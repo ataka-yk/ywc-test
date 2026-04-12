@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YWC×SF データフロー可視化</title>
+<style>
+:root{--bg:#fff;--bg2:#f5f5f3;--bg3:#ebebea;--text:#1a1a19;--text2:#6b6b6a;--text3:#9b9b9a;--border:rgba(0,0,0,.1);--border2:rgba(0,0,0,.2);--info-bg:#E6F1FB;--info:#185FA5;--warn-bg:#FAEEDA;--warn:#854F0B;--ok-bg:#EAF3DE;--ok:#3B6D11;--green-bg:#E1F5EE;--green:#0F6E56;--r:8px;--rl:12px}
+@media(prefers-color-scheme:dark){:root{--bg:#1a1a19;--bg2:#252524;--bg3:#2f2f2e;--text:#e8e8e6;--text2:#9b9b9a;--text3:#6b6b6a;--border:rgba(255,255,255,.1);--border2:rgba(255,255,255,.2);--info-bg:#0c3358;--info:#85b7eb;--warn-bg:#412402;--warn:#fac775;--ok-bg:#173404;--ok:#97c459;--green-bg:#04342c;--green:#5dcaa5}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:var(--bg);color:var(--text);padding:1.2rem 1rem 3rem;max-width:860px;margin:0 auto}
+/* flow */
+.flow{display:flex;align-items:stretch;gap:0;margin-bottom:1.4rem}
+.sys{flex:1;border-radius:var(--rl);padding:13px 15px;border:none}
+.sf{background:#185FA5}.ywc{background:#0F6E56}.gcs{background:#6B3A0F}
+.sys h3{font-size:16px;font-weight:500;color:#fff;margin:0 0 2px}
+.sys p{font-size:12px;color:rgba(255,255,255,.75);margin:0;line-height:1.6}
+.arr{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:0 7px;min-width:62px;gap:2px}
+.arr span{font-size:10px;color:var(--text3);white-space:nowrap}
+/* tabs */
+.tabs{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:1.2rem}
+.tab{padding:11px 14px;border-radius:10px;border:none;font-size:13px;font-weight:500;cursor:pointer;text-align:left;background:var(--bg2);color:var(--text2);box-shadow:0 1px 0 rgba(0,0,0,.12),0 2px 4px rgba(0,0,0,.08);transition:all .1s;position:relative;top:0}
+.tab:hover{background:var(--bg);color:var(--text);box-shadow:0 2px 0 rgba(0,0,0,.12),0 4px 8px rgba(0,0,0,.1);top:-1px}
+.tab:active{top:1px;box-shadow:0 0 0 rgba(0,0,0,.12)}
+.tab.on{background:#185FA5;color:#fff;box-shadow:0 1px 0 rgba(0,0,0,.2),0 2px 6px rgba(24,95,165,.4)}
+.tab i{font-size:15px;display:block;margin-bottom:3px;font-style:normal}
+.tab span{display:block;font-size:12px;font-weight:400}
+/* panels */
+.panel{display:none}.panel.on{display:block}
+.sec{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin:15px 0 5px}
+/* field rows */
+.fl{display:flex;flex-direction:column;gap:4px}
+.f{display:flex;align-items:center;gap:9px;padding:9px 12px;border-radius:var(--r);border:.5px solid var(--border);background:var(--bg)}
+.f.btn{cursor:pointer;border:none;background:var(--bg2);box-shadow:0 1px 0 rgba(0,0,0,.1),0 2px 4px rgba(0,0,0,.07);transition:all .1s;position:relative;top:0}
+.f.btn:hover{background:var(--info-bg);box-shadow:0 2px 0 rgba(0,0,0,.1),0 4px 8px rgba(24,95,165,.12);top:-1px}
+.f.btn:active{top:1px}.f.btn.on{background:var(--info-bg);box-shadow:inset 0 1px 3px rgba(0,0,0,.08);top:1px}
+.f.dim{opacity:.45}
+.fc{display:flex;flex-direction:column;flex:1;min-width:0}
+.fj{font-size:14px;font-weight:500;color:var(--text)}
+.fa{font-family:'SF Mono',Consolas,monospace;font-size:11px;color:var(--text3);margin-top:1px}
+.bdg{font-size:11px;padding:2px 7px;border-radius:99px;flex-shrink:0;font-weight:500;white-space:nowrap}
+.bb{background:var(--info-bg);color:var(--info)}.bs{background:var(--bg2);color:var(--text3)}.bc{background:var(--green-bg);color:var(--green)}.bw{background:var(--warn-bg);color:var(--warn)}.ba{background:var(--bg2);color:var(--text3)}
+.cv{font-size:11px;color:var(--text3);flex-shrink:0;transition:transform .15s}.btn.on .cv{transform:rotate(180deg)}
+/* detail */
+.det{border:.5px solid var(--border2);border-radius:var(--r);padding:11px 13px;background:var(--bg2);margin:2px 0}
+.det h5{font-size:13px;font-weight:500;margin:0 0 7px}
+.det p{font-size:13px;color:var(--text2);line-height:1.6;margin:5px 0 0}
+.vals{display:flex;flex-wrap:wrap;gap:4px}
+.val{font-size:12px;font-family:monospace;background:var(--bg);border:.5px solid var(--border);border-radius:4px;padding:2px 7px;color:var(--text2)}
+/* note */
+.note{font-size:13px;color:var(--text2);border-left:2px solid var(--border2);padding:7px 11px;margin:8px 0;border-radius:0 4px 4px 0}
+.note.w{border-color:var(--warn);background:var(--warn-bg);color:var(--warn)}
+/* cards */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.card{background:var(--bg2);border-radius:var(--rl);padding:13px}
+.card h4{font-size:14px;font-weight:500;margin:0 0 7px}
+.card p{font-size:13px;color:var(--text2);line-height:1.7;margin:0}
+/* todo */
+.ti{display:flex;flex-direction:column;gap:4px;padding:9px 12px;border-radius:var(--r);border:.5px solid var(--border);background:var(--bg)}
+.tr{display:flex;gap:7px;align-items:center}
+.chip{display:inline-flex;font-size:12px;padding:2px 9px;border-radius:99px;white-space:nowrap;flex-shrink:0;font-weight:500}
+.op{background:var(--warn-bg);color:var(--warn)}.dn{background:var(--ok-bg);color:var(--ok)}
+.tt{font-size:14px;font-weight:500}
+.td{font-size:12px;color:var(--text2)}
+.sp{visibility:hidden}
+@media(max-width:520px){.g2{grid-template-columns:1fr}.flow{flex-direction:column;gap:4px}.arr{flex-direction:row;min-width:auto;padding:2px 0}}
+</style>
+</head>
+<body>
+
+<div class="flow">
+  <div class="sys sf"><h3>Salesforce</h3><p>マスター（SSoT）<br>72フィールド / Student__c</p></div>
+  <div class="arr">
+    <span>日次バッチ</span>
+    <svg width="48" height="28" viewBox="0 0 48 28" fill="none"><line x1="3" y1="14" x2="38" y2="14" stroke="#888" stroke-width="1.5"/><path d="M33 7L43 14L33 21" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    <span>深夜1回</span>
+  </div>
+  <div class="sys ywc"><h3>YWC DB</h3><p>B欄25項目を保持<br>LIDはYWCがマスター</p></div>
+  <div class="arr">
+    <span>読み書き</span>
+    <svg width="48" height="28" viewBox="0 0 48 28" fill="none"><line x1="3" y1="9" x2="38" y2="9" stroke="#888" stroke-width="1.5"/><path d="M33 2L43 9L33 16" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/><line x1="45" y1="19" x2="10" y2="19" stroke="#888" stroke-width="1.5"/><path d="M15 12L5 19L15 26" stroke="#888" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
+    <span>チャット履歴</span>
+  </div>
+  <div class="sys gcs"><h3>GCS / C欄</h3><p>チャット履歴・LID2<br>タグ・学習ログ等</p></div>
+</div>
+
+<div class="tabs">
+  <button class="tab on" onclick="sw('b',this)"><i>🔵</i><span>B欄 — SF→YWC同期（25項目）</span></button>
+  <button class="tab" onclick="sw('c',this)"><i>🟢</i><span>C欄 — YWC独自</span></button>
+  <button class="tab" onclick="sw('a',this)"><i>⚪</i><span>A欄 — SF管理のみ（47項目）</span></button>
+  <button class="tab" onclick="sw('design',this)"><i>💡</i><span>設計の急所</span></button>
+  <button class="tab" onclick="sw('todo',this)"><i>📋</i><span>残課題</span></button>
+  <div class="sp tab"></div>
+</div>
+
+<!-- B欄 -->
+<div class="panel on" id="pb">
+  <div class="note">SalesforceからYWCへ日次バッチで同期する全25項目。正本：PRO3-89 §6。<b>浮き上がっている行はクリックで実値が展開されます。</b></div>
+  <div class="sec">① 識別・表示（§6順：Id → Name → NameKana__c → StudentNo__c）</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">レコードID</span><span class="fa">Id → salesforce_student_id</span></div><span class="bdg bb">upsertキー・18桁</span></div>
+    <div class="f"><div class="fc"><span class="fj">漢字氏名</span><span class="fa">Name → name_kanji</span></div><span class="bdg bb">先生UI表示</span></div>
+    <div class="f"><div class="fc"><span class="fj">ふりがな</span><span class="fa">NameKana__c → display_name_kana</span></div><span class="bdg bb">先生UI表示</span></div>
+    <div class="f"><div class="fc"><span class="fj">生徒番号</span><span class="fa">StudentNo__c → student_no</span></div><span class="bdg bb">業務参照・目視突合</span></div>
+  </div>
+  <div class="sec">② 学年</div>
+  <div class="fl">
+    <div class="f btn" onclick="td(this,'dg')"><div class="fc"><span class="fj">現学年</span><span class="fa">Grade__c → grade_code</span></div><span class="bdg bb">18値確認済み</span><span class="cv">▼</span></div>
+    <div class="det" id="dg" style="display:none"><h5>Grade__c 実値（2026-04-12 SOQL確認済み）</h5><div class="vals"><span class="val">年長</span><span class="val">小1</span><span class="val">小2</span><span class="val">小3</span><span class="val">小4</span><span class="val">小5</span><span class="val">小6</span><span class="val">中1</span><span class="val">中2</span><span class="val">中3</span><span class="val">高1</span><span class="val">高2</span><span class="val">高3</span><span class="val">高卒1年目</span><span class="val">高卒2年目</span><span class="val">高卒3年目</span><span class="val">高卒4年目</span><span class="val">その他</span></div><p>grade_codeはSF実値そのまま使用するか、Aitaneがコード変換するかを実装PR時に判断。</p></div>
+    <div class="f"><div class="fc"><span class="fj">新学年（来年度）</span><span class="fa">GradeNextYear__c → grade_code_next_year</span></div><span class="bdg bb">同一18値</span></div>
+  </div>
+  <div class="sec">③ 連絡先・メール</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">生徒Gmail</span><span class="fa">Gmail__c → student_email</span></div><span class="bdg bb">SendGrid</span></div>
+    <div class="f"><div class="fc"><span class="fj">保護者メール1</span><span class="fa">ParentsGmail__c → guardian_email_1</span></div><span class="bdg bb">SendGrid</span></div>
+    <div class="f"><div class="fc"><span class="fj">保護者メール2</span><span class="fa">ParentsGmail2__c → guardian_email_2</span></div><span class="bdg bb">nullable</span></div>
+  </div>
+  <div class="sec">④ LINE ID（方向—：SFのみ管理・YWCには渡さない）</div>
+  <div class="fl">
+    <div class="f dim"><div class="fc"><span class="fj">LINEユーザID（事務用）</span><span class="fa">LineUserId__c — 連携しない</span></div><span class="bdg bs">A欄・連携なし</span></div>
+    <div class="f dim"><div class="fc"><span class="fj">LINE登録済フラグ</span><span class="fa">LineUserIdCheck__c — 連携しない</span></div><span class="bdg bs">A欄・連携なし</span></div>
+  </div>
+  <div class="sec">⑤ 電話番号</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">電話番号①</span><span class="fa">MobileTel__c → guardian_phone_1</span></div><span class="bdg bb">緊急用</span></div>
+    <div class="f"><div class="fc"><span class="fj">電話番号②</span><span class="fa">Tel__c → guardian_phone_2（仮）</span></div><span class="bdg bw">カラム名仮</span></div>
+  </div>
+  <div class="sec">⑥ 配信制御・ステータス</div>
+  <div class="fl">
+    <div class="f btn" onclick="td(this,'ds')"><div class="fc"><span class="fj">ステータス</span><span class="fa">Status__c → enrollment_status</span></div><span class="bdg bb">6値確認済み</span><span class="cv">▼</span></div>
+    <div class="det" id="ds" style="display:none"><h5>Status__c 実値（SOQL確認済み）</h5><div class="vals"><span class="val">入会 94件</span><span class="val">体験中 13件</span><span class="val">問合せ 32件</span><span class="val">情報のみ 59件</span><span class="val">卒塾退塾 240件</span><span class="val">（空白）</span></div><p>空白のみ配信対象外。配信の主役はタグ。ステータスは参照のみ。</p></div>
+    <div class="f"><div class="fc"><span class="fj">入会日</span><span class="fa">JoinDate__c → join_date</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">退塾日</span><span class="fa">WithdrawalDate__c → withdrawal_date</span></div><span class="bdg bb">配信終了日の初期値</span></div>
+    <div class="f btn" onclick="td(this,'dc')"><div class="fc"><span class="fj">受講区分</span><span class="fa">Course__c → course_code</span></div><span class="bdg bb">6値確認済み</span><span class="cv">▼</span></div>
+    <div class="det" id="dc" style="display:none"><h5>Course__c 実値（SOQL確認済み）</h5><div class="vals"><span class="val">集団 283件</span><span class="val">アプリ 59件</span><span class="val">オンライン 42件</span><span class="val">ロボット 40件</span><span class="val">個別 2件</span><span class="val">その他 2件</span></div></div>
+  </div>
+  <div class="sec">⑦ LLMコンテキスト（郵便番号・学校情報）</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">郵便番号（新規追加）</span><span class="fa">SF未追加・糸井さん待ち → postal_code</span></div><span class="bdg bw">SF未追加</span></div>
+    <div class="f"><div class="fc"><span class="fj">小学校名</span><span class="fa">PrimarySchoolName__c → primary_school_name</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">中学校名</span><span class="fa">JuniorHighSchoolName__c → junior_high_school_name</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">高校名</span><span class="fa">HighSchoolName__c → high_school_name</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">中高一貫校フラグ</span><span class="fa">ConsistentJHFlag__c → consistent_jh_flag</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">私立小フラグ</span><span class="fa">PrivatePFlag__c → private_primary_flag</span></div><span class="bdg bb">LLM用</span></div>
+    <div class="f"><div class="fc"><span class="fj">幼保</span><span class="fa">Kindergarten__c → kindergarten</span></div><span class="bdg bb">LLM用</span></div>
+  </div>
+  <div class="sec">⑧ 返信リスト・保護者LID1</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">返信リスト</span><span class="fa">LineResponse__c → sf_response_list</span></div><span class="bdg bb">SF正本</span></div>
+    <div class="f"><div class="fc"><span class="fj">保護者LINE ID 1（照合用）</span><span class="fa">保護者レコード LineUserId__c — 照合のみ・上書きなし</span></div><span class="bdg bb">アラート対象</span></div>
+  </div>
+</div>
+
+<!-- C欄 -->
+<div class="panel" id="pc">
+  <div class="note">SFに存在しない。YWCのみが管理する情報（素案v2 C欄と照合済み）。</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">保護者LINE ID 2</span><span class="fa">LID2</span></div><span class="bdg bc">YWC管理</span></div>
+    <div class="f"><div class="fc"><span class="fj">生徒個別LINE ID</span><span class="fa">生徒LID</span></div><span class="bdg bc">YWC管理</span></div>
+    <div class="f"><div class="fc"><span class="fj">生徒グループLINE ID</span><span class="fa">LID1＋生徒LID＋任意でLID2</span></div><span class="bdg bc">YWC管理</span></div>
+    <div class="f"><div class="fc"><span class="fj">保護者グループLINE ID</span><span class="fa">LID1＋LID2</span></div><span class="bdg bc">YWC管理</span></div>
+    <div class="f"><div class="fc"><span class="fj">タグ情報</span><span class="fa">配信制御の主役。公式LINE管理画面から手動転記で初期移行</span></div><span class="bdg bc">YWC管理</span></div>
+    <div class="f"><div class="fc"><span class="fj">YWC配信終了日</span><span class="fa">退塾日をデフォルト値として自動セット・先生が上書き可</span></div><span class="bdg bc">YWC独自</span></div>
+    <div class="f"><div class="fc"><span class="fj">学習ログ（音読・つみかさね・タゲトモ等）</span><span class="fa">—</span></div><span class="bdg bc">YWC独自</span></div>
+    <div class="f"><div class="fc"><span class="fj">FB生成履歴・送信済み文面</span><span class="fa">—</span></div><span class="bdg bc">YWC独自</span></div>
+    <div class="f"><div class="fc"><span class="fj">先生の操作ログ（排他制御・ステータス管理）</span><span class="fa">—</span></div><span class="bdg bc">YWC独自</span></div>
+    <div class="f"><div class="fc"><span class="fj">保護者同意フラグ（YWC利用）</span><span class="fa">一度のみ取得</span></div><span class="bdg bc">YWC正本</span></div>
+    <div class="f"><div class="fc"><span class="fj">GCSオーディオ・チャット履歴パス</span><span class="fa">—</span></div><span class="bdg bc">YWC独自</span></div>
+  </div>
+  <div class="note" style="margin-top:10px">タグがない人には配信されない。配信終了日を過ぎるとタグ自動クリア→「配信停止」タグ自動付与（Aitane実装依頼事項）。</div>
+</div>
+
+<!-- A欄 -->
+<div class="panel" id="pa">
+  <div class="note">YWC DBには持たない。SFが管理するフィールド（47項目）。</div>
+  <div class="sec">LINE（事務用）</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">LINEユーザID（事務用）</span><span class="fa">LineUserId__c</span></div><span class="bdg ba">事務LINE専用</span></div>
+    <div class="f"><div class="fc"><span class="fj">LINE登録済フラグ</span><span class="fa">LineUserIdCheck__c</span></div><span class="bdg ba">派生フィールド</span></div>
+  </div>
+  <div class="sec">住所</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">住所</span><span class="fa">Address__c</span></div><span class="bdg ba">郵便番号のみ連携</span></div>
+    <div class="f"><div class="fc"><span class="fj">マンション名・住所位置</span><span class="fa">ApartmentName__c / GeoLocation__c</span></div><span class="bdg ba">不要</span></div>
+  </div>
+  <div class="sec">請求処理（17項目）</div>
+  <div class="fl"><div class="f"><div class="fc"><span class="fj">自動課金・請求関連 各種</span><span class="fa">AutoBilling系・Fee系・BillingDeposit等</span></div><span class="bdg ba">請求専用</span></div></div>
+  <div class="sec">SF内部・その他</div>
+  <div class="fl">
+    <div class="f"><div class="fc"><span class="fj">保護者参照・リード・入会フォームURL等</span><span class="fa">Parent__c / LeadRef__c / EnteringClassFormUrl__c 等</span></div><span class="bdg ba">SF内部</span></div>
+    <div class="f"><div class="fc"><span class="fj">作成日・更新日等システム項目</span><span class="fa">CreatedDate / LastModifiedDate 等</span></div><span class="bdg ba">LastModifiedDateはバッチ増分キー</span></div>
+  </div>
+</div>
+
+<!-- 設計の急所 -->
+<div class="panel" id="pdesign">
+  <div class="g2">
+    <div class="card"><h4>LID1照合フロー</h4><p>① YWCがLID1取得<br>② 見学フォームURLパラメータで暗号化LID1をSFに送信<br>③ SFのhiddenフィールドに保存<br>④ 日次バッチでYWCがSFから取得し照合<br>⑤ 不一致→アラート発報</p><div class="note w" style="margin-top:9px">LID1はYWCが上書きしない</div></div>
+    <div class="card"><h4>配信制御の2層構造</h4><p><b>主役：タグ</b><br>一斉配信・才能配信 → タグで制御<br>学習履歴自動送信 → 配信終了日で制御<br>人間同士のチャット → 退会後も継続可</p><div class="note w" style="margin-top:9px">タグなし → 配信されない</div></div>
+    <div class="card"><h4>退塾日 vs 配信終了日</h4><p>退塾日（B欄）→ SF請求と連動。先生が変更不可<br><br>YWC配信終了日（C欄）→ 退塾日をデフォルト値として自動セット。先生が上書き可</p></div>
+    <div class="card"><h4>LID1不一致アラート</h4><p>発生ケース：<br>① LINEアカウント変更<br>② 見学フォーム保存失敗・遅延<br>③ 初期移行時の突合ミス<br><br>対処：SF上で手動再紐づけ → 翌日バッチで自動更新</p></div>
+  </div>
+</div>
+
+<!-- 残課題 -->
+<div class="panel" id="ptodo">
+  <div class="fl">
+    <div class="ti"><div class="tr"><span class="chip op">⚠ 未完了</span><span class="tt">退塾日（WithdrawalDate__c）手動上書き許可</span></div><span class="td">糸井さんへSF改修依頼済み。完了待ち。</span></div>
+    <div class="ti"><div class="tr"><span class="chip op">⚠ 未完了</span><span class="tt">Connected App作成</span></div><span class="td">糸井さん対応。仕様確定後に着手。</span></div>
+    <div class="ti"><div class="tr"><span class="chip op">⚠ 仮</span><span class="tt">電話番号② カラム名（Tel__c）</span></div><span class="td">guardian_phone_2（仮）。Aitaneが実装PR時に確定。</span></div>
+    <div class="ti"><div class="tr"><span class="chip op">⚠ 未完了</span><span class="tt">郵便番号API名確定後のAitaneへの連絡</span></div><span class="td">糸井さんがSFにフィールド追加後、確定したAPI名をAitaneにSlackで連絡。連絡前はバッチ実装を進めないようAitaneに周知が必要。</span></div>
+    <div class="ti"><div class="tr"><span class="chip dn">✓ 解消</span><span class="tt">学年（Grade__c）選択リスト実値</span></div><span class="td">18値 SOQL確認済み。PRO3-89 §6に記載。</span></div>
+    <div class="ti"><div class="tr"><span class="chip dn">✓ 解消</span><span class="tt">ステータス・受講区分 実値</span></div><span class="td">Status__c（6値）・Course__c（6値）ともSOQL確認済み。PRO3-89 §6に記載。</span></div>
+  </div>
+  <div class="note" style="margin-top:13px">⚠️の3件（退塾日改修・Connected App・郵便番号）は糸井さん待ちのため、Aitaneの実装着手はブロックされない。</div>
+</div>
+
+<script>
+function sw(id,el){
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  el.classList.add('on');
+  document.getElementById('p'+id).classList.add('on');
+}
+function td(el,id){
+  const d=document.getElementById(id);
+  const o=d.style.display!=='none';
+  d.style.display=o?'none':'block';
+  el.classList.toggle('on',!o);
+}
+</script>
+</body>
+</html>
