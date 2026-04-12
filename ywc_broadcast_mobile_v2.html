@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>YWC 配信</title>
+<style>
+:root {
+  --bg: #F2F1EE;
+  --surface: #FFFFFF;
+  --border: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.18);
+  --text: #1A1A1A;
+  --text2: #555;
+  --text3: #999;
+  --accent: #2E7DD1;
+  --accent-dark: #1A5BA0;
+  --accent-bg: #E8F2FB;
+  --danger: #D94040;
+  --danger-bg: #FEF0F0;
+  --warn: #D08020;
+  --warn-bg: #FEF3E2;
+  --green: #1A9060;
+  --green-bg: #E2F5EE;
+  --radius: 14px;
+  --radius-sm: 10px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,0.18);
+  --font: -apple-system, 'Hiragino Sans', 'Yu Gothic UI', sans-serif;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+/* ===== 外側フレーム（デモ用） ===== */
+body {
+  font-family: var(--font);
+  background: #D8D6D0;
+  display: flex; justify-content: center; align-items: flex-start;
+  min-height: 100vh; padding: 20px 0;
+}
+.phone {
+  width: 390px; height: 844px;
+  background: var(--bg);
+  border-radius: 44px;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.28), 0 0 0 1px rgba(255,255,255,0.15) inset;
+  overflow: hidden;
+  display: flex; flex-direction: column;
+}
+
+/* ===== ステータスバー ===== */
+.sbar {
+  background: var(--surface);
+  padding: 14px 24px 6px;
+  display: flex; justify-content: space-between; align-items: center;
+  flex-shrink: 0;
+}
+.sbar-time { font-size: 15px; font-weight: 600; color: var(--text); }
+.sbar-icons { font-size: 11px; color: var(--text2); letter-spacing: 1px; }
+
+/* ===== ヘッダー ===== */
+.header {
+  background: var(--surface);
+  border-bottom: 0.5px solid var(--border);
+  padding: 10px 16px 10px;
+  display: flex; align-items: center; justify-content: space-between;
+  flex-shrink: 0;
+}
+.header-title { font-size: 17px; font-weight: 700; color: var(--text); }
+.header-hist-btn {
+  font-size: 11px; font-weight: 600; color: var(--accent);
+  background: var(--accent-bg); border: none; border-radius: 8px;
+  padding: 5px 10px; cursor: pointer;
+}
+
+/* ===== スクロールボディ ===== */
+.body {
+  flex: 1;
+  display: flex; flex-direction: column;
+  overflow: hidden; /* 内部でflexによる高さ管理 */
+  padding: 10px 12px;
+  gap: 8px;
+}
+
+/* ===== アコーディオン共通 ===== */
+.accordion {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  overflow: hidden;
+}
+.acc-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 11px 14px; cursor: pointer; user-select: none;
+}
+.acc-header-left { display: flex; align-items: center; gap: 8px; }
+.acc-icon { font-size: 14px; }
+.acc-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.acc-summary { font-size: 11px; color: var(--text3); margin-left: 4px; }
+.acc-summary.has-value { color: var(--accent); font-weight: 600; }
+.acc-chevron {
+  font-size: 10px; color: var(--text3);
+  transition: transform 0.2s; flex-shrink: 0;
+}
+.acc-chevron.open { transform: rotate(180deg); }
+.acc-body {
+  max-height: 0; overflow: hidden;
+  transition: max-height 0.25s ease;
+}
+.acc-body.open { max-height: 600px; }
+.acc-body-inner { padding: 0 14px 12px; }
+
+/* ===== タグ ===== */
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 7px; padding: 2px 0 4px; }
+.tag {
+  font-size: 13px; font-weight: 500; padding: 6px 14px;
+  border-radius: 20px; border: none; cursor: pointer; transition: all 0.15s;
+  background: #ECEAE6; color: var(--text2);
+}
+.tag.on { background: var(--accent); color: #fff; }
+.dest-row {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 10px; background: var(--bg); border-radius: 8px; margin-top: 8px;
+}
+.dest-count { font-size: 13px; font-weight: 700; color: var(--text); }
+.dest-meta { font-size: 10px; color: var(--text3); }
+.dest-done-btn {
+  font-size: 12px; font-weight: 700; color: #fff;
+  background: var(--accent); border: none; border-radius: 8px;
+  padding: 6px 14px; cursor: pointer;
+}
+
+/* ===== 画像添付 ===== */
+.image-trigger {
+  width: 100%; min-height: 54px;
+  border: 1.5px dashed var(--border-strong); border-radius: 8px;
+  background: var(--bg); cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  font-size: 12px; color: var(--text3); transition: all 0.15s;
+}
+.image-trigger:active { border-color: var(--accent); background: var(--accent-bg); }
+.image-trigger.has-images { border-style: solid; border-color: var(--accent); color: var(--accent); background: var(--accent-bg); }
+.image-grid { display: flex; gap: 8px; padding-bottom: 2px; }
+.image-thumb {
+  width: 64px; height: 64px; border-radius: 8px; overflow: hidden;
+  position: relative; flex-shrink: 0; background: var(--bg);
+}
+.image-thumb svg { width: 100%; height: 100%; }
+.image-remove {
+  position: absolute; top: 2px; right: 2px; width: 16px; height: 16px;
+  background: rgba(0,0,0,0.5); border-radius: 50%; border: none; cursor: pointer;
+  color: #fff; font-size: 9px; display: flex; align-items: center; justify-content: center;
+}
+.image-add {
+  width: 64px; height: 64px; border-radius: 8px;
+  border: 1.5px dashed var(--border-strong); background: var(--bg);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; font-size: 20px; color: var(--text3);
+}
+.img-done-btn {
+  display: block; width: 100%; margin-top: 10px;
+  font-size: 12px; font-weight: 700; color: #fff;
+  background: var(--accent); border: none; border-radius: 8px;
+  padding: 8px; cursor: pointer;
+}
+
+/* ===== テキストエリア（メインの広大なエリア） ===== */
+.textarea-section {
+  flex: 1;
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+  min-height: 0; /* flex子要素で縮まないようにするため */
+}
+.textarea-header {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 14px; border-bottom: 0.5px solid var(--border); flex-shrink: 0;
+}
+.textarea-label { font-size: 12px; font-weight: 600; color: var(--text2); }
+.char-count { font-size: 11px; color: var(--text3); }
+.char-count.over { color: var(--danger); font-weight: 700; }
+.textarea {
+  flex: 1; width: 100%; border: none; outline: none; resize: none;
+  font-size: 14px; font-family: var(--font); color: var(--text);
+  line-height: 1.65; padding: 12px 14px;
+  background: transparent; min-height: 0;
+}
+.textarea::placeholder { color: var(--text3); }
+
+/* ===== 時間制限バナー ===== */
+.time-banner {
+  background: var(--warn-bg); border: 1px solid #F0C060;
+  border-radius: var(--radius-sm); padding: 9px 12px;
+  display: none; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.time-banner.show { display: flex; }
+.time-banner-text { flex: 1; font-size: 11px; color: #7A5010; line-height: 1.4; }
+.urgent-btn {
+  font-size: 10px; font-weight: 700; color: var(--warn);
+  border: 1.5px solid var(--warn); background: none;
+  border-radius: 6px; padding: 4px 9px; cursor: pointer; flex-shrink: 0;
+}
+.urgent-active-banner {
+  background: var(--danger-bg); border: 1px solid #F0A0A0;
+  border-radius: var(--radius-sm); padding: 9px 12px;
+  display: none; align-items: center; gap: 8px; flex-shrink: 0;
+}
+.urgent-active-banner.show { display: flex; }
+.urgent-active-text { flex: 1; font-size: 11px; color: #7A1010; }
+.urgent-undo { font-size: 10px; color: var(--text3); background: none; border: none; cursor: pointer; text-decoration: underline; }
+
+/* ===== 送信設定バー（日時・グループ） ===== */
+.send-settings {
+  background: var(--surface);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  flex-shrink: 0;
+  padding: 0;
+  overflow: hidden;
+}
+.setting-row {
+  display: flex; align-items: center; padding: 10px 14px;
+  border-bottom: 0.5px solid var(--border);
+  gap: 10px;
+}
+.setting-row:last-child { border-bottom: none; }
+.setting-icon { font-size: 14px; flex-shrink: 0; }
+.setting-label { font-size: 12px; color: var(--text); flex: 1; }
+.setting-val { font-size: 12px; color: var(--accent); font-weight: 600; flex-shrink: 0; cursor: pointer; }
+.setting-val:hover { text-decoration: underline; }
+.toggle-label { position: relative; display: inline-flex; cursor: pointer; }
+.toggle-label input { opacity:0; width:0; height:0; position: absolute; }
+.toggle-track {
+  display: block; width: 38px; height: 22px; border-radius: 11px;
+  background: #C8C8C8; transition: background 0.2s; position: relative;
+}
+.toggle-label input:checked + .toggle-track { background: var(--accent); }
+.toggle-track::after {
+  content:''; position:absolute; top:2px; left:2px;
+  width:18px; height:18px; border-radius:50%; background:#fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2); transition: transform 0.2s;
+}
+.toggle-label input:checked + .toggle-track::after { transform: translateX(16px); }
+
+/* ===== 送信ボタン ===== */
+.send-wrap { flex-shrink: 0; }
+.send-btn {
+  width: 100%; padding: 15px; border-radius: var(--radius);
+  font-size: 15px; font-weight: 700; font-family: var(--font);
+  border: none; cursor: pointer; transition: all 0.18s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.send-btn.ready { background: var(--accent); color: #fff; box-shadow: 0 4px 16px rgba(46,125,209,0.35); }
+.send-btn.ready:active { transform: scale(0.98); box-shadow: none; }
+.send-btn.off { background: #C8C8C8; color: #fff; cursor: default; }
+.send-count { background: rgba(255,255,255,0.22); border-radius: 10px; padding: 1px 8px; font-size: 12px; }
+
+/* ===== モーダル共通 ===== */
+.overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 100; align-items: flex-end; justify-content: center;
+}
+.overlay.open { display: flex; }
+.sheet {
+  background: var(--surface); border-radius: 20px 20px 0 0;
+  width: 100%; max-width: 390px; max-height: 82vh;
+  display: flex; flex-direction: column;
+  animation: slideUp 0.22s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.sheet-handle { width: 38px; height: 4px; background: #D8D8D8; border-radius: 2px; margin: 10px auto 0; }
+.sheet-title {
+  font-size: 14px; font-weight: 700; color: var(--text);
+  padding: 12px 16px 10px; border-bottom: 0.5px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.sheet-close { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text3); }
+.sheet-scroll { overflow-y: auto; flex: 1; }
+.sheet-footer {
+  padding: 10px 14px; border-top: 0.5px solid var(--border);
+  display: flex; gap: 8px;
+}
+.btn-cancel {
+  flex: 1; padding: 11px; border: 1.5px solid var(--border-strong); border-radius: 10px;
+  font-size: 13px; font-weight: 600; background: none; color: var(--text2); cursor: pointer;
+}
+.btn-ok {
+  flex: 2; padding: 11px; background: var(--accent); border: none; border-radius: 10px;
+  font-size: 13px; font-weight: 700; color: #fff; cursor: pointer;
+}
+.btn-ok:disabled { background: #C8C8C8; cursor: default; }
+
+/* ===== GCSモーダル ===== */
+.gcs-grid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; padding: 10px;
+}
+.gcs-folder { grid-column: 1/-1; font-size: 11px; font-weight: 600; color: var(--text2); padding: 4px 2px 2px; }
+.gcs-item {
+  aspect-ratio: 1; border-radius: 8px; overflow: hidden; cursor: pointer;
+  position: relative; border: 2.5px solid transparent; transition: border-color 0.1s;
+}
+.gcs-item.sel { border-color: var(--accent); }
+.gcs-item svg { width: 100%; height: 100%; }
+.gcs-check {
+  display: none; position: absolute; top: 4px; right: 4px;
+  width: 18px; height: 18px; background: var(--accent); border-radius: 50%;
+  align-items: center; justify-content: center; color: #fff; font-size: 10px; font-weight: 700;
+}
+.gcs-item.sel .gcs-check { display: flex; }
+
+/* ===== 過去履歴モーダル ===== */
+.hist-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 11px 16px; border-bottom: 0.5px solid var(--border); cursor: pointer;
+}
+.hist-item:active { background: var(--bg); }
+.hist-score { font-size: 10px; font-weight: 700; color: var(--accent); background: var(--accent-bg); padding: 2px 5px; border-radius: 4px; flex-shrink: 0; }
+.hist-body { flex: 1; min-width: 0; }
+.hist-date { font-size: 10px; color: var(--text3); }
+.hist-text { font-size: 12px; color: var(--text); line-height: 1.4; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.hist-meta { font-size: 10px; color: var(--text3); margin-top: 1px; }
+.hist-use { font-size: 10px; font-weight: 700; color: var(--accent); background: var(--accent-bg); border: none; border-radius: 5px; padding: 4px 9px; cursor: pointer; flex-shrink: 0; }
+
+/* ===== 日時モーダル ===== */
+.dt-body { padding: 14px 16px; display: flex; flex-direction: column; gap: 12px; }
+.dt-label { font-size: 12px; font-weight: 600; color: var(--text2); margin-bottom: 4px; }
+.dt-now-row { display: flex; align-items: center; justify-content: space-between; }
+.dt-inputs { display: flex; gap: 8px; }
+.dt-input {
+  flex: 1; border: 1.5px solid var(--border-strong); border-radius: 8px;
+  padding: 10px; font-size: 13px; font-family: var(--font); color: var(--text);
+  background: var(--surface); cursor: pointer; text-align: center; outline: none;
+  transition: border-color 0.15s;
+}
+.dt-input:focus { border-color: var(--accent); }
+
+/* ===== プレビューモーダル（中央表示） ===== */
+.preview-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
+  z-index: 200; align-items: center; justify-content: center; padding: 16px;
+}
+.preview-overlay.open { display: flex; }
+.preview-card {
+  background: var(--surface); border-radius: 16px; width: 100%; max-width: 360px;
+  box-shadow: var(--shadow-lg); overflow: hidden;
+  animation: fadeScale 0.2s ease;
+}
+@keyframes fadeScale { from { opacity:0; transform:scale(0.94); } to { opacity:1; transform:scale(1); } }
+.preview-header {
+  font-size: 14px; font-weight: 700; color: var(--text);
+  padding: 13px 16px; border-bottom: 0.5px solid var(--border);
+  display: flex; justify-content: space-between; align-items: center;
+}
+.preview-x { background: none; border: none; cursor: pointer; font-size: 16px; color: var(--text3); }
+.preview-body { padding: 14px 16px; }
+.preview-line-box {
+  background: #f0f9f0; border-left: 3px solid var(--green);
+  border-radius: 10px; padding: 12px; margin-bottom: 10px;
+}
+.preview-line-label { font-size: 10px; color: var(--green); font-weight: 700; margin-bottom: 5px; }
+.preview-line-text { font-size: 13px; color: var(--text); line-height: 1.65; white-space: pre-wrap; }
+.preview-imgs { display: flex; gap: 6px; margin-top: 8px; }
+.preview-imgs > div { width: 60px; height: 60px; border-radius: 6px; overflow: hidden; }
+.preview-imgs svg { width: 100%; height: 100%; }
+.preview-meta { font-size: 10px; color: var(--text3); text-align: right; margin-top: 8px; line-height: 1.5; }
+.preview-footer { display: flex; gap: 8px; padding: 0 16px 14px; }
+.preview-edit { flex: 1; padding: 11px; border: 1.5px solid var(--border-strong); border-radius: 10px; font-size: 13px; font-weight: 600; background: none; color: var(--text2); cursor: pointer; }
+.preview-confirm { flex: 2; padding: 11px; background: var(--accent); border: none; border-radius: 10px; font-size: 13px; font-weight: 700; color: #fff; cursor: pointer; }
+
+/* ===== 完了 ===== */
+.done-overlay {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+  z-index: 300; align-items: center; justify-content: center; padding: 20px;
+}
+.done-overlay.open { display: flex; }
+.done-card {
+  background: var(--surface); border-radius: 16px; width: 100%; max-width: 300px;
+  padding: 28px 24px; text-align: center; box-shadow: var(--shadow-lg);
+  animation: fadeScale 0.2s ease;
+}
+.done-icon { font-size: 48px; margin-bottom: 12px; }
+.done-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+.done-sub { font-size: 12px; color: var(--text2); line-height: 1.6; margin-bottom: 20px; }
+.done-ok { width: 100%; padding: 12px; background: var(--accent); border: none; border-radius: 10px; font-size: 14px; font-weight: 700; color: #fff; cursor: pointer; }
+</style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- ステータスバー -->
+  <div class="sbar">
+    <span class="sbar-time">9:41</span>
+    <span class="sbar-icons">●●● WiFi 🔋</span>
+  </div>
+
+  <!-- ヘッダー -->
+  <div class="header">
+    <span class="header-title">📤 配信</span>
+    <button class="header-hist-btn" onclick="openHist()">🔍 過去の配信を参照</button>
+  </div>
+
+  <!-- ===== ボディ ===== -->
+  <div class="body">
+
+    <!-- ① タグアコーディオン -->
+    <div class="accordion" id="tagAcc">
+      <div class="acc-header" onclick="toggleAcc('tagAcc')">
+        <div class="acc-header-left">
+          <span class="acc-icon">🏷️</span>
+          <span class="acc-title">送信先タグ</span>
+          <span class="acc-summary has-value" id="tagSummary">中 · 112名</span>
+        </div>
+        <span class="acc-chevron open" id="tagChevron">▼</span>
+      </div>
+      <div class="acc-body open" id="tagBody">
+        <div class="acc-body-inner">
+          <div class="tag-wrap" id="tagWrap">
+            <button class="tag on" onclick="toggleTag(this)">中</button>
+            <button class="tag"    onclick="toggleTag(this)">高</button>
+            <button class="tag"    onclick="toggleTag(this)">小</button>
+            <button class="tag"    onclick="toggleTag(this)">英検</button>
+            <button class="tag"    onclick="toggleTag(this)">算数</button>
+            <button class="tag"    onclick="toggleTag(this)">国語</button>
+            <button class="tag"    onclick="toggleTag(this)">新規</button>
+            <button class="tag"    onclick="toggleTag(this)">要対応</button>
+          </div>
+          <div class="dest-row">
+            <div>
+              <div class="dest-count" id="destCount">112名</div>
+              <div class="dest-meta">保護者LINE · 保護者メール</div>
+            </div>
+            <button class="dest-done-btn" onclick="closeAcc('tagAcc')">確定 ▸</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ② 画像添付アコーディオン -->
+    <div class="accordion" id="imgAcc">
+      <div class="acc-header" onclick="toggleAcc('imgAcc')">
+        <div class="acc-header-left">
+          <span class="acc-icon">🖼️</span>
+          <span class="acc-title">画像添付</span>
+          <span class="acc-summary" id="imgSummary">なし</span>
+        </div>
+        <span class="acc-chevron" id="imgChevron">▼</span>
+      </div>
+      <div class="acc-body" id="imgBody">
+        <div class="acc-body-inner">
+          <div id="imgGridWrap">
+            <!-- 初期：トリガーボタン -->
+            <div class="image-trigger" id="imgTrigger" onclick="openGcs()">
+              <span>＋</span><span>GCSから選択（最大2枚）</span>
+            </div>
+          </div>
+          <button class="img-done-btn" onclick="closeAcc('imgAcc')">確定 ▸</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ③ テキストエリア（flex-grow） -->
+    <div class="textarea-section">
+      <div class="textarea-header">
+        <span class="textarea-label">配信テキスト</span>
+        <span class="char-count" id="charCount">0 / 600</span>
+      </div>
+      <textarea class="textarea" id="mainText"
+        placeholder="本文を入力&#10;&#10;例）★↑新中2！&#10;休日の昼間、30分ほどで200問。..."
+        oninput="onText(this)"></textarea>
+    </div>
+
+    <!-- 時間制限バナー -->
+    <div class="time-banner" id="timeBanner">
+      <span style="font-size:16px;flex-shrink:0;">🔒</span>
+      <span class="time-banner-text">23:00〜6:00は配信不可。翌朝6:30〜7:00に自動配信されます。</span>
+      <button class="urgent-btn" onclick="setUrgent(true)">緊急</button>
+    </div>
+    <div class="urgent-active-banner" id="urgentBanner">
+      <span style="font-size:16px;flex-shrink:0;">🚨</span>
+      <span class="urgent-active-text">【緊急配信】として即時送信されます。</span>
+      <button class="urgent-undo" onclick="setUrgent(false)">取消</button>
+    </div>
+
+    <!-- ④ 送信設定 -->
+    <div class="send-settings">
+      <div class="setting-row">
+        <span class="setting-icon">🕐</span>
+        <span class="setting-label">配信日時</span>
+        <span class="setting-val" id="datetimeVal" onclick="openDatetime()">翌朝 6:42</span>
+      </div>
+      <div class="setting-row">
+        <span class="setting-icon">👥</span>
+        <span class="setting-label">グループにも配信</span>
+        <label class="toggle-label">
+          <input type="checkbox" id="groupToggle">
+          <span class="toggle-track"></span>
+        </label>
+      </div>
+    </div>
+
+    <!-- ⑤ プレビューして配信ボタン -->
+    <div class="send-wrap">
+      <button class="send-btn off" id="sendBtn" onclick="openPreview()">
+        <span>👁</span>
+        <span id="sendLabel">プレビューして配信</span>
+        <span class="send-count" id="sendCount">112名</span>
+      </button>
+    </div>
+
+  </div><!-- /body -->
+</div><!-- /phone -->
+
+
+<!-- ===== 過去履歴モーダル ===== -->
+<div class="overlay" id="histOverlay" onclick="closeOverlayClick(event,'histOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      過去の配信
+      <button class="sheet-close" onclick="close0('histOverlay')">✕</button>
+    </div>
+    <div class="sheet-scroll">
+      <div class="hist-item" onclick="useHist(this,'★↑新中2！ 休日の昼間、30分ほどで200問。英語の基礎の復習をはじめ…')">
+        <span class="hist-score">94%</span>
+        <div class="hist-body">
+          <div class="hist-date">2026/3/29 19:31</div>
+          <div class="hist-text">★↑新中2！ 休日の昼間、30分ほどで200問。</div>
+          <div class="hist-meta">絞り込み · 112名</div>
+        </div>
+        <button class="hist-use" onclick="event.stopPropagation();useHist(this.closest('.hist-item'),'★↑新中2！ 休日の昼間、30分ほどで200問。英語の基礎の復習をはじめ…')">使う</button>
+      </div>
+      <div class="hist-item" onclick="useHist(this,'★新中1が5200点達成！！ メンテナンス後には4月分をスタートできますので…')">
+        <span class="hist-score">82%</span>
+        <div class="hist-body">
+          <div class="hist-date">2026/3/31 14:42</div>
+          <div class="hist-text">★新中1が5200点達成！！</div>
+          <div class="hist-meta">絞り込み · 56名</div>
+        </div>
+        <button class="hist-use" onclick="event.stopPropagation();useHist(this.closest('.hist-item'),'★新中1が5200点達成！！ メンテナンス後には4月分をスタートできますので…')">使う</button>
+      </div>
+      <div class="hist-item" onclick="useHist(this,'★お正月の中2！ 夏から始めて約半年。英語の才能があるのはすぐに気づきました…')">
+        <span class="hist-score">78%</span>
+        <div class="hist-body">
+          <div class="hist-date">2026/1/3</div>
+          <div class="hist-text">★↑お正月の中2！</div>
+          <div class="hist-meta">絞り込み · 97名</div>
+        </div>
+        <button class="hist-use" onclick="event.stopPropagation();useHist(this.closest('.hist-item'),'★お正月の中2！ 夏から始めて約半年。英語の才能があるのはすぐに気づきました…')">使う</button>
+      </div>
+      <div class="hist-item" onclick="useHist(this,'★中2が大学入試問題に毎日挑む！ 中1の夏前には英検5級を解いていたところから…')">
+        <span class="hist-score">71%</span>
+        <div class="hist-body">
+          <div class="hist-date">2025/10/9</div>
+          <div class="hist-text">★中2が大学入試問題に毎日挑む！</div>
+          <div class="hist-meta">絞り込み · 56名</div>
+        </div>
+        <button class="hist-use" onclick="event.stopPropagation();useHist(this.closest('.hist-item'),'★中2が大学入試問題に毎日挑む！ 中1の夏前には英検5級を解いていたところから…')">使う</button>
+      </div>
+      <div class="hist-item" onclick="useHist(this,'★3月進路指導！ 2026年入試の科目別の得点分布に関する資料です。中1中2の方にこそ…')">
+        <span class="hist-score">63%</span>
+        <div class="hist-body">
+          <div class="hist-date">2026/3/28 14:42</div>
+          <div class="hist-text">★3月進路指導！</div>
+          <div class="hist-meta">絞り込み · 56名</div>
+        </div>
+        <button class="hist-use" onclick="event.stopPropagation();useHist(this.closest('.hist-item'),'★3月進路指導！ 2026年入試の科目別の得点分布に関する資料です。中1中2の方にこそ…')">使う</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== GCS選択モーダル ===== -->
+<div class="overlay" id="gcsOverlay" onclick="closeOverlayClick(event,'gcsOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      GCSから選択（最大2枚）
+      <button class="sheet-close" onclick="close0('gcsOverlay')">✕</button>
+    </div>
+    <div class="sheet-scroll">
+      <div class="gcs-grid" id="gcsGrid">
+        <div class="gcs-folder">📁 talent_signal / 2026-04</div>
+        <div class="gcs-item" data-id="i1" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#D0E8F8"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#2E7DD1">学習グラフA</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i2" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#D8F0E4"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#1A9060">音読ランキング</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i3" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#F8ECD0"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#D08020">タゲトモスコア</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i4" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#F0D8F8"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#8040B0">達成度グラフ</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i5" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#F8D8D8"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#D94040">正誤分析</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i6" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#DCF0F8"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#2E7DD1">配信用グラフ</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-folder">📁 talent_signal / 2026-03</div>
+        <div class="gcs-item" data-id="i7" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#E8F8D0"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#5A9020">3月成績グラフ</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+        <div class="gcs-item" data-id="i8" onclick="toggleGcs(this)">
+          <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="#F8F0D0"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="11" fill="#A08020">模試結果</text></svg>
+          <div class="gcs-check">✓</div>
+        </div>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn-cancel" onclick="close0('gcsOverlay')">キャンセル</button>
+      <button class="btn-ok" id="gcsOk" onclick="confirmGcs()" disabled>
+        選択（<span id="gcsCount">0</span>/2）
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 日時モーダル ===== -->
+<div class="overlay" id="dtOverlay" onclick="closeOverlayClick(event,'dtOverlay')">
+  <div class="sheet">
+    <div class="sheet-handle"></div>
+    <div class="sheet-title">
+      配信日時を設定
+      <button class="sheet-close" onclick="close0('dtOverlay')">✕</button>
+    </div>
+    <div class="dt-body">
+      <div>
+        <div class="dt-label">今すぐ配信</div>
+        <div class="dt-now-row">
+          <span style="font-size:12px;color:var(--text2);">ONにすると即時送信</span>
+          <label class="toggle-label">
+            <input type="checkbox" id="sendNowToggle" onchange="onSendNow()">
+            <span class="toggle-track"></span>
+          </label>
+        </div>
+      </div>
+      <div id="dtPickerArea">
+        <div class="dt-label">日時指定</div>
+        <div class="dt-inputs">
+          <input type="date" class="dt-input" id="sendDate" onchange="onDtChange()">
+          <input type="time" class="dt-input" id="sendTime" onchange="onDtChange()">
+        </div>
+      </div>
+    </div>
+    <div class="sheet-footer">
+      <button class="btn-cancel" onclick="close0('dtOverlay')">キャンセル</button>
+      <button class="btn-ok" onclick="confirmDatetime()">確定</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== プレビューモーダル ===== -->
+<div class="preview-overlay" id="previewOverlay" onclick="closePreviewClick(event)">
+  <div class="preview-card">
+    <div class="preview-header">
+      配信プレビュー
+      <button class="preview-x" onclick="close0('previewOverlay')">✕</button>
+    </div>
+    <div class="preview-body">
+      <div class="preview-line-box">
+        <div class="preview-line-label">📤 LINE 配信イメージ</div>
+        <div class="preview-line-text" id="pvText"></div>
+        <div class="preview-imgs" id="pvImgs"></div>
+      </div>
+      <div class="preview-meta" id="pvMeta"></div>
+    </div>
+    <div class="preview-footer">
+      <button class="preview-edit" onclick="close0('previewOverlay')">修正する</button>
+      <button class="preview-confirm" onclick="doSend()">この内容で配信</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 完了 ===== -->
+<div class="done-overlay" id="doneOverlay">
+  <div class="done-card">
+    <div class="done-icon">✅</div>
+    <div class="done-title" id="doneTitle">配信予約しました</div>
+    <div class="done-sub" id="doneSub"></div>
+    <button class="done-ok" onclick="doReset()">OK</button>
+  </div>
+</div>
+
+
+<script>
+// ===== 状態 =====
+const tagCounts = {中:112,高:67,小:44,英検:89,算数:55,国語:60,新規:23,要対応:8};
+let pendingGcs = [];   // モーダル内一時選択
+let confirmedGcs = []; // 確定済み
+let urgentMode = false;
+const svgColors  = {i1:'#D0E8F8',i2:'#D8F0E4',i3:'#F8ECD0',i4:'#F0D8F8',i5:'#F8D8D8',i6:'#DCF0F8',i7:'#E8F8D0',i8:'#F8F0D0'};
+const svgTColors = {i1:'#2E7DD1',i2:'#1A9060',i3:'#D08020',i4:'#8040B0',i5:'#D94040',i6:'#2E7DD1',i7:'#5A9020',i8:'#A08020'};
+const svgLabels  = {i1:'学習グラフA',i2:'音読ランキング',i3:'タゲトモスコア',i4:'達成度グラフ',i5:'正誤分析',i6:'配信用グラフ',i7:'3月成績グラフ',i8:'模試結果'};
+
+// ===== アコーディオン =====
+function toggleAcc(id) {
+  const body = document.getElementById(id.replace('Acc','')+'Body') || document.getElementById(id+'Body'.replace('Acc','Body'));
+  const chevron = document.getElementById(id+'Chevron'.replace('Acc','Chevron'));
+  // シンプルに名前で
+  const b = id === 'tagAcc' ? document.getElementById('tagBody') : document.getElementById('imgBody');
+  const c = id === 'tagAcc' ? document.getElementById('tagChevron') : document.getElementById('imgChevron');
+  const open = b.classList.toggle('open');
+  c.classList.toggle('open', open);
+}
+function closeAcc(id) {
+  const b = id === 'tagAcc' ? document.getElementById('tagBody') : document.getElementById('imgBody');
+  const c = id === 'tagAcc' ? document.getElementById('tagChevron') : document.getElementById('imgChevron');
+  b.classList.remove('open');
+  c.classList.remove('open');
+}
+
+// ===== タグ =====
+function toggleTag(btn) {
+  btn.classList.toggle('on');
+  recalcDest();
+}
+function recalcDest() {
+  const active = [...document.querySelectorAll('.tag.on')].map(b=>b.textContent.trim());
+  let n = 0;
+  active.forEach(t=>{ if(tagCounts[t]) n+=tagCounts[t]; });
+  if(active.length > 1) n = Math.round(n * 0.72);
+  n = active.length ? Math.max(n,5) : 0;
+  document.getElementById('destCount').textContent = n+'名';
+  document.getElementById('sendCount').textContent = n+'名';
+  const summary = active.length ? active.join('・')+' · '+n+'名' : '未選択';
+  const el = document.getElementById('tagSummary');
+  el.textContent = summary;
+  el.className = 'acc-summary' + (active.length ? ' has-value' : '');
+  updateBtn();
+}
+
+// ===== テキスト =====
+function onText(ta) {
+  const n = ta.value.length;
+  const el = document.getElementById('charCount');
+  el.textContent = n+' / 600';
+  el.className = 'char-count' + (n>600 ? ' over' : '');
+  updateBtn();
+}
+
+// ===== 履歴 =====
+function openHist() { document.getElementById('histOverlay').classList.add('open'); }
+function useHist(el, text) {
+  document.getElementById('mainText').value = text;
+  onText(document.getElementById('mainText'));
+  close0('histOverlay');
+}
+
+// ===== GCS =====
+function openGcs() {
+  pendingGcs = [...confirmedGcs];
+  document.querySelectorAll('.gcs-item').forEach(el => {
+    el.classList.toggle('sel', pendingGcs.includes(el.dataset.id));
+  });
+  updGcsOk();
+  document.getElementById('gcsOverlay').classList.add('open');
+}
+function toggleGcs(el) {
+  const id = el.dataset.id;
+  if (pendingGcs.includes(id)) {
+    pendingGcs = pendingGcs.filter(x=>x!==id);
+    el.classList.remove('sel');
+  } else {
+    if (pendingGcs.length >= 2) return;
+    pendingGcs.push(id);
+    el.classList.add('sel');
+  }
+  updGcsOk();
+}
+function updGcsOk() {
+  const n = pendingGcs.length;
+  document.getElementById('gcsCount').textContent = n;
+  document.getElementById('gcsOk').disabled = n === 0;
+}
+function confirmGcs() {
+  confirmedGcs = [...pendingGcs];
+  close0('gcsOverlay');
+  renderImgGrid();
+  const s = document.getElementById('imgSummary');
+  if(confirmedGcs.length){
+    s.textContent = confirmedGcs.length+'枚選択';
+    s.className='acc-summary has-value';
+  } else {
+    s.textContent='なし'; s.className='acc-summary';
+  }
+  updateBtn();
+}
+function renderImgGrid() {
+  const wrap = document.getElementById('imgGridWrap');
+  if(!confirmedGcs.length){
+    wrap.innerHTML='<div class="image-trigger" id="imgTrigger" onclick="openGcs()"><span>＋</span><span>GCSから選択（最大2枚）</span></div>';
+    return;
+  }
+  let html='<div class="image-grid">';
+  confirmedGcs.forEach(id=>{
+    html+=`<div class="image-thumb">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="${svgColors[id]}"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="${svgTColors[id]}">${svgLabels[id]}</text></svg>
+      <button class="image-remove" onclick="removeImg('${id}')">✕</button>
+    </div>`;
+  });
+  if(confirmedGcs.length < 2){
+    html+=`<div class="image-add" onclick="openGcs()">＋</div>`;
+  }
+  html+='</div>';
+  wrap.innerHTML = html;
+}
+function removeImg(id){
+  confirmedGcs = confirmedGcs.filter(x=>x!==id);
+  renderImgGrid();
+  const s=document.getElementById('imgSummary');
+  if(confirmedGcs.length){ s.textContent=confirmedGcs.length+'枚選択'; s.className='acc-summary has-value';}
+  else { s.textContent='なし'; s.className='acc-summary'; }
+  updateBtn();
+}
+
+// ===== 日時 =====
+function initDt() {
+  const d = new Date(); d.setDate(d.getDate()+1);
+  const mm=String(d.getMonth()+1).padStart(2,'0'), dd=String(d.getDate()).padStart(2,'0');
+  document.getElementById('sendDate').value=`${d.getFullYear()}-${mm}-${dd}`;
+  const m = 30+Math.floor(Math.random()*30);
+  document.getElementById('sendTime').value=`06:${String(m).padStart(2,'0')}`;
+  updDtVal();
+}
+function updDtVal(){
+  const now=document.getElementById('sendNowToggle').checked;
+  if(now){ document.getElementById('datetimeVal').textContent='今すぐ'; return; }
+  const t=document.getElementById('sendTime').value||'06:30';
+  const d=document.getElementById('sendDate').value;
+  const today=new Date(); const tomorrow=new Date(); tomorrow.setDate(today.getDate()+1);
+  const sel=new Date(d);
+  const prefix = sel.toDateString()===tomorrow.toDateString() ? '翌朝 ' : (d.slice(5)+' ');
+  document.getElementById('datetimeVal').textContent = (urgentMode?'🚨 ':'')+prefix+t;
+  checkTimeLock();
+  updateBtn();
+}
+function openDatetime(){ document.getElementById('dtOverlay').classList.add('open'); }
+function onSendNow(){
+  const on=document.getElementById('sendNowToggle').checked;
+  document.getElementById('dtPickerArea').style.opacity=on?'0.4':'1';
+  document.getElementById('dtPickerArea').style.pointerEvents=on?'none':'auto';
+  if(on){ hideBanners(); }
+  updDtVal();
+}
+function onDtChange(){ checkTimeLock(); updDtVal(); }
+function confirmDatetime(){ updDtVal(); close0('dtOverlay'); }
+function checkTimeLock(){
+  if(document.getElementById('sendNowToggle').checked){ hideBanners(); return; }
+  const t=document.getElementById('sendTime').value||'06:30';
+  const h=parseInt(t.split(':')[0]);
+  const locked=(h>=23||h<6);
+  document.getElementById('timeBanner').classList.toggle('show', locked && !urgentMode);
+  document.getElementById('urgentBanner').classList.toggle('show', locked && urgentMode);
+}
+function hideBanners(){
+  document.getElementById('timeBanner').classList.remove('show');
+  document.getElementById('urgentBanner').classList.remove('show');
+}
+function setUrgent(on){ urgentMode=on; checkTimeLock(); updDtVal(); updateBtn(); }
+
+// ===== ボタン状態 =====
+function updateBtn(){
+  const text=document.getElementById('mainText').value.trim();
+  const tags=[...document.querySelectorAll('.tag.on')].length;
+  const t=document.getElementById('sendTime').value||'06:30';
+  const h=parseInt(t.split(':')[0]);
+  const locked=(h>=23||h<6)&&!urgentMode&&!document.getElementById('sendNowToggle').checked;
+  const ok=text.length>0&&text.length<=600&&tags>0&&!locked;
+  const btn=document.getElementById('sendBtn');
+  btn.className='send-btn '+(ok?'ready':'off');
+  btn.onclick=ok?openPreview:null;
+  document.getElementById('sendLabel').textContent=urgentMode?'【緊急】プレビューして配信':'プレビューして配信';
+}
+
+// ===== プレビュー =====
+function openPreview(){
+  const text=document.getElementById('mainText').value;
+  document.getElementById('pvText').textContent=text;
+  const pi=document.getElementById('pvImgs');
+  if(confirmedGcs.length){
+    pi.innerHTML=confirmedGcs.map(id=>`<div><svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect width="100" height="100" fill="${svgColors[id]}"/><text x="50%" y="52%" dominant-baseline="middle" text-anchor="middle" font-size="10" fill="${svgTColors[id]}">${svgLabels[id]}</text></svg></div>`).join('');
+    pi.style.display='flex';
+  } else { pi.innerHTML=''; pi.style.display='none'; }
+  const tags=[...document.querySelectorAll('.tag.on')].map(b=>b.textContent.trim());
+  const cnt=document.getElementById('destCount').textContent;
+  const dtVal=document.getElementById('datetimeVal').textContent;
+  const grp=document.getElementById('groupToggle').checked?'・グループも含む':'';
+  document.getElementById('pvMeta').textContent=`${dtVal} ／ タグ: ${tags.join('・')} ／ ${cnt}${grp}`;
+  document.getElementById('previewOverlay').classList.add('open');
+}
+function closePreviewClick(e){ if(e.target===document.getElementById('previewOverlay')) close0('previewOverlay'); }
+
+// ===== 送信 =====
+function doSend(){
+  close0('previewOverlay');
+  const now=document.getElementById('sendNowToggle').checked;
+  const cnt=document.getElementById('destCount').textContent;
+  const dtVal=document.getElementById('datetimeVal').textContent;
+  document.getElementById('doneTitle').textContent=now?'配信しました':urgentMode?'【緊急配信】しました':'配信予約しました';
+  document.getElementById('doneSub').textContent=now?`${cnt}に即時送信されます。`:urgentMode?`${cnt}への緊急配信が完了しました。`:`${dtVal} に${cnt}へ\n送信されます。`;
+  document.getElementById('doneOverlay').classList.add('open');
+}
+function doReset(){
+  document.getElementById('doneOverlay').classList.remove('open');
+  document.getElementById('mainText').value='';
+  onText(document.getElementById('mainText'));
+  confirmedGcs=[]; renderImgGrid();
+  document.getElementById('imgSummary').textContent='なし';
+  document.getElementById('imgSummary').className='acc-summary';
+  urgentMode=false; hideBanners();
+  document.getElementById('sendNowToggle').checked=false; onSendNow();
+  initDt(); updateBtn();
+}
+
+// ===== モーダル共通 =====
+function close0(id){ document.getElementById(id).classList.remove('open'); }
+function closeOverlayClick(e,id){ if(e.target===document.getElementById(id)) close0(id); }
+
+// ===== 初期化 =====
+initDt();
+recalcDest();
+</script>
+</body>
+</html>

@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>YWC スマホ版 v1</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#F5F4F0;color:#1a1a1a;-webkit-tap-highlight-color:transparent;}
+
+/* ヘッダー */
+.hdr{background:#fff;border-bottom:0.5px solid rgba(0,0,0,.1);height:48px;display:flex;align-items:center;padding:0 14px;gap:10px;position:sticky;top:0;z-index:50;flex-shrink:0;}
+.hdr-title{font-size:15px;font-weight:700;flex:1;}
+.hdr-badge{background:#E24B4A;color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px;}
+
+/* タブバー（メッセージ・配信のみ） */
+.tab-bar{display:flex;background:#fff;border-bottom:0.5px solid rgba(0,0,0,.1);}
+.tab-item{flex:1;padding:11px 0 10px;font-size:13px;text-align:center;color:#aaa;cursor:pointer;border-bottom:2px solid transparent;position:relative;}
+.tab-item.act{color:#378ADD;border-bottom:2px solid #378ADD;font-weight:600;}
+.tab-dot{position:absolute;top:8px;right:calc(50% - 18px);width:6px;height:6px;border-radius:50%;background:#E24B4A;}
+
+/* リストビュー */
+#view-grid{display:flex;flex-direction:column;height:100dvh;background:#F5F4F0;}
+.search-bar{background:#fff;padding:8px 12px 7px;border-bottom:0.5px solid rgba(0,0,0,.07);}
+.search-input{width:100%;background:#F0EFE9;border:none;border-radius:10px;padding:7px 12px;font-size:13px;outline:none;font-family:inherit;}
+.filter-row{padding:7px 12px;display:flex;gap:6px;overflow-x:auto;background:#fff;-webkit-overflow-scrolling:touch;border-bottom:0.5px solid rgba(0,0,0,.06);}
+.filter-row::-webkit-scrollbar{display:none;}
+.ftag{font-size:10px;padding:4px 10px;border-radius:14px;border:0.5px solid #ccc;background:#fff;color:#666;white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.ftag.on{background:#378ADD;color:#fff;border-color:#378ADD;}
+.ftag.sf{border-style:dashed;background:#F8F7F3;color:#555;}
+
+/* LINEスタイル縦リスト */
+.chat-list{flex:1;overflow-y:auto;background:#F5F4F0;}
+.ci{display:flex;align-items:center;padding:12px 14px;background:#fff;border-bottom:0.5px solid rgba(0,0,0,.06);cursor:pointer;gap:12px;position:relative;}
+.ci:active{background:#F0EFE9;}
+.ci.pinned::after{content:'📌';position:absolute;top:10px;right:12px;font-size:10px;}
+.av{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#fff;flex-shrink:0;position:relative;}
+.av .nbadge{position:absolute;top:-2px;right:-2px;background:#E24B4A;color:#fff;font-size:8px;font-weight:700;min-width:16px;height:16px;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:0 4px;border:2px solid #fff;}
+.av-b{background:#378ADD;}.av-g{background:#1D9E75;}.av-r{background:#E24B4A;}.av-o{background:#E8841A;}.av-p{background:#8B5CF6;}.av-t{background:#0E9FC0;}
+.ci-body{flex:1;min-width:0;}
+.ci-top{display:flex;align-items:center;gap:6px;margin-bottom:3px;}
+.ci-name{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ci-time{font-size:10px;color:#aaa;flex-shrink:0;}
+.ci-type{font-size:9px;color:#aaa;margin-bottom:2px;}
+.ci-prev{font-size:12px;color:#888;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.ci-prev.u{color:#1a1a1a;font-weight:500;}
+.ci-bottom{display:flex;align-items:center;gap:5px;}
+.sbadge{display:inline-block;font-size:10px;padding:2px 7px;border-radius:7px;font-weight:500;}
+.sb-ai{background:#E1F5EE;color:#085041;}.sb-nr{background:#FFF0E0;color:#7A3D00;}.sb-done{background:#F0F0F0;color:#999;}
+
+/* ===== 1名詳細ビュー ===== */
+#view-detail{display:none;flex-direction:column;height:100dvh;background:#F5F4F0;}
+
+/* 詳細ヘッダー */
+.det-hdr{background:#fff;border-bottom:0.5px solid rgba(0,0,0,.1);padding:0 10px 0 4px;display:flex;align-items:center;gap:6px;height:52px;flex-shrink:0;}
+.det-back{font-size:30px;color:#378ADD;cursor:pointer;padding:2px 4px;line-height:1;font-weight:300;flex-shrink:0;}
+.det-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.det-info{flex:1;min-width:0;}
+.det-name{font-size:14px;font-weight:700;}
+.det-sub{font-size:10px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.data-btn{background:#F0EFE9;border:none;border-radius:8px;padding:6px 10px;font-size:10px;color:#555;cursor:pointer;flex-shrink:0;font-family:inherit;white-space:nowrap;}
+
+/* ↑↓ナビ — ヘッダー右端 */
+.nav-btns{display:flex;flex-direction:column;gap:0;flex-shrink:0;}
+.nav-btn{display:flex;align-items:center;justify-content:center;width:32px;height:24px;cursor:pointer;color:#378ADD;}
+.nav-btn:active{opacity:.4;}
+.nav-btn svg{width:16px;height:16px;fill:none;stroke:#378ADD;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;}
+.nav-btn.dis svg{stroke:#ccc;}
+
+/* 才能シグナル帯 */
+.sig-bar{background:#F3EFF8;border-bottom:0.5px solid #E0D8EE;padding:7px 14px;display:flex;align-items:center;gap:7px;flex-shrink:0;}
+.sig-dot{width:7px;height:7px;border-radius:50%;background:#8B5CF6;flex-shrink:0;}
+.sig-txt{font-size:11px;color:#5B21B6;flex:1;line-height:1.4;}
+.sig-period{font-size:9px;color:#9B89CC;white-space:nowrap;}
+
+/* チャットTL */
+.tl-wrap{flex:1;overflow-y:auto;padding:12px 13px 6px;display:flex;flex-direction:column;gap:8px;}
+.tl-date{text-align:center;font-size:10px;color:#aaa;margin:4px 0;}
+.bub-row{display:flex;gap:7px;align-items:flex-end;}
+.bub-row.out{flex-direction:row-reverse;}
+.bub{max-width:78%;padding:9px 12px;border-radius:14px;font-size:13px;line-height:1.6;}
+.bub.in{background:#fff;border-bottom-left-radius:3px;border:0.5px solid rgba(0,0,0,.07);}
+.bub.out{background:#378ADD;color:#fff;border-bottom-right-radius:3px;}
+.bub.auto{background:#E8F5EE;border:0.5px solid #B8DFC8;border-bottom-left-radius:3px;}
+.bub-label{font-size:9px;color:#666;margin-bottom:3px;}
+.bub-type{font-size:9px;font-weight:700;margin-bottom:4px;}
+.bub-type.oto{color:#1D9E75;}
+.data-bub{background:#fff;border:0.5px solid rgba(0,0,0,.08);border-radius:12px;padding:9px 12px;font-size:12px;line-height:1.8;max-width:90%;}
+.data-bub-lbl{font-size:9px;color:#aaa;margin-bottom:3px;}
+.ai-box{background:#F3EFF8;border:0.5px solid #D8CCF0;border-radius:12px;padding:11px 12px;margin:2px 0;cursor:pointer;}
+.ai-box:active{background:#EDE8F8;}
+.ai-box-lbl{font-size:9px;color:#7C3AED;font-weight:600;margin-bottom:5px;}
+.ai-box-txt{font-size:13px;color:#1a1a1a;line-height:1.6;}
+.ai-box-hint{font-size:9px;color:#9B89CC;margin-top:5px;}
+
+/* =================================================================
+   LINE公式と同一の送信エリア
+   - 下部バー：灰背景・入力欄（角丸・白）・送信ボタン（右端・青丸）
+   - 左側アイコン列：＋（追加）/ カメラ / ステッカー / ボイス
+   ================================================================= */
+.send-area{
+  background:#F5F5F5;
+  border-top:0.5px solid rgba(0,0,0,.13);
+  padding:8px 8px 10px;
+  flex-shrink:0;
+  display:flex;
+  flex-direction:column;
+  gap:0;
+}
+/* 上段：アイコン群 ＋ 入力欄 ＋ 送信 */
+.send-row{display:flex;align-items:flex-end;gap:0;}
+
+/* 左アイコン群 */
+.left-icons{display:flex;align-items:center;gap:0;flex-shrink:0;padding-bottom:6px;}
+.lic{width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.lic:active{opacity:.4;}
+.lic svg{width:24px;height:24px;}
+
+/* 入力欄：白・角丸・自動拡張 */
+.line-input-wrap{flex:1;background:#fff;border-radius:20px;border:0.5px solid rgba(0,0,0,.12);padding:0 12px;display:flex;align-items:flex-end;min-height:36px;margin:0 6px 0 4px;}
+.line-input{flex:1;border:none;background:transparent;font-size:15px;font-family:inherit;outline:none;resize:none;line-height:1.45;max-height:100px;overflow-y:auto;padding:7px 0;}
+.line-input::placeholder{color:#bbb;}
+
+/* 右アイコン：ステッカー（入力欄右内側） / 送信ボタン */
+.input-right{display:flex;align-items:flex-end;padding-bottom:6px;flex-shrink:0;}
+.sticker-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;margin-right:6px;}
+.sticker-btn svg{width:22px;height:22px;}
+.send-btn{width:36px;height:36px;border-radius:50%;background:#378ADD;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;transition:background .1s;}
+.send-btn:active{background:#185FA5;}
+.send-btn svg{width:16px;height:16px;fill:#fff;margin-left:2px;}
+
+/* ＋パネル（LINEの追加パネルと同一構造） */
+.plus-panel{display:none;background:#F5F5F5;border-top:0.5px solid rgba(0,0,0,.1);padding:16px 14px 20px;}
+.plus-panel.open{display:flex;flex-wrap:wrap;gap:10px 6px;align-items:flex-start;}
+.xtool{display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;width:72px;}
+.xtool:active{opacity:.5;}
+.xtool-icon{width:52px;height:52px;border-radius:14px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 1px 3px rgba(0,0,0,.1);}
+.xtool-lbl{font-size:10px;color:#666;text-align:center;}
+.delay-chip{font-size:9px;background:#FFF0E0;color:#7A3D00;padding:4px 10px;border-radius:10px;border:0.5px solid #FFCF8A;white-space:nowrap;align-self:center;margin-left:auto;}
+
+/* ===== ドロワー（学習データ） ===== */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.32);z-index:100;}
+.overlay.show{display:block;}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:101;transform:translateY(100%);transition:transform .26s cubic-bezier(.32,1,.23,1);max-height:82dvh;display:flex;flex-direction:column;}
+.drawer.open{transform:translateY(0);}
+.drawer-pull{text-align:center;padding:11px 0 4px;}
+.drawer-pull-bar{width:38px;height:4px;border-radius:2px;background:#ddd;display:inline-block;}
+.drawer-hdr{padding:4px 16px 11px;display:flex;align-items:center;border-bottom:0.5px solid rgba(0,0,0,.07);}
+.drawer-title{font-size:14px;font-weight:700;flex:1;}
+.drawer-close{font-size:20px;color:#ccc;cursor:pointer;padding:2px 4px;}
+.drawer-body{flex:1;overflow-y:auto;padding:14px 15px 36px;}
+.dr-sec{margin-bottom:22px;}
+.dr-sec-title{font-size:10px;font-weight:700;color:#aaa;text-transform:uppercase;letter-spacing:.05em;margin-bottom:9px;display:flex;align-items:center;gap:7px;}
+.dr-period{font-size:9px;font-weight:400;color:#bbb;border:0.5px solid #e0e0e0;border-radius:6px;padding:1px 6px;}
+.rank-rows{display:flex;flex-direction:column;gap:3px;}
+.rr{display:flex;align-items:center;gap:8px;padding:5px 3px;}
+.rr.me{background:#F0F6FF;border-radius:9px;padding:7px 9px;}
+.rpos{font-size:12px;font-weight:500;width:32px;text-align:right;color:#ccc;flex-shrink:0;}
+.rpos.me-pos{color:#378ADD;}
+.rname-txt{font-size:12px;flex:1;}
+.rval{font-size:11px;color:#777;flex-shrink:0;}
+.photo-scroll{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;-webkit-overflow-scrolling:touch;}
+.photo-scroll::-webkit-scrollbar{display:none;}
+.photo-th{width:70px;height:70px;border-radius:10px;background:#F0EFE9;flex-shrink:0;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#aaa;text-align:center;line-height:1.5;cursor:pointer;}
+.note-area{width:100%;border:0.5px solid rgba(0,0,0,.14);border-radius:10px;padding:10px 12px;font-size:13px;font-family:inherit;background:#FDFCFA;resize:none;outline:none;line-height:1.6;}
+
+/* 定型文シート */
+.tk-sheet{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;z-index:101;transform:translateY(100%);transition:transform .26s cubic-bezier(.32,1,.23,1);max-height:65dvh;display:flex;flex-direction:column;}
+.tk-sheet.open{transform:translateY(0);}
+.tk-hdr{padding:13px 14px 10px;display:flex;align-items:center;gap:9px;border-bottom:0.5px solid rgba(0,0,0,.07);}
+.tk-search{flex:1;background:#F0EFE9;border:none;border-radius:10px;padding:8px 12px;font-size:13px;outline:none;font-family:inherit;}
+.tk-close{font-size:20px;color:#ccc;cursor:pointer;padding:4px;}
+.tk-list{flex:1;overflow-y:auto;}
+.tk-item{padding:13px 15px;border-bottom:0.5px solid rgba(0,0,0,.05);cursor:pointer;}
+.tk-item:active{background:#F5F4F0;}
+.tk-item-title{font-size:13px;font-weight:500;margin-bottom:3px;}
+.tk-item-body{font-size:11px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* モーダル */
+.modal-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:center;justify-content:center;padding:24px;}
+.modal-wrap.show{display:flex;}
+.modal-card{background:#fff;border-radius:18px;width:100%;max-width:320px;padding:22px 18px;}
+.modal-title{font-size:15px;font-weight:700;margin-bottom:5px;}
+.modal-sub{font-size:12px;color:#999;margin-bottom:16px;line-height:1.5;}
+.modal-info{background:#F5F4F0;border-radius:10px;padding:11px 13px;font-size:13px;margin-bottom:18px;}
+.modal-btns{display:flex;gap:9px;}
+.modal-btn{flex:1;padding:12px;border-radius:11px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;}
+.modal-btn.cancel{background:#F0EFE9;color:#555;}
+.modal-btn.primary{background:#378ADD;color:#fff;}
+.paste-wrap{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;align-items:flex-end;}
+.paste-wrap.show{display:flex;}
+.paste-card{background:#fff;border-radius:18px 18px 0 0;width:100%;padding:20px 18px 34px;}
+.paste-preview{background:#F5F4F0;border-radius:10px;padding:16px;margin:12px 0 14px;text-align:center;font-size:12px;color:#666;}
+.paste-icon{font-size:36px;margin-bottom:6px;}
+
+/* 生徒切り替えトースト */
+.nav-toast{position:fixed;top:60px;left:50%;transform:translateX(-50%) translateY(-8px);background:rgba(0,0,0,.68);color:#fff;font-size:12px;padding:6px 16px;border-radius:20px;z-index:300;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;white-space:nowrap;}
+.nav-toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+</style>
+</head>
+<body>
+
+<!-- ===================== リストビュー ===================== -->
+<div id="view-grid">
+  <div class="hdr">
+    <div class="hdr-title">ユウエルコネクト</div>
+    <span class="hdr-badge">未返信 3</span>
+    <span style="font-size:22px;cursor:pointer;margin-left:6px;">🔔</span>
+  </div>
+  <div class="tab-bar">
+    <div class="tab-item act" onclick="switchTab(this,'grid-msg','grid-bc')">メッセージ<div class="tab-dot"></div></div>
+    <div class="tab-item" onclick="switchTab(this,'grid-bc','grid-msg')">配信</div>
+  </div>
+
+  <!-- メッセージリスト -->
+  <div id="grid-msg" style="display:flex;flex-direction:column;flex:1;overflow:hidden;">
+    <div class="search-bar">
+      <input class="search-input" placeholder="🔍　生徒名・タグ・メッセージで検索...">
+    </div>
+    <div class="filter-row">
+      <button class="ftag on">未返信</button>
+      <button class="ftag on">AI済</button>
+      <button class="ftag sf">中2</button>
+      <button class="ftag sf">保護者</button>
+      <button class="ftag">英検</button>
+      <button class="ftag">高1</button>
+      <button class="ftag">要対応</button>
+    </div>
+    <div class="chat-list" id="chat-list">
+      <div class="ci unread pinned" onclick="openDetail(0)">
+        <div class="av av-b">田中<div class="nbadge">2</div></div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">田中 健太</div><div class="ci-time">10分前</div></div>
+          <div class="ci-type">👤 保護者個別</div>
+          <div class="ci-prev u">🎙 音読 英語 12分 · GCS保存済</div>
+          <div class="ci-bottom"><span class="sbadge sb-ai">AI生成済</span></div>
+        </div>
+      </div>
+      <div class="ci unread" onclick="openDetail(1)">
+        <div class="av av-g">佐藤<div class="nbadge">1</div></div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">佐藤 花</div><div class="ci-time">25分前</div></div>
+          <div class="ci-type">👤 保護者個別</div>
+          <div class="ci-prev u">🎯 タゲトモ 黄 935点 · 前月比+87</div>
+          <div class="ci-bottom"><span class="sbadge sb-nr">未返信</span></div>
+        </div>
+      </div>
+      <div class="ci unread" onclick="openDetail(2)">
+        <div class="av av-r">山田<div class="nbadge">3</div></div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">山田 翔</div><div class="ci-time">1時間前</div></div>
+          <div class="ci-type">👥 保護者・生徒グループ</div>
+          <div class="ci-prev u">📷 写真 3枚 · 算数ノート</div>
+          <div class="ci-bottom"><span class="sbadge sb-nr">未返信</span></div>
+        </div>
+      </div>
+      <div class="ci" onclick="openDetail(3)">
+        <div class="av av-o">鈴木</div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">鈴木 陽</div><div class="ci-time">2時間前</div></div>
+          <div class="ci-type">👤 保護者個別</div>
+          <div class="ci-prev">📚 つみかさね 280問 · 正答率91%</div>
+          <div class="ci-bottom"><span class="sbadge sb-done">返信済</span></div>
+        </div>
+      </div>
+      <div class="ci" onclick="openDetail(4)">
+        <div class="av av-p">伊藤</div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">伊藤 咲</div><div class="ci-time">3時間前</div></div>
+          <div class="ci-type">👤 保護者個別</div>
+          <div class="ci-prev">📚 モノグサ 340問 · 正答率82%</div>
+          <div class="ci-bottom"><span class="sbadge sb-done">返信済</span></div>
+        </div>
+      </div>
+      <div class="ci" onclick="openDetail(5)">
+        <div class="av av-t">中村</div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">中村 大地</div><div class="ci-time">昨日</div></div>
+          <div class="ci-type">🧑 生徒個別</div>
+          <div class="ci-prev">今日も頑張ります！</div>
+          <div class="ci-bottom"><span class="sbadge sb-ai">AI生成済</span></div>
+        </div>
+      </div>
+      <div class="ci" onclick="openDetail(6)">
+        <div class="av" style="background:#6B9BD2;">木村</div>
+        <div class="ci-body">
+          <div class="ci-top"><div class="ci-name">木村 彩</div><div class="ci-time">昨日</div></div>
+          <div class="ci-type">👤 保護者個別</div>
+          <div class="ci-prev">🎙 音読 国語 9分</div>
+          <div class="ci-bottom"><span class="sbadge sb-done">返信済</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 配信タブ（プレースホルダー） -->
+  <div id="grid-bc" style="display:none;flex:1;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:#aaa;font-size:13px;padding:40px;">
+    <div style="font-size:36px;">📢</div>
+    配信タブ（PC版と同機能）<br>
+    <span style="font-size:11px;">スマホ版は今後実装予定</span>
+  </div>
+</div>
+
+<!-- ===================== 1名詳細ビュー ===================== -->
+<div id="view-detail">
+  <div class="det-hdr">
+    <div class="det-back" onclick="closeDetail()">‹</div>
+    <div class="det-av av-b" id="det-av">田</div>
+    <div class="det-info">
+      <div class="det-name" id="det-name">田中 健太</div>
+      <div class="det-sub" id="det-sub">保護者個別 · 音読着信</div>
+    </div>
+    <button class="data-btn" onclick="openDrawer()">📊 学習データ</button>
+    <!-- ↑↓ナビ -->
+    <div class="nav-btns">
+      <div class="nav-btn" id="nav-up" onclick="navigate(-1)">
+        <svg viewBox="0 0 16 16"><polyline points="3,10 8,5 13,10"/></svg>
+      </div>
+      <div class="nav-btn" id="nav-dn" onclick="navigate(1)">
+        <svg viewBox="0 0 16 16"><polyline points="3,6 8,11 13,6"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="sig-bar">
+    <div class="sig-dot"></div>
+    <div class="sig-txt" id="sig-txt">音読継続日数クラス最長。継続力・自己管理に才能の兆し。</div>
+    <div class="sig-period">1週間 ▾</div>
+  </div>
+
+  <div class="tl-wrap" id="tl">
+    <div class="tl-date">2026年4月11日</div>
+    <div class="bub-row">
+      <div class="bub in"><div class="bub-type oto">🎙 音読着信</div>英語 12分30秒<br><span style="font-size:10px;color:#aaa;">音読アプリ → GCS → Push API</span></div>
+    </div>
+    <div class="bub-row">
+      <div class="bub auto"><div class="bub-label">🤖 自動返信済（先生確認なし）</div>音読ファイルを受け取りました。STT処理完了（30秒×3か所）</div>
+    </div>
+    <div class="bub-row">
+      <div class="data-bub">
+        <div class="data-bub-lbl">最新学習データ（本日）</div>
+        <span style="color:#378ADD;font-weight:600;">つみかさね</span>　数社 42問 · 正答率88%<br>
+        <span style="color:#378ADD;font-weight:600;">モノグサ</span>　　数社 38問 · 正答率82%<br>
+        <span style="color:#E24B4A;font-weight:600;">タゲトモ</span>　　🟡黄 935点 · 前月比+87
+      </div>
+    </div>
+    <div class="ai-box" onclick="copyAI()">
+      <div class="ai-box-lbl">✦ AI一次返信案（タップで送信欄にコピー）※詳細検討中</div>
+      <div class="ai-box-txt" id="ai-txt">英語音読12分、記録しました。直近1週間の田中さんの音読時間はクラス上位です。この調子で続けていきましょう！</div>
+      <div class="ai-box-hint">↑ タップして編集・送信</div>
+    </div>
+    <div class="tl-date">昨日</div>
+    <div class="bub-row"><div class="bub in">今日も音読できました😊</div></div>
+    <div class="bub-row out"><div class="bub out">素晴らしいです！毎日続けていますね。この調子でいきましょう。</div></div>
+    <div class="tl-date">4月9日</div>
+    <div class="bub-row"><div class="bub in"><div class="bub-type oto">🎙 音読着信</div>英語 11分</div></div>
+    <div class="bub-row out"><div class="bub out">11分！昨日より1分増えましたね👏</div></div>
+  </div>
+
+  <!-- ===== LINE公式と同一の送信エリア ===== -->
+  <div class="send-area">
+    <div class="send-row">
+      <!-- 左：＋ボタン（タップでパネル開閉） -->
+      <div class="left-icons">
+        <div class="lic" onclick="togPlus()">
+          <!-- ＋ アイコン -->
+          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2" stroke-linecap="round">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="16"/>
+            <line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+        </div>
+      </div>
+      <!-- 入力欄（白・角丸） -->
+      <div class="line-input-wrap">
+        <textarea class="line-input" id="reply-input" rows="1" placeholder="メッセージ" oninput="autoResize(this)"></textarea>
+      </div>
+      <!-- 右：ボイスメモ or 送信 -->
+      <div class="input-right">
+        <!-- スタンプ（入力欄の右外） -->
+        <div class="lic" style="margin-right:2px;">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="1.8" stroke-linecap="round">
+            <circle cx="12" cy="12" r="9"/>
+            <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+            <line x1="9" y1="9" x2="9.01" y2="9"/>
+            <line x1="15" y1="9" x2="15.01" y2="9"/>
+          </svg>
+        </div>
+        <!-- 送信ボタン（青丸） -->
+        <button class="send-btn" onclick="sendMsg()">
+          <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- ＋パネル（定型文・通話・遅延時刻） -->
+    <div class="plus-panel" id="plus-panel">
+      <div class="xtool" onclick="openTeikei();togPlus();">
+        <div class="xtool-icon">💬</div>
+        <div class="xtool-lbl">定型文</div>
+      </div>
+      <div class="xtool" onclick="showCallModal();togPlus();">
+        <div class="xtool-icon">📞</div>
+        <div class="xtool-lbl">通話リンク</div>
+      </div>
+      <div class="delay-chip">🕐 翌朝6:30〜7:15</div>
+    </div>
+  </div>
+</div>
+
+<!-- 生徒データ -->
+<script>
+const students=[
+  {name:'田中 健太',sub:'保護者個別',av:'av-b',avt:'田中',sig:'音読継続日数クラス最長。継続力・自己管理に才能の兆し。'},
+  {name:'佐藤 花',  sub:'保護者個別',av:'av-g',avt:'佐藤',sig:'タゲトモスコア前月比+87。暗記の瞬発力が伸びてきている。'},
+  {name:'山田 翔',  sub:'保護者・生徒グループ',av:'av-r',avt:'山田',sig:'写真提出が週3回以上継続。自主学習習慣が定着しつつある。'},
+  {name:'鈴木 陽',  sub:'保護者個別',av:'av-o',avt:'鈴木',sig:'つみかさね問題数が今月最多ペース。集中力が増している。'},
+  {name:'伊藤 咲',  sub:'保護者個別',av:'av-p',avt:'伊藤',sig:'モノグサ正答率82%→88%に改善。反復学習の効果が出ている。'},
+  {name:'中村 大地', sub:'生徒個別',  av:'av-t',avt:'中村',sig:'毎朝メッセージを送る習慣が続いている。主体性の現れ。'},
+  {name:'木村 彩',  sub:'保護者個別',av:'',   avt:'木村',sig:'音読時間が2週間連続で増加中。継続力が光る。'},
+];
+let currentIdx=0;
+
+function openDetail(idx){
+  currentIdx=idx;
+  renderDetail();
+  document.getElementById('view-grid').style.display='none';
+  document.getElementById('view-detail').style.display='flex';
+  setTimeout(()=>{const tl=document.getElementById('tl');tl.scrollTop=tl.scrollHeight;},80);
+}
+function renderDetail(){
+  const s=students[currentIdx];
+  document.getElementById('det-name').textContent=s.name;
+  document.getElementById('det-sub').textContent=s.sub+' · 10分前';
+  const av=document.getElementById('det-av');
+  av.textContent=s.avt;
+  av.className='det-av '+(s.av||'');
+  if(!s.av) av.style.background='#6B9BD2'; else av.style.background='';
+  document.getElementById('sig-txt').textContent=s.sig;
+  document.getElementById('drawer-title').textContent=s.name+' — 学習データ';
+  document.getElementById('call-to').textContent=s.name+'（保護者）';
+  document.getElementById('paste-to').textContent='送信先：'+s.name+'（保護者）';
+  // ナビ矢印の活性/非活性
+  document.getElementById('nav-up').className='nav-btn'+(currentIdx===0?' dis':'');
+  document.getElementById('nav-dn').className='nav-btn'+(currentIdx===students.length-1?' dis':'');
+}
+function navigate(dir){
+  const next=currentIdx+dir;
+  if(next<0||next>=students.length)return;
+  currentIdx=next;
+  renderDetail();
+  // 切り替えトースト
+  const toast=document.getElementById('nav-toast');
+  toast.textContent=students[currentIdx].name;
+  toast.classList.add('show');
+  clearTimeout(window._toastTimer);
+  window._toastTimer=setTimeout(()=>toast.classList.remove('show'),1200);
+  // TL末尾へ
+  setTimeout(()=>{const tl=document.getElementById('tl');tl.scrollTop=tl.scrollHeight;},60);
+}
+function closeDetail(){
+  document.getElementById('view-detail').style.display='none';
+  document.getElementById('view-grid').style.display='flex';
+}
+
+// タブ切り替え
+function switchTab(el,showId,hideId){
+  document.querySelectorAll('.tab-item').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+  const s=document.getElementById(showId),h=document.getElementById(hideId);
+  if(s)s.style.display='flex';
+  if(h)h.style.display='none';
+}
+
+// 学習データドロワー
+function openDrawer(){show('drawer-ov');document.getElementById('drawer').classList.add('open');}
+function closeDrawer(){hide('drawer-ov');document.getElementById('drawer').classList.remove('open');}
+
+// 定型文
+function openTeikei(){show('tk-ov');document.getElementById('tk-sheet').classList.add('open');}
+function closeTeikei(){hide('tk-ov');document.getElementById('tk-sheet').classList.remove('open');}
+function ins(text){
+  const inp=document.getElementById('reply-input');
+  inp.value=text; autoResize(inp); closeTeikei(); inp.focus();
+}
+
+// 通話
+function showCallModal(){show('call-modal');}
+
+// AI返信案コピー
+function copyAI(){
+  const inp=document.getElementById('reply-input');
+  inp.value=document.getElementById('ai-txt').textContent;
+  autoResize(inp); inp.focus();
+  document.getElementById('tl').scrollTop=9999;
+}
+
+// 送信
+function sendMsg(){
+  const inp=document.getElementById('reply-input');
+  const val=inp.value.trim(); if(!val)return;
+  const tl=document.getElementById('tl');
+  const row=document.createElement('div');
+  row.className='bub-row out';
+  row.innerHTML='<div class="bub out">'+val+'</div>';
+  tl.appendChild(row);
+  inp.value=''; inp.style.height='';
+  tl.scrollTop=tl.scrollHeight;
+}
+
+// テキストエリア自動拡張
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,100)+'px';}
+
+// ペースト
+document.addEventListener('paste',()=>{
+  if(document.getElementById('view-detail').style.display==='flex') show('paste-modal');
+});
+
+function togPlus(){
+  const p=document.getElementById('plus-panel');
+  p.classList.toggle('open');
+}
+function show(id){document.getElementById(id).classList.add('show');}
+function hide(id){document.getElementById(id).classList.remove('show');}
+</script>
+
+<!-- 生徒名トースト -->
+<div class="nav-toast" id="nav-toast"></div>
+
+<!-- 学習データドロワー -->
+<div class="overlay" id="drawer-ov" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-pull"><span class="drawer-pull-bar"></span></div>
+  <div class="drawer-hdr">
+    <div class="drawer-title" id="drawer-title">田中 健太 — 学習データ</div>
+    <div class="drawer-close" onclick="closeDrawer()">✕</div>
+  </div>
+  <div class="drawer-body">
+    <div class="dr-sec">
+      <div class="dr-sec-title">問題数（つみかさね＋モノグサ）<span class="dr-period">1週間 ▾</span></div>
+      <div class="rank-rows">
+        <div class="rr"><div class="rpos">24位</div><div class="rname-txt">まえの たろう</div><div class="rval">412問</div></div>
+        <div class="rr"><div class="rpos">25位</div><div class="rname-txt">まえの はなこ</div><div class="rval">398問</div></div>
+        <div class="rr me"><div class="rpos me-pos">26位</div><div class="rname-txt" style="font-weight:700;">田中 健太 ◀</div><div class="rval" style="color:#378ADD;font-weight:700;">372問</div></div>
+        <div class="rr"><div class="rpos">27位</div><div class="rname-txt">つぎの じろう</div><div class="rval">351問</div></div>
+        <div class="rr"><div class="rpos">28位</div><div class="rname-txt">つぎの さぶろう</div><div class="rval">340問</div></div>
+      </div>
+    </div>
+    <div class="dr-sec">
+      <div class="dr-sec-title">音読時間<span class="dr-period">1週間 ▾</span></div>
+      <div class="rank-rows">
+        <div class="rr"><div class="rpos">1位</div><div class="rname-txt">まえの たろう</div><div class="rval">94分</div></div>
+        <div class="rr me"><div class="rpos me-pos">2位</div><div class="rname-txt" style="font-weight:700;">田中 健太 ◀</div><div class="rval" style="color:#378ADD;font-weight:700;">82分</div></div>
+        <div class="rr"><div class="rpos">3位</div><div class="rname-txt">つぎの はなこ</div><div class="rval">71分</div></div>
+      </div>
+    </div>
+    <div class="dr-sec">
+      <div class="dr-sec-title">タゲトモスコア<span class="dr-period">今月</span></div>
+      <div class="rank-rows">
+        <div class="rr"><div class="rpos">5位</div><div class="rname-txt">まえの たろう</div><div class="rval">1,024</div></div>
+        <div class="rr me"><div class="rpos me-pos">6位</div><div class="rname-txt" style="font-weight:700;">田中 健太 ◀</div><div class="rval" style="color:#378ADD;font-weight:700;">935</div></div>
+        <div class="rr"><div class="rpos">7位</div><div class="rname-txt">つぎの さぶろう</div><div class="rval">901</div></div>
+      </div>
+    </div>
+    <div class="dr-sec">
+      <div class="dr-sec-title">受信写真（新しい順）</div>
+      <div class="photo-scroll">
+        <div class="photo-th">算数<br>ノート<br><span style="font-size:8px;color:#ccc;">今日</span></div>
+        <div class="photo-th">理科<br>実験<br><span style="font-size:8px;color:#ccc;">昨日</span></div>
+        <div class="photo-th">英語<br>単語<br><span style="font-size:8px;color:#ccc;">4/9</span></div>
+        <div class="photo-th">数学<br>計算<br><span style="font-size:8px;color:#ccc;">4/8</span></div>
+        <div class="photo-th">国語<br>漢字<br><span style="font-size:8px;color:#ccc;">4/7</span></div>
+      </div>
+    </div>
+    <div class="dr-sec">
+      <div class="dr-sec-title">先生メモ（自動保存）</div>
+      <textarea class="note-area" rows="3" placeholder="メモを入力...（自動保存）">音読が毎日続いている。英語が特に伸びてきている印象。</textarea>
+    </div>
+  </div>
+</div>
+
+<!-- 定型文シート -->
+<div class="overlay" id="tk-ov" onclick="closeTeikei()"></div>
+<div class="tk-sheet" id="tk-sheet">
+  <div class="tk-hdr">
+    <input class="tk-search" placeholder="定型文を検索...">
+    <div class="tk-close" onclick="closeTeikei()">✕</div>
+  </div>
+  <div class="tk-list">
+    <div class="tk-item" onclick="ins('素晴らしいです！毎日続けていますね。この調子でいきましょう。')"><div class="tk-item-title">継続している生徒への返信</div><div class="tk-item-body">素晴らしいです！毎日続けていますね。この調子でいきましょう。</div></div>
+    <div class="tk-item" onclick="ins('音読ファイルを確認しました。発音がとても良くなっています！')"><div class="tk-item-title">音読フィードバック</div><div class="tk-item-body">音読ファイルを確認しました。発音がとても良くなっています！</div></div>
+    <div class="tk-item" onclick="ins('タゲトモのスコアが上がっていますね。前月比プラスです！')"><div class="tk-item-title">タゲトモ好調</div><div class="tk-item-body">タゲトモのスコアが上がっていますね。前月比プラスです！</div></div>
+    <div class="tk-item" onclick="ins('写真を確認しました。丁寧なノートですね。')"><div class="tk-item-title">写真受信・確認</div><div class="tk-item-body">写真を確認しました。丁寧なノートですね。</div></div>
+    <div class="tk-item" onclick="ins('お疲れ様です。次回の授業でしっかり復習しましょう。')"><div class="tk-item-title">授業後の声掛け</div><div class="tk-item-body">お疲れ様です。次回の授業でしっかり復習しましょう。</div></div>
+    <div class="tk-item" onclick="ins('連絡ありがとうございます。確認して折り返しご連絡します。')"><div class="tk-item-title">保護者への受取確認</div><div class="tk-item-body">連絡ありがとうございます。確認して折り返しご連絡します。</div></div>
+    <div class="tk-item" onclick="ins('問題数が増えています！この調子で続けてください。')"><div class="tk-item-title">問題数増加の褒め</div><div class="tk-item-body">問題数が増えています！この調子で続けてください。</div></div>
+  </div>
+</div>
+
+<!-- 通話モーダル -->
+<div class="modal-wrap" id="call-modal">
+  <div class="modal-card">
+    <div class="modal-title">LINE通話リンクを送信</div>
+    <div class="modal-sub">相手がタップするとLINE通話が始まります</div>
+    <div class="modal-info">送信先：<strong id="call-to">田中 健太（保護者）</strong></div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="hide('call-modal')">キャンセル</button>
+      <button class="modal-btn primary" onclick="hide('call-modal')">送信する</button>
+    </div>
+  </div>
+</div>
+
+<!-- ペーストダイアログ -->
+<div class="paste-wrap" id="paste-modal">
+  <div class="paste-card">
+    <div class="modal-title">ファイルを送信しますか？</div>
+    <div class="modal-sub">このチャットルームに送信します</div>
+    <div class="paste-preview"><div class="paste-icon">🖼️</div>スクリーンショット.jpg · 1.2MB</div>
+    <div style="font-size:11px;color:#bbb;margin-bottom:16px;" id="paste-to">送信先：田中 健太（保護者）</div>
+    <div class="modal-btns">
+      <button class="modal-btn cancel" onclick="hide('paste-modal')">キャンセル</button>
+      <button class="modal-btn primary" onclick="hide('paste-modal')">送信する</button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
