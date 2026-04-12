@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>YWC v10 — 2026/4/11</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#E8E7E3;color:#1a1a1a;font-size:13px;height:100vh;overflow:hidden;}
+
+/* ========= APP SHELL ========= */
+.app{display:flex;flex-direction:column;height:calc(100vh - 40px);min-height:640px;width:100%;max-width:1440px;border:1px solid #ccc;border-radius:10px;overflow:hidden;background:#F0EFEB;}
+
+/* ---- TOPBAR ---- */
+.tb{height:36px;min-height:36px;flex-shrink:0;background:#fff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 12px;gap:0;}
+.app-logo{font-size:13px;font-weight:600;color:#1a1a1a;margin-right:16px;white-space:nowrap;}
+.tabs{display:flex;height:100%;}
+.tab{font-size:13px;padding:0 14px;border:none;background:transparent;color:#999;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+.tab.act{color:#fff;background:#378ADD;border-bottom:2px solid #1A5FA0;font-weight:600;}
+.tab:hover:not(.act){color:#555;background:rgba(0,0,0,.03);}
+.badge{width:14px;height:14px;border-radius:50%;background:#E24B4A;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+.tab.act .badge{background:rgba(255,255,255,.3);color:#fff;}
+.tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
+.delay-chip{font-size:13px;padding:2px 7px;border-radius:10px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
+.red-dot{width:7px;height:7px;border-radius:50%;background:#E24B4A;}
+
+/* ---- 3-COLUMN LAYOUT ---- */
+.cols{display:flex;flex:1;overflow:hidden;min-height:0;}
+
+/* LEFT COL */
+.col-l{width:290px;min-width:290px;max-width:290px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;overflow:hidden;}
+
+/* MID COL */
+.col-m{flex:1;min-width:0;display:flex;flex-direction:column;background:#F0EFEB;overflow:hidden;}
+
+/* RIGHT COL */
+.col-r{width:290px;min-width:290px;max-width:290px;flex-shrink:0;background:#fff;border-left:1px solid #e0e0e0;display:flex;flex-direction:column;overflow-y:auto;}
+
+/* ========= LEFT COL ========= */
+.lsearch{padding:5px 7px;border-bottom:1px solid #efefef;}
+.lsearch input{width:100%;font-size:13px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;color:#1a1a1a;}
+.lsearch-note{font-size:13px;color:#bbb;margin-top:2px;}
+.ltags{padding:3px 7px;border-bottom:1px solid #efefef;display:flex;gap:3px;flex-wrap:wrap;}
+.ltag{font-size:13px;padding:2px 5px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;line-height:1.4;}
+.ltag.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
+.ltag.sf{background:#F1EFE8;color:#555;border-style:dashed;}
+.lsel{padding:3px 7px;border-bottom:1px solid #efefef;}
+.lsel select{width:100%;font-size:13px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
+.clist{flex:1;overflow-y:auto;}
+
+/* chat item */
+.ci{display:flex;align-items:flex-start;gap:4px;padding:5px 7px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
+.ci:hover{background:#F5F5F5;}
+.ci.sel{background:#EAF3FB;}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.av-b{background:#D7EAFB;color:#0C447C;}.av-g{background:#D4F0E0;color:#085041;}
+.av-a{background:#FAEEDA;color:#7A3D00;}.av-p{background:#EAE8FD;color:#3C3489;}
+.av-c{background:#FAE8E3;color:#712B13;}
+.ci-body{flex:1;min-width:0;}
+.ci-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ci-prev{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.ci-prev.meta{color:#1870C0;}
+.ci-prev.txt{color:#999;}
+.ci-time{font-size:13px;color:#bbb;white-space:nowrap;}
+.ci-bot{display:flex;align-items:center;gap:3px;}
+.st{font-size:13px;padding:1px 4px;border-radius:4px;font-weight:600;}
+.st-new{background:#FAEEDA;color:#7A3D00;}
+.st-ai{background:#D4F0E0;color:#085041;}
+.st-sent{background:#F0EFEB;color:#666;}
+.st-delay{background:#FAEEDA;color:#7A3D00;}
+.pin-dot{width:5px;height:5px;border-radius:50%;background:#378ADD;flex-shrink:0;margin-top:4px;}
+.ci-more{font-size:13px;color:#ccc;cursor:pointer;padding:0 2px;flex-shrink:0;}
+.ci-more:hover{color:#888;}
+.ctx{background:#fff;border:1px solid #ddd;border-radius:6px;padding:3px 0;font-size:12px;width:110px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.ctx-i{padding:5px 10px;cursor:pointer;}
+.ctx-i:hover{background:#F5F5F5;}
+
+/* ========= MID COL ========= */
+/* header: 氏名＋検索のみ・最小高さ */
+.mh{height:26px;min-height:26px;flex-shrink:0;background:#fff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 8px;gap:6px;}
+.mh-name{font-size:12px;font-weight:600;white-space:nowrap;}
+.mh-search{flex:1;max-width:160px;}
+.mh-search input{width:100%;font-size:13px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
+.mh-pill{font-size:12px;padding:1px 6px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;white-space:nowrap;}
+.mh-nav{display:flex;align-items:center;gap:2px;margin-left:auto;}
+.nav-btn{font-size:12px;padding:1px 7px;border-radius:4px;border:1px solid #ccc;background:transparent;color:#1870C0;cursor:pointer;font-weight:600;line-height:1.4;}
+.nav-btn:hover{background:#E6F1FB;}
+.nav-cnt{font-size:12px;color:#aaa;padding:0 3px;white-space:nowrap;}
+
+/* signal strip */
+.sig-strip{background:#EAE8FD;border-bottom:1px solid #C5C0F5;padding:4px 9px;flex-shrink:0;cursor:pointer;}
+.sig-lbl{font-size:13px;color:#534AB7;font-weight:700;margin-bottom:1px;text-transform:uppercase;letter-spacing:.04em;}
+.sig-txt{font-size:13px;color:#3C3489;line-height:1.4;}
+.sig-meta{font-size:13px;color:#7F77DD;margin-top:2px;}
+
+/* TL: flex:1 = 最大面積 */
+.tl{flex:1;overflow-y:auto;padding:8px 9px;display:flex;flex-direction:column;gap:5px;}
+
+/* TL bubbles */
+.tl-time{font-size:13px;color:#bbb;text-align:center;margin:2px 0;}
+.bub-wrap{display:flex;flex-direction:column;gap:1px;}
+.bub-from{font-size:13px;color:#aaa;margin-bottom:1px;}
+
+/* 受信テキスト（左寄せ） */
+.bub-recv{background:#fff;border:1px solid #e8e8e8;border-radius:2px 10px 10px 10px;padding:7px 10px;font-size:13px;line-height:1.5;max-width:85%;align-self:flex-start;}
+
+/* 送信済みテキスト（右寄せ） */
+.bub-sent{background:#06C755;border-radius:10px 2px 10px 10px;padding:7px 10px;font-size:13px;color:#fff;line-height:1.5;max-width:85%;align-self:flex-end;}
+
+/* データバブル（学習データ・写真・音読） */
+.bub-data{background:#F0F8EC;border:1px solid #C5E5A8;border-radius:8px;padding:5px 8px;font-size:13px;align-self:flex-start;max-width:90%;}
+.bub-data-label{font-size:13px;font-weight:700;margin-bottom:2px;}
+.bub-data-label.oto{color:#27500A;}.bub-data-label.tsg{color:#B02020;}.bub-data-label.tsm{color:#1870C0;}.bub-data-label.mno{color:#1870C0;}.bub-data-label.photo{color:#555;}
+
+/* 写真タイル */
+.photo-row{display:flex;gap:3px;margin-top:3px;}
+.photo-thumb{width:40px;height:36px;border-radius:4px;background:#D4EED0;border:1px solid #B8DDB3;display:flex;align-items:center;justify-content:center;font-size:13px;color:#27500A;text-align:center;cursor:pointer;line-height:1.2;}
+.photo-thumb:hover{opacity:.8;}
+
+/* 自動処理済み */
+.bub-auto{background:#F5F5F5;border:1px solid #e8e8e8;border-radius:8px;padding:3px 8px;font-size:12px;color:#aaa;align-self:flex-start;}
+
+/* AI一次返信案ボックス */
+.ai-box{background:#EBF7F0;border:1px solid #9DDEC2;border-radius:8px;padding:6px 9px;align-self:stretch;}
+.ai-box-lbl{font-size:13px;color:#1D9E75;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
+.ai-box-txt{font-size:12px;color:#085041;line-height:1.5;margin-bottom:5px;}
+.fb-row{display:flex;gap:3px;flex-wrap:wrap;}
+.fb-btn{font-size:12px;padding:2px 6px;border-radius:5px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;line-height:1.4;}
+.fb-btn:hover,.fb-btn.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
+
+/* send area */
+.send-area{flex-shrink:0;background:#fff;border-top:1px solid #e0e0e0;padding:5px 9px;}
+.send-icons{display:flex;align-items:center;gap:4px;margin-bottom:4px;position:relative;}
+.s-ico{font-size:13px;color:#888;cursor:pointer;padding:2px 3px;border-radius:4px;user-select:none;}
+.s-ico:hover{background:#F5F5F5;}
+.s-lbl{font-size:12px;color:#888;cursor:pointer;padding:2px 5px;border-radius:4px;border:1px solid #ddd;line-height:1.5;user-select:none;}
+.s-lbl:hover{background:#F5F5F5;}
+.s-hint{font-size:13px;color:#ccc;margin-left:4px;}
+.send-ta{width:100%;border:1px solid #ddd;border-radius:6px;padding:6px 9px;font-size:13px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.5;outline:none;overflow:hidden;margin-bottom:4px;}
+.send-btns{display:flex;gap:3px;align-items:center;}
+.abtn{font-size:13px;padding:3px 9px;border-radius:5px;border:1px solid #ccc;background:transparent;cursor:pointer;font-weight:600;line-height:1.4;}
+.abtn:hover{background:#F5F5F5;}
+.abtn-g{background:#1D9E75;color:#fff;border-color:#1D9E75;}
+.abtn-b{background:#378ADD;color:#fff;border-color:#378ADD;}
+.abtn-r{color:#A32D2D;border-color:#F09595;}
+.regen-cnt{font-size:12px;color:#aaa;margin-left:4px;}
+.send-note{font-size:13px;color:#ccc;margin-top:3px;line-height:1.5;}
+
+/* teikei popup */
+.tk-pop{position:absolute;bottom:calc(100% + 4px);left:0;width:380px;background:#fff;border:1px solid #ddd;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:100;overflow:hidden;}
+.tk-hd{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #f0f0f0;background:#F5F5F5;}
+.tk-hd-title{font-size:13px;font-weight:600;}
+.tk-sw{padding:5px 10px;border-bottom:1px solid #f0f0f0;}
+.tk-sw input{width:100%;font-size:12px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;}
+.tk-list{max-height:200px;overflow-y:auto;}
+.tk-i{padding:6px 10px;border-bottom:1px solid #f5f5f5;cursor:pointer;}
+.tk-i:hover{background:#EAF3FB;}
+.tk-i-t{font-size:12px;font-weight:600;margin-bottom:1px;}
+.tk-i-b{font-size:13px;color:#999;line-height:1.3;}
+
+/* ========= RIGHT COL ========= */
+.rs{padding:6px 8px;border-bottom:1px solid #efefef;}
+.rl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+.rperiod{font-size:13px;color:#ccc;margin-left:3px;cursor:pointer;text-decoration:underline dotted;}
+.rrow{display:flex;align-items:center;gap:3px;padding:2px 0;}
+.rpos{font-size:12px;font-weight:600;width:28px;text-align:right;padding-right:3px;color:#aaa;flex-shrink:0;}
+.rpos.cur{color:#1D9E75;font-weight:800;}
+.rname{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rname.cur{font-weight:700;}
+.rval{font-size:12px;color:#666;flex-shrink:0;text-align:right;min-width:44px;}
+.rtotal{font-size:13px;color:#bbb;margin-top:2px;}
+
+/* ai case buttons */
+.ai-case-btn{width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:5px 8px;border:1px solid #C5E5A8;border-radius:7px;background:#fff;cursor:pointer;text-align:left;transition:background .1s;}
+.ai-case-btn:hover{background:#EBF7F0;border-color:#1D9E75;}
+.ai-case-btn.sel{background:#EBF7F0;border-color:#1D9E75;border-width:2px;}
+.ai-case-lbl{font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:2px;}
+.ai-case-txt{font-size:13px;color:#1a1a1a;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
+
+/* note */
+.note-sec{padding:6px 8px;border-bottom:1px solid #efefef;}
+.sec-lbl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+.note-ta{width:100%;font-size:13px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;resize:none;font-family:inherit;outline:none;line-height:1.5;}
+.note-st{font-size:13px;color:#1D9E75;margin-top:2px;}
+
+/* tags */
+.tag-sec{padding:6px 8px;}
+.chips{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px;}
+.chip{font-size:12px;padding:2px 6px;border-radius:10px;background:#E6F1FB;color:#0C447C;display:flex;align-items:center;gap:2px;}
+.chip.sf{background:#F1EFE8;color:#666;border:1px dashed #ccc;}
+.chip-x{cursor:pointer;font-size:12px;color:#aaa;line-height:1;}
+.chip-x:hover{color:#E24B4A;}
+.tag-add{width:100%;font-size:13px;padding:2px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;font-family:inherit;outline:none;}
+
+.llm-box{margin:5px 7px;background:#F5F4F0;border-radius:6px;padding:5px 7px;}
+.llm-lbl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.llm-txt{font-size:12px;color:#666;line-height:1.5;}
+
+/* ========= MODALS ========= */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;}
+.modal{background:#fff;border-radius:10px;padding:18px 20px;width:285px;box-shadow:0 8px 32px rgba(0,0,0,.2);}
+.modal-t{font-size:12px;font-weight:600;margin-bottom:5px;}
+.modal-sub{font-size:12px;color:#666;margin-bottom:10px;line-height:1.6;}
+.modal-prev{width:100%;height:76px;background:#F5F4F0;border-radius:7px;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:6px;}
+.modal-dest-lbl{font-size:12px;color:#aaa;margin-bottom:1px;}
+.modal-dest{background:#F5F4F0;border-radius:6px;padding:5px 8px;font-size:12px;color:#1a1a1a;margin-bottom:12px;}
+.modal-acts{display:flex;gap:6px;}
+.m-cancel{font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #ddd;background:#F5F4F0;cursor:pointer;}
+.m-ok{font-size:12px;padding:6px 14px;border-radius:6px;border:none;background:#06C755;color:#fff;cursor:pointer;font-weight:600;}
+
+/* ========= BROADCAST ========= */
+.bc-left{width:208px;min-width:208px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;}
+.bc-main{flex:1;min-width:0;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:9px;padding:11px 13px;}
+.card-t{font-size:13px;font-weight:600;margin-bottom:10px;}
+.field{margin-bottom:9px;}
+.flbl{font-size:12px;color:#555;font-weight:600;margin-bottom:3px;}
+.fsub{font-size:12px;color:#aaa;margin-top:2px;}
+.tg-grp{display:flex;gap:3px;flex-wrap:wrap;}
+.tc{font-size:12px;padding:2px 7px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.tc.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
+.tgnote{font-size:12px;color:#aaa;margin-top:2px;}
+.dest-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
+.db{font-size:13px;padding:5px 7px;border-radius:6px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;text-align:center;}
+.db.on{background:#E6F1FB;color:#0C447C;border-color:transparent;font-weight:600;}
+.db.dim{background:#F5F5F5;color:#bbb;border-color:transparent;}
+.bct{width:100%;border:1px solid #ddd;border-radius:6px;padding:7px 9px;font-size:13px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.7;outline:none;overflow:hidden;min-height:90px;}
+.lock-chip{font-size:12px;padding:2px 6px;border-radius:8px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
+.lock-chip.urg{background:#FCEBEB;color:#791F1F;}
+.dt-inp{font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#F5F4F0;outline:none;width:175px;font-family:inherit;}
+.dt-inp:disabled{opacity:.3;}
+.ck-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
+.ck-row input{cursor:pointer;accent-color:#378ADD;}
+.ck-lbl{font-size:13px;cursor:pointer;}
+.rand-note{font-size:12px;color:#aaa;margin-top:1px;}
+.urg-box{background:#fff;border:1.5px solid #E24B4A;border-radius:8px;padding:11px 13px;margin-top:7px;}
+.urg-t{font-size:13px;font-weight:600;color:#A32D2D;margin-bottom:4px;}
+.urg-b{font-size:12px;color:#555;margin-bottom:7px;line-height:1.6;}
+.urg-in{width:100%;border:1px solid #F09595;border-radius:6px;padding:5px 8px;font-size:13px;background:#F5F4F0;font-family:inherit;outline:none;}
+.act-row{display:flex;gap:4px;align-items:center;margin-top:4px;}
+.abtn-d{font-size:13px;padding:3px 8px;border-radius:5px;border:1px solid #F09595;background:transparent;color:#A32D2D;cursor:pointer;}
+.gcs-t{width:66px;cursor:pointer;border-radius:7px;border:2px solid transparent;overflow:hidden;position:relative;flex-shrink:0;}
+.gcs-t:hover{border-color:#378ADD;}.gcs-t.sel{border-color:#378ADD;}
+.gcs-ti{width:100%;height:46px;border-radius:4px;}
+.gcs-tn{font-size:13px;color:#666;text-align:center;padding:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcs-sb{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:50%;background:#378ADD;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.pvc{background:#fff;border:2px solid #378ADD;border-radius:9px;padding:11px 13px;}
+.pvh{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
+.pvdot{width:6px;height:6px;border-radius:50%;background:#378ADD;}
+.pvlbl{font-size:12px;color:#185FA5;font-weight:600;}
+.line-bub{background:#06C755;border-radius:10px;padding:8px 11px;margin-bottom:6px;}
+.line-lbl{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:2px;}
+.line-txt{font-size:13px;color:#fff;line-height:1.7;white-space:pre-wrap;}
+.mail-b{background:#F5F4F0;border:1px solid #e8e8e8;border-radius:9px;padding:8px 11px;margin-bottom:6px;}
+.mail-hd{font-size:12px;color:#aaa;border-bottom:1px solid #e8e8e8;padding-bottom:4px;margin-bottom:4px;}
+.mail-txt{font-size:13px;line-height:1.7;white-space:pre-wrap;}
+.pv-meta{font-size:12px;color:#aaa;margin-bottom:7px;}
+.hist{flex:1;overflow-y:auto;}
+.hi{padding:8px 9px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
+.hi:hover{background:#F5F5F5;}.hi.sel{background:#EAF3FB;}
+.hi-top{display:flex;align-items:center;gap:3px;margin-bottom:2px;}
+.hi-date{font-size:12px;color:#aaa;flex:1;}
+.hi-sc{font-size:13px;padding:1px 5px;border-radius:5px;background:#D4F0E0;color:#085041;font-weight:600;}
+.hi-prev{font-size:13px;line-height:1.4;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.hi-meta{font-size:12px;color:#aaa;margin-bottom:2px;}
+.hi-tog{font-size:12px;padding:1px 6px;border-radius:4px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.hi-full{font-size:13px;line-height:1.5;margin-top:5px;padding:6px 8px;background:#F5F4F0;border-radius:6px;white-space:pre-wrap;border:1px solid #e8e8e8;}
+
+/* ========= TALENT ========= */
+.tstat{display:flex;padding:5px 7px;gap:5px;border-bottom:1px solid #efefef;}
+.tsi{flex:1;text-align:center;}
+.tsn{font-size:13px;font-weight:600;}.tsl{font-size:13px;color:#aaa;margin-top:1px;}
+.tsec{font-size:13px;color:#aaa;font-weight:700;padding:4px 7px 2px;border-top:1px solid #efefef;text-transform:uppercase;letter-spacing:.04em;}
+.ti{display:flex;align-items:flex-start;gap:4px;padding:5px 7px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
+.ti:hover{background:#F5F5F5;}.ti.sel{background:#EAF3FB;}.ti.exc{opacity:.4;}
+.ti-name{font-size:13px;font-weight:600;margin-bottom:1px;}.ti-sub{font-size:12px;color:#999;}
+.tsbadge{font-size:13px;padding:1px 5px;border-radius:5px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.tb-pur{background:#EAE8FD;color:#3C3489;}.tb-gray{background:#F0EFEB;color:#aaa;}
+.tbox{background:#EAE8FD;border-radius:8px;padding:7px 9px;border:1px solid #C5C0F5;margin-bottom:10px;}
+.tbox-l{font-size:13px;color:#534AB7;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.tbox-t{font-size:12px;color:#3C3489;line-height:1.5;}
+.tdraft{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:9px 11px;margin-bottom:8px;}
+.tdraft-l{font-size:13px;color:#555;font-weight:600;margin-bottom:5px;}
+.personal{background:#F5F4F0;border:1px dashed #ccc;border-radius:8px;padding:9px 11px;margin-bottom:8px;}
+.personal-l{font-size:13px;color:#aaa;font-weight:600;margin-bottom:4px;}
+.personal-txt{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:12px;line-height:1.6;margin-bottom:5px;}
+
+/* ========= NOTES SECTION ========= */
+.notes-sec{max-width:1060px;margin:28px auto;padding:0 18px 50px;}
+.nt{font-size:16px;font-weight:700;padding-bottom:8px;border-bottom:2px solid #378ADD;margin-bottom:3px;}
+.ns-sub{font-size:13px;color:#999;margin-bottom:22px;}
+.ns-blk{margin-bottom:20px;}
+.ns-head{font-size:13px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:7px;}
+.nh-b{color:#185FA5;background:#E6F1FB;}.nh-a{color:#7A3D00;background:#FAEEDA;}
+.ni{margin-bottom:7px;padding-left:11px;border-left:2px solid #e8e8e8;}
+.ni-t{font-size:12px;font-weight:600;margin-bottom:2px;}
+.ni-b{font-size:12px;color:#555;line-height:1.6;}
+.ntag{display:inline-block;font-size:12px;padding:1px 5px;border-radius:5px;font-weight:600;margin-right:3px;}
+.t-ok{background:#D4F0E0;color:#085041;}.t-open{background:#FAEEDA;color:#7A3D00;}
+</style>
+</head>
+<body>
+<div style="max-width:1440px;margin:20px auto;padding:0 14px;height:calc(100vh - 40px);display:flex;flex-direction:column;">
+<div style="font-size:11px;color:#aaa;margin-bottom:4px;flex-shrink:0;">YWC 画面モックアップ v11　2026/4/13　カラム幅1:3:1・フォントサイズ調整版</div>
+
+<div class="app">
+
+ <!-- ===== TOPBAR ===== -->
+ <div class="tb">
+  <span class="app-logo">ユウエルコネクト</span>
+  <div class="tabs">
+   <button class="tab act" onclick="showTab('msg',this)">メッセージ <span class="badge">3</span></button>
+   <button class="tab" onclick="showTab('bc',this)">配信</button>
+   <button class="tab" onclick="showTab('talent',this)">才能</button>
+  </div>
+  <div class="tb-right">
+   <span class="delay-chip">遅延1件</span>
+   <span class="red-dot"></span>
+  </div>
+ </div>
+
+ <!-- ===== メッセージタブ ===== -->
+ <div id="tab-msg" class="cols">
+
+  <!-- ==== LEFT COL ==== -->
+  <div class="col-l">
+   <div class="lsearch">
+    <input placeholder="生徒名（ひらがな）· タグ · メッセージ内検索" />
+    <div class="lsearch-note">全スレッドから横断検索</div>
+   </div>
+   <div class="ltags">
+    <span class="ltag sf on">未読</span><span class="ltag sf on">中</span>
+    <span class="ltag sf">小</span><span class="ltag sf">高</span><span class="ltag sf">保護者</span>
+    <span class="ltag on">英検</span><span class="ltag">要対応</span>
+   </div>
+   <div class="lsel">
+    <select><option>すべて（保護者・生徒・グループ）</option><option>保護者個別</option><option>生徒個別</option><option>グループ</option></select>
+   </div>
+   <!-- チャットリスト：ピン止め > 未返信 > 受信TS -->
+   <div class="clist">
+    <!-- ピン止め -->
+    <div class="ci sel">
+     <span class="pin-dot" style="margin-top:6px;"></span>
+     <div class="av av-b">その田</div>
+     <div class="ci-body">
+      <div class="ci-name">その田 せいと（保護者）</div>
+      <div class="ci-prev meta">音読 英語 12分 · GCS保存済</div>
+      <div class="ci-bot"><span class="st st-ai">AI生成済</span><span class="ci-time" style="margin-left:auto;">10分前</span></div>
+     </div>
+     <span class="ci-more" onclick="toggleCtx('cx1')">⋯</span>
+    </div>
+    <div id="cx1" style="display:none;"><div class="ctx"><div class="ctx-i">名称変更</div><div class="ctx-i">要対応フラグ</div><div class="ctx-i">ピン留め解除</div></div></div>
+    <!-- 未返信1 -->
+    <div class="ci">
+     <div class="av av-g">佐藤</div>
+     <div class="ci-body">
+      <div class="ci-name">佐藤 花（グループ）</div>
+      <div class="ci-prev meta">タゲトモ 🟡935点 · 前月比+87</div>
+      <div class="ci-bot"><span class="st st-new">未返信</span><span class="ci-time" style="margin-left:auto;">25分前</span></div>
+     </div>
+     <span class="ci-more" onclick="toggleCtx('cx2')">⋯</span>
+    </div>
+    <div id="cx2" style="display:none;"><div class="ctx"><div class="ctx-i">名称変更</div><div class="ctx-i">要対応フラグ</div><div class="ctx-i">ピン留め</div></div></div>
+    <!-- 未返信2 -->
+    <div class="ci">
+     <div class="av av-c">木村</div>
+     <div class="ci-body">
+      <div class="ci-name">木村 陸（保護者）</div>
+      <div class="ci-prev txt">来週の面談について確認させてください</div>
+      <div class="ci-bot"><span class="st st-new">未返信</span><span class="ci-time" style="margin-left:auto;">1時間前</span></div>
+     </div>
+     <span class="ci-more" onclick="toggleCtx('cx3')">⋯</span>
+    </div>
+    <div id="cx3" style="display:none;"><div class="ctx"><div class="ctx-i">名称変更</div><div class="ctx-i">要対応フラグ</div><div class="ctx-i">ピン留め</div></div></div>
+    <!-- 受信TS -->
+    <div class="ci">
+     <div class="av av-a">山田</div>
+     <div class="ci-body">
+      <div class="ci-name">山田 翔（保護者）</div>
+      <div class="ci-prev meta">写真 3枚 · 算数ノート</div>
+      <div class="ci-bot"><span class="st st-delay">遅延送信</span><span class="ci-time" style="margin-left:auto;">2時間前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av av-p">鈴木</div>
+     <div class="ci-body">
+      <div class="ci-name">鈴木 莉子（生徒）</div>
+      <div class="ci-prev meta">モノグサ 数社 340問 · 正答率82%</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">3時間前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av av-b" style="background:#E3F5D7;color:#2D6A1F;">田中</div>
+     <div class="ci-body">
+      <div class="ci-name">田中 みのり（保護者）</div>
+      <div class="ci-prev txt">ありがとうございます。引き続きよろしく</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">4時間前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av av-c" style="background:#FDE8D8;color:#8B3A0F;">伊藤</div>
+     <div class="ci-body">
+      <div class="ci-name">伊藤 蓮（グループ）</div>
+      <div class="ci-prev meta">つみかさね 国語 88問 · 週累計612問</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">5時間前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#EAE8FD;color:#3C3489;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">渡辺</div>
+     <div class="ci-body">
+      <div class="ci-name">渡辺 さくら（保護者）</div>
+      <div class="ci-prev txt">先生、先日はご丁寧に…</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">昨日</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">高橋</div>
+     <div class="ci-body">
+      <div class="ci-name">高橋 あおい（生徒）</div>
+      <div class="ci-prev meta">音読 国語 8分18秒 · GCS保存</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">昨日</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#D4F0E0;color:#085041;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">小林</div>
+     <div class="ci-body">
+      <div class="ci-name">小林 颯太（保護者）</div>
+      <div class="ci-prev txt">定期テストの結果を送ります</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">昨日</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#FAEEDA;color:#7A3D00;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">中村</div>
+     <div class="ci-body">
+      <div class="ci-name">中村 ひかり（グループ）</div>
+      <div class="ci-prev meta">タゲトモ 🟠2,640点 · 前月比+120</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">昨日</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#FAE8E3;color:#712B13;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">松本</div>
+     <div class="ci-body">
+      <div class="ci-name">松本 大翔（保護者）</div>
+      <div class="ci-prev txt">面談のご確認ありがとうございます</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">2日前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci">
+     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">藤田</div>
+     <div class="ci-body">
+      <div class="ci-name">藤田 きょうか（生徒）</div>
+      <div class="ci-prev meta">モノグサ 英語 271問 · 正答率91%</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">2日前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+    <div class="ci" style="opacity:.5;">
+     <div class="av" style="background:#EFEFEF;color:#aaa;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">加藤</div>
+     <div class="ci-body">
+      <div class="ci-name">加藤 ゆい（保護者）</div>
+      <div class="ci-prev txt">了解しました。よろしくお願いします</div>
+      <div class="ci-bot"><span class="st st-sent">送信済</span><span class="ci-time" style="margin-left:auto;">3日前</span></div>
+     </div>
+     <span class="ci-more">⋯</span>
+    </div>
+   </div>
+  </div>
+
+  <!-- ==== MID COL ==== -->
+  <div class="col-m">
+   <!-- ヘッダー：氏名＋検索のみ・高さ最小 -->
+   <div class="mh">
+    <span class="mh-name">その田 せいと（中2）</span>
+    <div class="mh-search">
+     <input placeholder="月検索 · スレッド内検索" />
+    </div>
+    <span class="mh-pill">才能シグナル</span>
+    <div class="mh-nav">
+     <button class="nav-btn">↑</button>
+     <span class="nav-cnt">未読3</span>
+     <button class="nav-btn">↓</button>
+    </div>
+   </div>
+
+   <!-- 才能シグナル帯：直近1週間 -->
+   <div class="sig-strip" onclick="toggleEl('sig-d')">
+    <div class="sig-lbl">才能シグナル（BLPM-4/5）</div>
+    <div class="sig-txt">音読継続日数クラス最長。継続力・自己管理に才能の兆し。</div>
+    <div class="sig-meta">直近1週間（変更可）· アーカイブ可 · 非表示可 ▾</div>
+   </div>
+   <div id="sig-d" style="display:none;background:#F0EFEB;border-bottom:1px solid #e0e0e0;padding:4px 9px;font-size:10px;color:#666;">
+    履歴：継続力（4/10）· 集中力（4/3）· 継続力（3/27）　<span style="cursor:pointer;color:#aaa;text-decoration:underline dotted;">アーカイブ一覧</span>
+   </div>
+
+   <!-- TL：保護者テキスト・写真・音読・タゲトモ・つみかさね・モノグサが時系列で混在 -->
+   <div class="tl">
+
+    <div class="tl-time">2026/4/10（木）</div>
+
+    <!-- 保護者からテキスト -->
+    <div class="bub-wrap">
+     <div class="bub-from">その田さん（保護者）06:22</div>
+     <div class="bub-recv">おはようございます。今朝も音読がんばっています！写真送ります。</div>
+    </div>
+
+    <!-- 写真着信（TL内バブル） -->
+    <div class="bub-wrap">
+     <div class="bub-from">着信 06:24 · 自動処理済（回転・画質補正）</div>
+     <div class="bub-data">
+      <div class="bub-data-label photo">📷 着信写真 3枚</div>
+      <div class="photo-row">
+       <div class="photo-thumb">算数<br>ノート</div>
+       <div class="photo-thumb">英語<br>ノート</div>
+       <div class="photo-thumb">理科<br>ノート</div>
+      </div>
+     </div>
+    </div>
+
+    <!-- つみかさね着信（TL内バブル） -->
+    <div class="bub-wrap">
+     <div class="bub-from">つみかさね 着信 06:31 · 自動返信済</div>
+     <div class="bub-data">
+      <div class="bub-data-label tsm">📘 つみかさね</div>
+      <div style="font-size:11px;color:#1a1a1a;">数社 42問 · 正答率88% · 週累計3,840問</div>
+     </div>
+    </div>
+
+    <!-- 音読着信（TL内バブル） -->
+    <div class="bub-wrap">
+     <div class="bub-from">音読アプリ 着信 06:48 · GCS保存 · Push API</div>
+     <div class="bub-data">
+      <div class="bub-data-label oto">🎙 音読</div>
+      <div style="font-size:11px;color:#1a1a1a;">英語 · 実質12分18秒 <span style="font-size:10px;color:#1D9E75;cursor:pointer;margin-left:6px;">再生</span></div>
+     </div>
+     <div class="bub-auto" style="margin-top:2px;">保護者グループLINEへ自動要約配信（Push API）· 保護者メールへ全文送信（SendGrid）· STT処理完了</div>
+    </div>
+
+    <!-- 生徒向けランキング自動返信（TL内・送信済みバブルとして表示） -->
+    <div class="bub-wrap">
+     <div class="bub-from">システム自動返信 06:48 → 生徒グループLINE</div>
+     <div class="bub-sent" style="background:#9B8FE0;font-size:11px;">🤖 今週の音読時間：78分（中高生6位 / 14名中）
+つみかさね：週累計3,840問（8位 / 22名中）</div>
+     <div style="font-size:9px;color:#aaa;margin-top:1px;">自動返信（FR-51-07）· 先生の操作不要 · グループがない場合は保護者個別へ</div>
+    </div>
+
+    <!-- タゲトモ着信（TL内バブル） -->
+    <div class="bub-wrap">
+     <div class="bub-from">タゲトモ 着信 06:48 · OCR処理 · 自動返信済</div>
+     <div class="bub-data">
+      <div class="bub-data-label tsg">🟡 タゲトモ</div>
+      <div style="font-size:11px;color:#1a1a1a;">黄 935点 · 前月比+87 · 4月通算3,210点</div>
+     </div>
+    </div>
+
+    <!-- 保護者からテキスト返信 -->
+    <div class="bub-wrap">
+     <div class="bub-from">その田さん（保護者）07:02</div>
+     <div class="bub-recv">ランキングメール届きました。ありがとうございます。</div>
+    </div>
+
+    <!-- AI返信案：現行返信リストをセマンティック一致で2〜5件候補提示（糸井さん実装済みのおばちゃんロジックをYWCに適用）
+         解釈①（トーン選択）と解釈②（返信文そのもの）をランダム混在→RLHFで収束 -->
+    <div class="ai-box">
+     <div class="ai-box-lbl">AI返信案（返信リストのセマンティック一致 2〜5件）— ボタンを押すと入力欄にコピー · 修正して送信</div>
+     <div style="display:flex;flex-direction:column;gap:4px;margin-top:2px;">
+      <!-- 解釈②：返信文そのものがボタンに（事実ベース・数値報告型）→ Phase 1〜2優先 -->
+      <button class="ai-case-btn" onclick="selCase(this,'音読12分、記録しました。今週の累積78分で中高生6位です。つみかさねも今朝42問こなしています。')">
+       <span class="ai-case-lbl" style="color:#185FA5;">事実報告（自動返信リスト一致）</span>
+       <span class="ai-case-txt">音読12分、記録しました。今週の累積78分で中高生6位です…</span>
+      </button>
+      <!-- 解釈①：トーン選択ボタン → 対応する文案を入力欄にセット -->
+      <button class="ai-case-btn" onclick="selCase(this,'今週も音読継続できていますね。今日12分、今週累積78分で中高生6位です。つみかさねも42問こなしました。この調子で続けましょう！')">
+       <span class="ai-case-lbl">継続を称える</span>
+       <span class="ai-case-txt">今週も音読継続できていますね。今日12分、今週累積78分で中高生6位…</span>
+      </button>
+      <!-- 解釈②：返信文そのもの（定型応答型） -->
+      <button class="ai-case-btn" onclick="selCase(this,'ありがとうございます！音読の様子、しっかり受け取りました。引き続きよろしくお願いします。')">
+       <span class="ai-case-lbl" style="color:#185FA5;">定型応答（返信リスト一致）</span>
+       <span class="ai-case-txt">ありがとうございます！音読の様子、しっかり受け取りました…</span>
+      </button>
+     </div>
+     <div style="font-size:9px;color:#aaa;margin-top:4px;">青ラベル＝返信リストからのセマンティック一致（解釈②）· 黒ラベル＝トーン選択（解釈①）· RLHF蓄積により収束予定</div>
+    </div>
+
+   </div><!-- /tl -->
+
+   <!-- 送信エリア -->
+   <div class="send-area">
+    <div class="send-icons">
+     <div style="position:relative;">
+      <span class="s-ico" onclick="toggleTk()" title="定型文">💬</span>
+      <!-- 定型文ポップアップ：文中検索可能・最近利用順・プレビューなし -->
+      <div id="tk-pop" style="display:none;" class="tk-pop">
+       <div class="tk-hd"><span class="tk-hd-title">定型文（50件）</span><span style="font-size:10px;color:#aaa;">最近利用した順</span></div>
+       <div class="tk-sw"><input placeholder="定型文を検索..." /></div>
+       <div class="tk-list">
+        <div class="tk-i" onclick="insT('塾生マイページは全県模試でご利用いただけます。最初は慣れない感じで扱いにくいかもしれませんが、ぜひ一度ご覧ください。')"><div class="tk-i-t">塾生マイページ</div><div class="tk-i-b">塾生マイページは全県模試でご利用いただけます…</div></div>
+        <div class="tk-i" onclick="insT('↑急いでつくった解答解説です。まちがいもあり得るので、あくまで参考として使用してください。')"><div class="tk-i-t">定期テスト解答</div><div class="tk-i-b">↑急いでつくった解答解説です…</div></div>
+        <div class="tk-i" onclick="insT('これまで何十回もお伝えしていますが、全く見えないので、重要な声掛けができません。')"><div class="tk-i-t">これまで何十回も…</div><div class="tk-i-b">これまで何十回もお伝えしていますが…</div></div>
+        <div class="tk-i" onclick="insT('進路情報をGmailに共有いたしました。情報量がとても多いので、まずはこちらからご確認ください。')"><div class="tk-i-t">進路情報</div><div class="tk-i-b">進路情報をGmailに共有いたしました…</div></div>
+        <div class="tk-i" onclick="insT('お問い合わせありがとうございます！！ユニティ責任者の高塚です。')"><div class="tk-i-t">問い合わせ対応</div><div class="tk-i-b">お問い合わせありがとうございます！！…</div></div>
+       </div>
+      </div>
+     </div>
+     <span class="s-lbl" onclick="showCallModal()">📞 通話リンク</span>
+     <span class="s-lbl" onclick="toggleEl('dt-row')">🕐 日時指定</span>
+     <span class="s-hint">Ctrl+V で画像</span>
+     <button style="margin-left:auto;font-size:9px;padding:2px 5px;border-radius:4px;border:1px solid #ddd;background:transparent;cursor:pointer;color:#888;" onclick="showFileModal()">Ctrl+V デモ</button>
+    </div>
+    <div id="dt-row" style="display:none;margin-bottom:4px;font-size:10px;color:#aaa;display:flex;gap:5px;align-items:center;">
+     <input style="font-size:13px;padding:3px 7px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;width:185px;font-family:inherit;" placeholder="配信日時を指定..." />
+     <span>禁止時間帯 → 翌朝6:30〜7:15 ランダム（変更可）</span>
+    </div>
+    <textarea class="send-ta" id="reply-ta" rows="2" placeholder="Enter で改行 · Ctrl+Enter で送信" oninput="ar(this)">英語音読12分、記録しました。</textarea>
+    <div class="send-btns">
+     <button class="abtn abtn-g">送信</button>
+     <button class="abtn abtn-b">編集して送信</button>
+    </div>
+    <div class="send-note">Enter 改行 · Ctrl+Enter 送信 · 23:00〜6:30は翌朝6:30〜7:15ランダム遅延（変更可）· スマホのみ：6名/1名詳細トグル</div>
+   </div>
+  </div><!-- /col-m -->
+
+  <!-- ==== RIGHT COL ==== -->
+  <div class="col-r">
+
+   <!-- 問題数ランキング -->
+   <div class="rs">
+    <div class="rl">問題数（つみかさね＋モノグサ）<span class="rperiod">1週間</span></div>
+    <div class="rrow"><span class="rpos">7位</span><div class="rname">まえのたろう</div><div class="rval">4,120問</div></div>
+    <div class="rrow"><span class="rpos cur">8位</span><div class="rname cur">その田 せいと</div><div class="rval">3,840問</div></div>
+    <div class="rrow"><span class="rpos">9位</span><div class="rname">つぎのじろう</div><div class="rval">3,710問</div></div>
+    <div class="rtotal">中高生 記録あり22名中</div>
+   </div>
+
+   <!-- 音読ランキング -->
+   <div class="rs">
+    <div class="rl">音読時間<span class="rperiod">1週間</span></div>
+    <div class="rrow"><span class="rpos">5位</span><div class="rname">きむらりく</div><div class="rval">87分</div></div>
+    <div class="rrow"><span class="rpos cur">6位</span><div class="rname cur">その田 せいと</div><div class="rval">78分</div></div>
+    <div class="rrow"><span class="rpos">7位</span><div class="rname">やまだしょう</div><div class="rval">61分</div></div>
+    <div class="rtotal">中高生 記録あり14名中</div>
+   </div>
+
+   <!-- タゲトモランキング -->
+   <div class="rs">
+    <div class="rl">タゲトモスコア<span class="rperiod">今月</span></div>
+    <div class="rrow"><span class="rpos">13位</span><div class="rname">さとうはな</div><div class="rval">🟡3,250</div></div>
+    <div class="rrow"><span class="rpos cur">14位</span><div class="rname cur">その田 せいと</div><div class="rval">🟡3,210</div></div>
+    <div class="rrow"><span class="rpos">15位</span><div class="rname">すずきりこ</div><div class="rval">🟠2,980</div></div>
+    <div class="rtotal">中高生 記録あり16名中</div>
+   </div>
+
+   <!-- ノート：確定ボタンなし・自動保存 -->
+   <div class="note-sec">
+    <div class="sec-lbl">ノート（内部メモ · 外部送信なし）</div>
+    <textarea class="note-ta" id="note-ta" rows="3" oninput="noteChg()">コツコツ型。朝の習慣がしっかりしている。保護者は連絡マメで音読も毎日送ってくる。</textarea>
+    <div class="note-st" id="note-st">✓ 保存済み</div>
+   </div>
+
+   <!-- タグ：SF自動タグ区別 · ×削除 · 追加入力 -->
+   <div class="tag-sec">
+    <div class="sec-lbl">タグ</div>
+    <div class="chips" id="chips">
+     <span class="chip sf">中2</span>
+     <span class="chip sf">保護者</span>
+     <span class="chip">英検 <span class="chip-x" onclick="this.closest('.chip').remove()">×</span></span>
+     <span class="chip">上菅田 <span class="chip-x" onclick="this.closest('.chip').remove()">×</span></span>
+    </div>
+    <input class="tag-add" placeholder="タグを追加..." onkeydown="addTag(event,this)" />
+   </div>
+
+   <!-- コンテキスト蓄積：この生徒について蓄積された情報 -->
+   <div class="llm-box" style="margin-top:0;">
+    <div class="llm-lbl" style="color:#378ADD;">コンテキスト（蓄積中）</div>
+    <div class="llm-txt" style="display:flex;flex-direction:column;gap:5px;">
+     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">学習パターン</span>毎朝6:30〜7:00に音読＋つみかさねを実施。週末は途切れがち。タゲトモは月末に集中する傾向。</div>
+     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">保護者との関係</span>連絡マメで毎日写真を送ってくる。返信に対して素直に反応する。面談は希望が多い。</div>
+     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">才能の兆し</span>継続力が高い。成果が出なくても習慣が崩れない。英語音読の正確さが改善傾向。</div>
+     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">最近の変化</span>3週間前から朝の音読時間が8分→12分に増加。タゲトモスコアが先月比+87点。</div>
+     <div style="font-size:9px;color:#ccc;margin-top:2px;">過去チャット履歴・学習ログ・写真から自動蓄積 · GCS保存</div>
+    </div>
+   </div>
+
+  </div><!-- /col-r -->
+
+ </div><!-- /tab-msg -->
+
+ <!-- ===== 配信タブ ===== -->
+ <div id="tab-bc" class="cols" style="display:none;">
+  <div class="bc-left">
+   <div class="lsearch" style="padding:7px 8px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:1px;">過去の類似配信</div>
+    <div class="lsearch-note">入力内容から自動検索 · 全文表示可</div>
+   </div>
+   <div class="hist">
+    <div class="hi sel">
+     <div class="hi-top"><div class="hi-date">2026/3/31 6:39</div><div class="hi-sc">91%</div></div>
+     <div class="hi-prev">★本日の！予定　ご確認ください。春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！</div>
+     <div class="hi-meta">絞り込み · 97名</div>
+     <button class="hi-tog" onclick="togHi(this)">全文を見る</button>
+     <div class="hi-full" style="display:none;">★本日の！予定　ご確認ください。
+春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！
+3月最終日、さらに全力で。</div>
+    </div>
+    <div class="hi">
+     <div class="hi-top"><div class="hi-date">2026/3/28 6:45</div><div class="hi-sc">83%</div></div>
+     <div class="hi-prev">★本日の！予定です。3月も残すところ、あと4日。4/1に、みなぎる気合と…</div>
+     <div class="hi-meta">絞り込み · 97名</div>
+     <button class="hi-tog" onclick="togHi(this)">全文を見る</button>
+     <div class="hi-full" style="display:none;">★本日の！予定です。
+3月も残すところ、あと4日。
+4/1に、みなぎる気合と新しいエネルギーを感じるためには、3月の終わり方。</div>
+    </div>
+    <div class="hi">
+     <div class="hi-top"><div class="hi-date">2026/3/25 21:12</div><div class="hi-sc">60%</div></div>
+     <div class="hi-prev">★今日は多くの学校で終業式が行われ、通知表が渡されたかと思います。</div>
+     <div class="hi-meta">絞り込み · 46名</div>
+     <button class="hi-tog" onclick="togHi(this)">全文を見る</button>
+     <div class="hi-full" style="display:none;">★今日は多くの学校で終業式が行われ、通知表が渡されたかと思います。
+結果を振り返って、次につなげていくために！</div>
+    </div>
+   </div>
+  </div>
+  <div class="bc-main">
+   <div class="card">
+    <div class="card-t">配信内容を作成</div>
+    <div class="field">
+     <div class="flbl">タグで送信先を絞り込み（OR条件）</div>
+     <div class="tg-grp"><button class="tc on">中</button><button class="tc">高</button><button class="tc">小</button><button class="tc on">英検</button><button class="tc">新井中</button><button class="tc">上菅田</button><button class="tc">保土ヶ谷</button><button class="tc">RB</button></div>
+     <div class="tgnote">「中」または「英検」→ 131名（重複排除後）</div>
+    </div>
+    <div class="field">
+     <div class="flbl">送信先（デフォルト：個別4チャネル）</div>
+     <div class="dest-grid">
+      <button class="db on">保護者LINE（要約）</button><button class="db on">保護者メール（全文）</button>
+      <button class="db on">生徒LINE</button><button class="db on">生徒メール</button>
+     </div>
+     <div style="margin-top:4px;"><button class="db dim" style="width:100%;">グループにも送る（デフォルトOFF）</button></div>
+    </div>
+    <div class="field">
+     <div class="flbl">画像添付（GCS · 最大2枚 · Ctrl+クリックで複数選択）</div>
+     <div style="font-size:9px;color:#aaa;margin-bottom:4px;">GCS / ywc-delivery / 2026-04 / — 最新8件</div>
+     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="bc-ig">
+      <div class="gcs-t sel" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#D3E8FF;"></div><div class="gcs-tn">授業風景.jpg</div><div class="gcs-sb">1</div></div>
+      <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#D4F0E0;"></div><div class="gcs-tn">ホワイトボード.jpg</div></div>
+      <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#FFF0CC;"></div><div class="gcs-tn">春期講習.jpg</div></div>
+      <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#F5D0D0;"></div><div class="gcs-tn">スコア表.jpg</div></div>
+     </div>
+     <div style="font-size:9px;color:#1870C0;margin-top:3px;" id="bc-ig-lbl">選択中：授業風景.jpg（1枚 / 残1枚選択可）</div>
+    </div>
+    <div class="field">
+     <div class="flbl">送信テキスト</div>
+     <textarea class="bct" id="bc-txt" oninput="ar(this);syncPv()">★本日の！予定　ご確認ください。
+春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！
+3月最終日、さらに全力で。</textarea>
+    </div>
+    <div class="field">
+     <div class="flbl">配信日時</div>
+     <div class="ck-row"><input type="checkbox" id="sn" onchange="togSN(this.checked)" /><label class="ck-lbl" for="sn">すぐに配信</label></div>
+     <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+      <input class="dt-inp" type="text" id="dt-inp" oninput="chkDt(this.value)" />
+      <div id="lb" class="lock-chip">23:00〜6:30 送信不可</div>
+     </div>
+     <div class="rand-note" id="rn">翌朝6:30〜7:15のランダムな時刻を自動入力（変更可）</div>
+     <div id="urg-wrap" style="display:none;">
+      <div class="urg-box">
+       <div class="urg-t">緊急配信 — 禁止時間帯での送信</div>
+       <div class="urg-b">23:00〜6:30に指定されています。<strong>【緊急配信】</strong>と入力してください。監査ログに記録されます。</div>
+       <input class="urg-in" id="urg-in" placeholder="【緊急配信】と入力" oninput="chkUrg(this.value)" />
+       <div class="act-row">
+        <button class="abtn-d" id="urg-btn" disabled style="opacity:.4;">許可して続ける</button>
+        <button class="abtn" onclick="dismissUrg()">キャンセル</button>
+       </div>
+      </div>
+     </div>
+    </div>
+    <div class="act-row">
+     <button class="abtn abtn-b" onclick="showPv()">プレビューを確認</button>
+     <button class="abtn">下書き保存</button>
+    </div>
+   </div>
+   <div class="pvc" id="pv-card" style="display:none;">
+    <div class="pvh"><div class="pvdot"></div><div class="pvlbl">送信プレビュー — 内容を確認してから送信</div></div>
+    <div class="field"><div class="flbl">LINE（131名）</div>
+     <div class="line-bub"><div class="line-lbl">LINE</div><div class="line-txt" id="pv-line"></div></div>
+    </div>
+    <div class="field"><div class="flbl">メール（131名）</div>
+     <div class="mail-b"><div class="mail-hd">件名：【ユウエル】学習レポート（2026/4/11）</div><div class="mail-txt" id="pv-mail"></div></div>
+     <div class="pv-meta" id="pv-meta">添付：授業風景.jpg　配信日時：—　重複排除：家族IDで管理</div>
+    </div>
+    <div class="act-row">
+     <button class="abtn abtn-g">この内容で送信する</button>
+     <button class="abtn" onclick="document.getElementById('pv-card').style.display='none'">戻って編集</button>
+    </div>
+   </div>
+  </div>
+ </div>
+
+ <!-- ===== 才能タブ ===== -->
+ <div id="tab-talent" class="cols" style="display:none;">
+  <div class="bc-left">
+   <div class="lsearch" style="padding:7px 8px;">
+    <div style="font-size:13px;font-weight:600;margin-bottom:1px;">才能シグナル配信</div>
+    <div class="lsearch-note">日次バッチ生成 · 送信待ち順</div>
+   </div>
+   <div class="tstat">
+    <div class="tsi"><div class="tsn">4</div><div class="tsl">待ち</div></div>
+    <div class="tsi"><div class="tsn">2</div><div class="tsl">除外中</div></div>
+    <div class="tsi"><div class="tsn">1</div><div class="tsl">本日済</div></div>
+   </div>
+   <div class="clist">
+    <div class="tsec">送信待ち</div>
+    <div class="ti sel"><div class="av av-b" style="width:24px;height:24px;font-size:10px;">その田</div><div style="flex:1;min-width:0;"><div class="ti-name">その田 せいと（中2）</div><div class="ti-sub">継続力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="ti"><div class="av av-g" style="width:24px;height:24px;font-size:10px;">佐藤</div><div style="flex:1;min-width:0;"><div class="ti-name">佐藤 花（中3）</div><div class="ti-sub">集中力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="ti"><div class="av av-a" style="width:24px;height:24px;font-size:10px;">山田</div><div style="flex:1;min-width:0;"><div class="ti-name">山田 翔（小6）</div><div class="ti-sub">粘り強さシグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="tsec">除外中（5日以内に配信済）</div>
+    <div class="ti exc"><div class="av" style="width:24px;height:24px;font-size:10px;background:#D4F0E0;color:#085041;">木村</div><div style="flex:1;min-width:0;"><div class="ti-name">木村 陸（中1）</div><div class="ti-sub">3日前に送信済み</div></div><div class="tsbadge tb-gray">除外</div></div>
+   </div>
+  </div>
+  <div class="bc-main">
+   <div class="card">
+    <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;">
+     <div class="av av-b" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">その田</div>
+     <div><div style="font-size:12px;font-weight:600;">その田 せいと（中2）</div><div style="font-size:10px;color:#999;">全体配信（匿名）· 日次バッチ生成</div></div>
+     <div style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;">才能シグナル</div>
+    </div>
+    <!-- talent_signal：教師確認用 -->
+    <div class="tbox">
+     <div class="tbox-l">talent_signal — 教師確認用（送信されません）</div>
+     <div class="tbox-t">その田さんは「暗記が苦手」と言いながら、毎朝欠かさず音読を続けています。直近1ヶ月で78分、中高生6位。この継続力は、学習を越えた本物の強さです。</div>
+    </div>
+    <div style="height:10px;"></div>
+    <!-- ①全体配信文：直接書き直して送信 -->
+    <div class="tdraft">
+     <div class="tdraft-l">① 全体配信文（匿名 · 直接書き直して送信）</div>
+     <textarea class="bct" id="talent-txt" oninput="ar(this);syncTPv()" style="min-height:80px;">★↑中2！
+
+毎朝欠かさず音読を続けている生徒さんがいます。直近1ヶ月でクラス上位6位の記録。成果が見えにくくても継続できる力——これは、学習を超えた本物の強さだと感じています。</textarea>
+     <div style="font-size:10px;color:#aaa;margin-top:2px;">「★↑学年！」で始め、事実→所見の順。匿名のため名前は使わない。</div>
+    </div>
+    <!-- ②個別送信文 -->
+    <div class="personal">
+     <div class="personal-l">② 個別送信文（名前あり · メッセージタブから手動送信）</div>
+     <div class="personal-txt">その田せいとさん、毎朝欠かさず音読を続けてくれていますね。直近1ヶ月で中高生6位の記録です。この継続力は、本当に素晴らしい力です。</div>
+     <div style="font-size:10px;color:#aaa;margin-bottom:5px;">全体配信文をもとにLLMが個別トーンで生成。コピーして<strong>メッセージタブ</strong>から手動送信してください。</div>
+     <button class="abtn" style="background:#EBF7F0;color:#085041;border-color:rgba(27,158,117,.3);font-size:11px;" onclick="copyP()">📋 コピー</button>
+    </div>
+    <!-- FB＋再生成 -->
+    <div style="background:#F5F4F0;border:1px solid #e8e8e8;border-radius:7px;padding:7px 9px;margin-bottom:9px;">
+     <div style="font-size:11px;color:#555;font-weight:600;margin-bottom:5px;">talent_signalへのFB（RLHF用）＋再生成</div>
+     <div class="fb-row" style="margin-bottom:5px;">
+      <button class="fb-btn" onclick="selFb(this)">👍 良い</button>
+      <button class="fb-btn" onclick="selFb(this)">事実と異なる</button>
+      <button class="fb-btn" onclick="selFb(this)">表現が不適切</button>
+      <button class="fb-btn" onclick="selFb(this)">時期が早い</button>
+      <button class="fb-btn" onclick="selFb(this)">似すぎ</button>
+     </div>
+     <textarea style="width:100%;font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#fff;font-family:inherit;outline:none;resize:none;" rows="1" placeholder="その他・自由記述..."></textarea>
+     <div style="display:flex;gap:4px;margin-top:5px;">
+      <button class="abtn" style="font-size:11px;">FB入力して再生成</button>
+      <span style="font-size:10px;color:#aaa;align-self:center;">再生成 1/3回</span>
+     </div>
+    </div>
+    <div class="field">
+     <div class="flbl">送信先（デフォルト：個別4チャネル）</div>
+     <div class="dest-grid">
+      <button class="db on">保護者LINE（要約）</button><button class="db on">保護者メール（全文）</button>
+      <button class="db on">生徒LINE</button><button class="db on">生徒メール</button>
+     </div>
+     <div style="margin-top:4px;"><button class="db dim" style="width:100%;">グループにも送る（デフォルトOFF）</button></div>
+    </div>
+    <div class="field">
+     <div class="flbl">タグで絞り込み（OR条件）</div>
+     <div class="tg-grp"><button class="tc on">中</button><button class="tc">高</button><button class="tc">小</button><button class="tc on">英検</button><button class="tc">新井中</button><button class="tc">RB</button></div>
+     <div class="tgnote">131名（重複排除後）</div>
+    </div>
+    <div class="field">
+     <div class="flbl">画像添付（GCS · 最大2枚）</div>
+     <div style="display:flex;gap:4px;flex-wrap:wrap;" id="t-ig">
+      <div class="gcs-t" onclick="togImg(this,'t')"><div class="gcs-ti" style="background:#D3E8FF;"></div><div class="gcs-tn">授業風景.jpg</div></div>
+      <div class="gcs-t" onclick="togImg(this,'t')"><div class="gcs-ti" style="background:#D4F0E0;"></div><div class="gcs-tn">ホワイトボード.jpg</div></div>
+      <div class="gcs-t" onclick="togImg(this,'t')"><div class="gcs-ti" style="background:#FFF0CC;"></div><div class="gcs-tn">春期講習.jpg</div></div>
+     </div>
+     <div style="font-size:9px;color:#1870C0;margin-top:3px;" id="t-ig-lbl">未選択（最大2枚）</div>
+    </div>
+    <div class="field">
+     <div class="flbl">配信日時</div>
+     <div class="ck-row"><input type="checkbox" id="t-sn" onchange="togTN(this.checked)" /><label class="ck-lbl" for="t-sn">すぐに配信</label></div>
+     <div style="display:flex;align-items:center;gap:6px;margin-bottom:3px;">
+      <input class="dt-inp" type="text" id="t-dt" />
+      <div class="lock-chip">23:00〜6:30 送信不可</div>
+     </div>
+     <div class="rand-note">翌朝6:30〜7:15のランダムな時刻を自動入力（変更可）</div>
+    </div>
+    <div class="act-row">
+     <button class="abtn abtn-b" onclick="showTPv()">プレビューを確認</button>
+     <button class="abtn">下書き保存</button>
+     <button class="abtn-d">棄却する</button>
+    </div>
+    <div class="pvc" id="t-pv" style="display:none;margin-top:10px;">
+     <div class="pvh"><div class="pvdot"></div><div class="pvlbl">送信プレビュー</div></div>
+     <div class="field"><div class="flbl">LINE（131名）</div>
+      <div class="line-bub"><div class="line-lbl">LINE</div><div class="line-txt" id="t-pv-line"></div></div>
+     </div>
+     <div class="field"><div class="flbl">メール（131名）</div>
+      <div class="mail-b"><div class="mail-hd">件名：【ユウエル】才能のご報告（2026/4/11）</div><div class="mail-txt" id="t-pv-mail"></div></div>
+      <div class="pv-meta">配信日時：<span id="t-pv-dt">—</span>　送信後タグ自動消去</div>
+     </div>
+     <div class="act-row">
+      <button class="abtn abtn-g">この内容で送信する</button>
+      <button class="abtn" onclick="document.getElementById('t-pv').style.display='none'">戻って編集</button>
+     </div>
+    </div>
+   </div>
+  </div>
+ </div>
+
+</div><!-- /app -->
+</div><!-- /wrapper -->
+
+<!-- 通話リンクモーダル -->
+<div id="call-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+ <div class="modal">
+  <div class="modal-t">LINE通話リンクを送信しますか？</div>
+  <div class="modal-sub">相手がリンクをタップすると端末の通話アプリが起動します。誤送信にご注意ください。</div>
+  <div class="modal-dest-lbl">送信先</div>
+  <div class="modal-dest">その田 せいと（保護者LINE · 個別）</div>
+  <div class="modal-acts">
+   <button class="m-cancel" onclick="document.getElementById('call-modal').style.display='none'">キャンセル</button>
+   <button class="m-ok" onclick="sendCall()">通話リンクを送信</button>
+  </div>
+ </div>
+</div>
+
+<!-- ファイル送信モーダル -->
+<div id="file-modal" class="modal-ov" style="display:none;" onclick="if(event.target===this)this.style.display='none'">
+ <div class="modal">
+  <div class="modal-t">このファイルを送信しますか？</div>
+  <div class="modal-prev">🖼</div>
+  <div style="font-size:10px;color:#aaa;margin-bottom:5px;">screenshot_20260411.png</div>
+  <div class="modal-dest-lbl">送信先</div>
+  <div class="modal-dest">その田 せいと（保護者LINE · 個別）</div>
+  <div class="modal-acts">
+   <button class="m-cancel" onclick="document.getElementById('file-modal').style.display='none'">キャンセル</button>
+   <button class="m-ok" onclick="document.getElementById('file-modal').style.display='none'">送信</button>
+  </div>
+ </div>
+</div>
+
+<script>
+function showTab(n,btn){
+ ['msg','bc','talent'].forEach(t=>document.getElementById('tab-'+t).style.display='none');
+ document.getElementById('tab-'+n).style.display='flex';
+ document.querySelectorAll('.tab').forEach(t=>t.classList.remove('act'));
+ btn.classList.add('act');
+}
+function toggleEl(id){const e=document.getElementById(id);if(e)e.style.display=e.style.display==='none'?'block':'none';}
+function toggleCtx(id){
+ ['cx1','cx2','cx3'].forEach(c=>{if(c!==id){const e=document.getElementById(c);if(e)e.style.display='none';}});
+ const e=document.getElementById(id);if(e)e.style.display=e.style.display==='none'?'block':'none';
+}
+document.addEventListener('click',e=>{
+ const p=document.getElementById('tk-pop');
+ if(p&&p.style.display!=='none'&&!p.contains(e.target)&&!e.target.closest('.s-ico'))p.style.display='none';
+ ['cx1','cx2','cx3'].forEach(id=>{const el=document.getElementById(id);if(el&&el.style.display!=='none'&&!el.contains(e.target)&&!e.target.closest('.ci-more'))el.style.display='none';});
+});
+function toggleTk(){const p=document.getElementById('tk-pop');if(p)p.style.display=p.style.display==='none'?'block':'none';}
+function ar(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}
+function insT(t){const ta=document.getElementById('reply-ta');if(ta){ta.value=t;ar(ta);}const p=document.getElementById('tk-pop');if(p)p.style.display='none';}
+function showCallModal(){document.getElementById('call-modal').style.display='flex';}
+function sendCall(){const ta=document.getElementById('reply-ta');if(ta){ta.value='LINE通話はこちらから → tel:045XXXXXXXX';ar(ta);}document.getElementById('call-modal').style.display='none';}
+function showFileModal(){document.getElementById('file-modal').style.display='flex';}
+document.addEventListener('keydown',e=>{if(e.ctrlKey&&e.key==='v'&&document.getElementById('tab-msg').style.display!=='none')showFileModal();});
+function selCase(btn,txt){
+ document.querySelectorAll('.ai-case-btn').forEach(b=>b.classList.remove('sel'));
+ btn.classList.add('sel');
+ const ta=document.getElementById('reply-ta');
+ if(ta){ta.value=txt;ar(ta);}
+}
+function copyP(){
+ const t='その田せいとさん、毎朝欠かさず音読を続けてくれていますね。直近1ヶ月で中高生6位の記録です。この継続力は、本当に素晴らしい力です。';
+ if(navigator.clipboard)navigator.clipboard.writeText(t).then(()=>alert('コピーしました。メッセージタブから個別送信してください。'));
+}
+function noteChg(){const s=document.getElementById('note-st');if(!s)return;s.textContent='保存中...';clearTimeout(s._t);s._t=setTimeout(()=>{s.textContent='✓ 保存済み';},800);}
+function addTag(e,inp){
+ if(e.key==='Enter'&&inp.value.trim()){
+  const w=document.getElementById('chips');
+  const c=document.createElement('span');c.className='chip';
+  c.innerHTML=inp.value.trim()+' <span class="chip-x" onclick="this.closest(\'.chip\').remove()">×</span>';
+  w.appendChild(c);inp.value='';
+ }
+}
+const imgSt={bc:[],t:[]};
+function togImg(el,tab){
+ const n=el.querySelector('.gcs-tn').textContent;const st=imgSt[tab];const i=st.indexOf(n);
+ if(i>=0){st.splice(i,1);el.classList.remove('sel');const b=el.querySelector('.gcs-sb');if(b)b.remove();}
+ else{if(st.length>=2){alert('最大2枚まで選択できます。');return;}st.push(n);el.classList.add('sel');const b=document.createElement('div');b.className='gcs-sb';b.textContent=st.length;el.appendChild(b);}
+ const lid=(tab==='bc'?'bc':'t')+'-ig-lbl';const lbl=document.getElementById(lid);
+ if(lbl)lbl.textContent=st.length===0?'未選択（最大2枚）':'選択中：'+st.join('、')+'（'+st.length+'枚 / 残'+(2-st.length)+'枚選択可）';
+}
+function genRnd(){
+ const d=new Date();d.setDate(d.getDate()+1);
+ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dd=String(d.getDate()).padStart(2,'0');
+ const min=Math.floor(Math.random()*46)+390;
+ return `${y}/${m}/${dd} ${String(Math.floor(min/60)).padStart(2,'0')}:${String(min%60).padStart(2,'0')}`;
+}
+function initDts(){const d=document.getElementById('dt-inp');if(d)d.value=genRnd();const t=document.getElementById('t-dt');if(t)t.value=genRnd();}
+function syncPv(){const t=document.getElementById('bc-txt').value;['pv-line','pv-mail'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});}
+function showPv(){syncPv();const dt=document.getElementById('dt-inp').value;const m=document.getElementById('pv-meta');if(m)m.textContent=`添付：授業風景.jpg　配信日時：${dt}　重複排除：家族IDで管理`;const p=document.getElementById('pv-card');p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'start'});}
+function togSN(c){const d=document.getElementById('dt-inp'),lb=document.getElementById('lb'),rn=document.getElementById('rn');if(c){d.disabled=true;lb.style.display='none';if(rn)rn.textContent='';}else{d.disabled=false;lb.style.display='';if(rn)rn.textContent='翌朝6:30〜7:15のランダムな時刻を自動入力（変更可）';initDts();chkDt(d.value);}}
+function chkDt(v){if(document.getElementById('sn').checked)return;const uw=document.getElementById('urg-wrap'),lb=document.getElementById('lb');const m=v.match(/\d{4}\/\d{2}\/\d{2} (\d{2}):\d{2}/);if(m){const h=parseInt(m[1]),night=h>=23||h<6;if(night){uw.style.display='block';lb.className='lock-chip urg';lb.textContent='禁止時間帯に指定中';}else{uw.style.display='none';lb.className='lock-chip';lb.textContent='23:00〜6:30 送信不可';}}}
+function chkUrg(v){const btn=document.getElementById('urg-btn');const ok=v.trim()==='【緊急配信】';btn.disabled=!ok;btn.style.opacity=ok?'1':'.4';}
+function dismissUrg(){initDts();document.getElementById('urg-wrap').style.display='none';}
+function syncTPv(){const t=document.getElementById('talent-txt').value;['t-pv-line','t-pv-mail'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=t;});}
+function showTPv(){syncTPv();const dt=document.getElementById('t-dt').value;const el=document.getElementById('t-pv-dt');if(el)el.textContent=dt;const p=document.getElementById('t-pv');p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'start'});}
+function togTN(c){const d=document.getElementById('t-dt');if(c)d.disabled=true;else{d.disabled=false;initDts();}}
+function togHi(btn){const f=btn.nextElementSibling;const s=f.style.display==='none';f.style.display=s?'block':'none';btn.textContent=s?'閉じる':'全文を見る';}
+['reply-ta','bc-txt','talent-txt'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}});
+initDts();syncPv();syncTPv();
+</script>
+</body>
+</html>
