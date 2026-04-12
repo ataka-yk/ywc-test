@@ -6,302 +6,307 @@
 <title>YWC v10 — 2026/4/11</title>
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
-body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#E8E7E3;color:#1a1a1a;font-size:13px;height:100vh;overflow:hidden;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#E8E7E3;color:#1a1a1a;font-size:14px;height:100vh;overflow:hidden;}
 
 /* ========= APP SHELL ========= */
 .app{display:flex;flex-direction:column;height:calc(100vh - 40px);min-height:640px;width:100%;max-width:1440px;border:1px solid #ccc;border-radius:10px;overflow:hidden;background:#F0EFEB;}
 
 /* ---- TOPBAR ---- */
 .tb{height:36px;min-height:36px;flex-shrink:0;background:#fff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 12px;gap:0;}
-.app-logo{font-size:13px;font-weight:600;color:#1a1a1a;margin-right:16px;white-space:nowrap;}
+.app-logo{font-size:14px;font-weight:600;color:#1a1a1a;margin-right:16px;white-space:nowrap;}
 .tabs{display:flex;height:100%;}
-.tab{font-size:13px;padding:0 14px;border:none;background:transparent;color:#999;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:3px;white-space:nowrap;}
+.tab{font-size:14px;padding:0 14px;border:none;background:transparent;color:#999;cursor:pointer;border-bottom:2px solid transparent;display:flex;align-items:center;gap:3px;white-space:nowrap;}
 .tab.act{color:#fff;background:#378ADD;border-bottom:2px solid #1A5FA0;font-weight:600;}
 .tab:hover:not(.act){color:#555;background:rgba(0,0,0,.03);}
-.badge{width:14px;height:14px;border-radius:50%;background:#E24B4A;color:#fff;font-size:12px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
+.badge{width:14px;height:14px;border-radius:50%;background:#E24B4A;color:#fff;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;}
 .tab.act .badge{background:rgba(255,255,255,.3);color:#fff;}
 .tb-right{margin-left:auto;display:flex;align-items:center;gap:8px;}
-.delay-chip{font-size:13px;padding:2px 7px;border-radius:10px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
+.delay-chip{font-size:14px;padding:2px 7px;border-radius:10px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
 .red-dot{width:7px;height:7px;border-radius:50%;background:#E24B4A;}
 
 /* ---- 3-COLUMN LAYOUT ---- */
 .cols{display:flex;flex:1;overflow:hidden;min-height:0;}
 
 /* LEFT COL */
-.col-l{width:290px;min-width:290px;max-width:290px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;overflow:hidden;}
+.col-l{width:345px;min-width:160px;max-width:480px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;overflow:hidden;}
 
 /* MID COL */
 .col-m{flex:1;min-width:0;display:flex;flex-direction:column;background:#F0EFEB;overflow:hidden;}
 
 /* RIGHT COL */
-.col-r{width:290px;min-width:290px;max-width:290px;flex-shrink:0;background:#fff;border-left:1px solid #e0e0e0;display:flex;flex-direction:column;overflow-y:auto;}
+.col-r{width:305px;min-width:120px;max-width:480px;flex-shrink:0;background:#fff;border-left:1px solid #e0e0e0;display:flex;flex-direction:column;overflow-y:auto;}
 
 /* ========= LEFT COL ========= */
 .lsearch{padding:5px 7px;border-bottom:1px solid #efefef;}
-.lsearch input{width:100%;font-size:13px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;color:#1a1a1a;}
-.lsearch-note{font-size:13px;color:#bbb;margin-top:2px;}
+.lsearch input{width:100%;font-size:14px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;color:#1a1a1a;}
+.lsearch-note{font-size:14px;color:#bbb;margin-top:2px;}
 .ltags{padding:3px 7px;border-bottom:1px solid #efefef;display:flex;gap:3px;flex-wrap:wrap;}
-.ltag{font-size:13px;padding:2px 5px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;line-height:1.4;}
+.ltag{font-size:14px;padding:2px 5px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;line-height:1.4;}
 .ltag.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
 .ltag.sf{background:#F1EFE8;color:#555;border-style:dashed;}
 .lsel{padding:3px 7px;border-bottom:1px solid #efefef;}
-.lsel select{width:100%;font-size:13px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
+.lsel select{width:100%;font-size:14px;padding:2px 5px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
 .clist{flex:1;overflow-y:auto;}
 
 /* chat item */
 .ci{display:flex;align-items:flex-start;gap:4px;padding:5px 7px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
 .ci:hover{background:#F5F5F5;}
 .ci.sel{background:#EAF3FB;}
-.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex-shrink:0;}
+.av{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:600;flex-shrink:0;}
 .av-b{background:#D7EAFB;color:#0C447C;}.av-g{background:#D4F0E0;color:#085041;}
 .av-a{background:#FAEEDA;color:#7A3D00;}.av-p{background:#EAE8FD;color:#3C3489;}
 .av-c{background:#FAE8E3;color:#712B13;}
 .ci-body{flex:1;min-width:0;}
-.ci-name{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
-.ci-prev{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
+.ci-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:1px;}
+.ci-prev{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:2px;}
 .ci-prev.meta{color:#1870C0;}
 .ci-prev.txt{color:#999;}
-.ci-time{font-size:13px;color:#bbb;white-space:nowrap;}
+.ci-time{font-size:14px;color:#bbb;white-space:nowrap;}
 .ci-bot{display:flex;align-items:center;gap:3px;}
-.st{font-size:13px;padding:1px 4px;border-radius:4px;font-weight:600;}
+.st{font-size:14px;padding:1px 4px;border-radius:4px;font-weight:600;}
 .st-new{background:#FAEEDA;color:#7A3D00;}
 .st-ai{background:#D4F0E0;color:#085041;}
 .st-sent{background:#F0EFEB;color:#666;}
 .st-delay{background:#FAEEDA;color:#7A3D00;}
 .pin-dot{width:5px;height:5px;border-radius:50%;background:#378ADD;flex-shrink:0;margin-top:4px;}
-.ci-more{font-size:13px;color:#ccc;cursor:pointer;padding:0 2px;flex-shrink:0;}
+.ci-more{font-size:14px;color:#ccc;cursor:pointer;padding:0 2px;flex-shrink:0;}
 .ci-more:hover{color:#888;}
-.ctx{background:#fff;border:1px solid #ddd;border-radius:6px;padding:3px 0;font-size:12px;width:110px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
+.ctx{background:#fff;border:1px solid #ddd;border-radius:6px;padding:3px 0;font-size:14px;width:110px;box-shadow:0 2px 8px rgba(0,0,0,.1);}
 .ctx-i{padding:5px 10px;cursor:pointer;}
 .ctx-i:hover{background:#F5F5F5;}
 
 /* ========= MID COL ========= */
 /* header: 氏名＋検索のみ・最小高さ */
 .mh{height:26px;min-height:26px;flex-shrink:0;background:#fff;border-bottom:1px solid #e0e0e0;display:flex;align-items:center;padding:0 8px;gap:6px;}
-.mh-name{font-size:12px;font-weight:600;white-space:nowrap;}
+.mh-name{font-size:14px;font-weight:600;white-space:nowrap;}
 .mh-search{flex:1;max-width:160px;}
-.mh-search input{width:100%;font-size:13px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
-.mh-pill{font-size:12px;padding:1px 6px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;white-space:nowrap;}
+.mh-search input{width:100%;font-size:14px;padding:2px 6px;border:1px solid #ddd;border-radius:4px;background:#F5F4F0;outline:none;}
+.mh-pill{font-size:14px;padding:1px 6px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;white-space:nowrap;}
 .mh-nav{display:flex;align-items:center;gap:2px;margin-left:auto;}
-.nav-btn{font-size:12px;padding:1px 7px;border-radius:4px;border:1px solid #ccc;background:transparent;color:#1870C0;cursor:pointer;font-weight:600;line-height:1.4;}
+.nav-btn{font-size:14px;padding:1px 7px;border-radius:4px;border:1px solid #ccc;background:transparent;color:#1870C0;cursor:pointer;font-weight:600;line-height:1.4;}
 .nav-btn:hover{background:#E6F1FB;}
-.nav-cnt{font-size:12px;color:#aaa;padding:0 3px;white-space:nowrap;}
+.nav-cnt{font-size:14px;color:#aaa;padding:0 3px;white-space:nowrap;}
 
 /* signal strip */
 .sig-strip{background:#EAE8FD;border-bottom:1px solid #C5C0F5;padding:4px 9px;flex-shrink:0;cursor:pointer;}
-.sig-lbl{font-size:13px;color:#534AB7;font-weight:700;margin-bottom:1px;text-transform:uppercase;letter-spacing:.04em;}
-.sig-txt{font-size:13px;color:#3C3489;line-height:1.4;}
-.sig-meta{font-size:13px;color:#7F77DD;margin-top:2px;}
+.sig-lbl{font-size:14px;color:#534AB7;font-weight:700;margin-bottom:1px;text-transform:uppercase;letter-spacing:.04em;}
+.sig-txt{font-size:14px;color:#3C3489;line-height:1.4;}
+.sig-meta{font-size:14px;color:#7F77DD;margin-top:2px;}
 
 /* TL: flex:1 = 最大面積 */
 .tl{flex:1;overflow-y:auto;padding:8px 9px;display:flex;flex-direction:column;gap:5px;}
 
 /* TL bubbles */
-.tl-time{font-size:13px;color:#bbb;text-align:center;margin:2px 0;}
+.tl-time{font-size:14px;color:#bbb;text-align:center;margin:2px 0;}
 .bub-wrap{display:flex;flex-direction:column;gap:1px;}
-.bub-from{font-size:13px;color:#aaa;margin-bottom:1px;}
+.bub-from{font-size:14px;color:#aaa;margin-bottom:1px;}
 
 /* 受信テキスト（左寄せ） */
-.bub-recv{background:#fff;border:1px solid #e8e8e8;border-radius:2px 10px 10px 10px;padding:7px 10px;font-size:13px;line-height:1.5;max-width:85%;align-self:flex-start;}
+.bub-recv{background:#fff;border:1px solid #e8e8e8;border-radius:2px 10px 10px 10px;padding:7px 10px;font-size:14px;line-height:1.5;max-width:85%;align-self:flex-start;}
 
 /* 送信済みテキスト（右寄せ） */
-.bub-sent{background:#06C755;border-radius:10px 2px 10px 10px;padding:7px 10px;font-size:13px;color:#fff;line-height:1.5;max-width:85%;align-self:flex-end;}
+.bub-sent{background:#06C755;border-radius:10px 2px 10px 10px;padding:7px 10px;font-size:14px;color:#fff;line-height:1.5;max-width:85%;align-self:flex-end;}
 
 /* データバブル（学習データ・写真・音読） */
-.bub-data{background:#F0F8EC;border:1px solid #C5E5A8;border-radius:8px;padding:5px 8px;font-size:13px;align-self:flex-start;max-width:90%;}
-.bub-data-label{font-size:13px;font-weight:700;margin-bottom:2px;}
+.bub-data{background:#F0F8EC;border:1px solid #C5E5A8;border-radius:8px;padding:5px 8px;font-size:14px;align-self:flex-start;max-width:90%;}
+.bub-data-label{font-size:14px;font-weight:700;margin-bottom:2px;}
 .bub-data-label.oto{color:#27500A;}.bub-data-label.tsg{color:#B02020;}.bub-data-label.tsm{color:#1870C0;}.bub-data-label.mno{color:#1870C0;}.bub-data-label.photo{color:#555;}
 
 /* 写真タイル */
 .photo-row{display:flex;gap:3px;margin-top:3px;}
-.photo-thumb{width:40px;height:36px;border-radius:4px;background:#D4EED0;border:1px solid #B8DDB3;display:flex;align-items:center;justify-content:center;font-size:13px;color:#27500A;text-align:center;cursor:pointer;line-height:1.2;}
+.photo-thumb{width:40px;height:36px;border-radius:4px;background:#D4EED0;border:1px solid #B8DDB3;display:flex;align-items:center;justify-content:center;font-size:14px;color:#27500A;text-align:center;cursor:pointer;line-height:1.2;}
 .photo-thumb:hover{opacity:.8;}
 
 /* 自動処理済み */
-.bub-auto{background:#F5F5F5;border:1px solid #e8e8e8;border-radius:8px;padding:3px 8px;font-size:12px;color:#aaa;align-self:flex-start;}
+.bub-auto{background:#F5F5F5;border:1px solid #e8e8e8;border-radius:8px;padding:3px 8px;font-size:14px;color:#aaa;align-self:flex-start;}
 
 /* AI一次返信案ボックス */
 .ai-box{background:#EBF7F0;border:1px solid #9DDEC2;border-radius:8px;padding:6px 9px;align-self:stretch;}
-.ai-box-lbl{font-size:13px;color:#1D9E75;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
-.ai-box-txt{font-size:12px;color:#085041;line-height:1.5;margin-bottom:5px;}
+.ai-box-lbl{font-size:14px;color:#1D9E75;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em;}
+.ai-box-txt{font-size:14px;color:#085041;line-height:1.5;margin-bottom:5px;}
 .fb-row{display:flex;gap:3px;flex-wrap:wrap;}
-.fb-btn{font-size:12px;padding:2px 6px;border-radius:5px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;line-height:1.4;}
+.fb-btn{font-size:14px;padding:2px 6px;border-radius:5px;border:1px solid #ddd;background:#fff;color:#666;cursor:pointer;line-height:1.4;}
 .fb-btn:hover,.fb-btn.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
 
 /* send area */
 .send-area{flex-shrink:0;background:#fff;border-top:1px solid #e0e0e0;padding:5px 9px;}
 .send-icons{display:flex;align-items:center;gap:4px;margin-bottom:4px;position:relative;}
-.s-ico{font-size:13px;color:#888;cursor:pointer;padding:2px 3px;border-radius:4px;user-select:none;}
+.s-ico{font-size:14px;color:#888;cursor:pointer;padding:2px 3px;border-radius:4px;user-select:none;}
 .s-ico:hover{background:#F5F5F5;}
-.s-lbl{font-size:12px;color:#888;cursor:pointer;padding:2px 5px;border-radius:4px;border:1px solid #ddd;line-height:1.5;user-select:none;}
+.s-lbl{font-size:14px;color:#888;cursor:pointer;padding:2px 5px;border-radius:4px;border:1px solid #ddd;line-height:1.5;user-select:none;}
 .s-lbl:hover{background:#F5F5F5;}
-.s-hint{font-size:13px;color:#ccc;margin-left:4px;}
-.send-ta{width:100%;border:1px solid #ddd;border-radius:6px;padding:6px 9px;font-size:13px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.5;outline:none;overflow:hidden;margin-bottom:4px;}
+.s-hint{font-size:14px;color:#ccc;margin-left:4px;}
+.send-ta{width:100%;border:1px solid #ddd;border-radius:6px;padding:6px 9px;font-size:14px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.5;outline:none;overflow:hidden;margin-bottom:4px;}
 .send-btns{display:flex;gap:3px;align-items:center;}
-.abtn{font-size:13px;padding:3px 9px;border-radius:5px;border:1px solid #ccc;background:transparent;cursor:pointer;font-weight:600;line-height:1.4;}
+.abtn{font-size:14px;padding:3px 9px;border-radius:5px;border:1px solid #ccc;background:transparent;cursor:pointer;font-weight:600;line-height:1.4;}
 .abtn:hover{background:#F5F5F5;}
 .abtn-g{background:#1D9E75;color:#fff;border-color:#1D9E75;}
 .abtn-b{background:#378ADD;color:#fff;border-color:#378ADD;}
 .abtn-r{color:#A32D2D;border-color:#F09595;}
-.regen-cnt{font-size:12px;color:#aaa;margin-left:4px;}
-.send-note{font-size:13px;color:#ccc;margin-top:3px;line-height:1.5;}
+.regen-cnt{font-size:14px;color:#aaa;margin-left:4px;}
+.send-note{font-size:14px;color:#ccc;margin-top:3px;line-height:1.5;}
 
 /* teikei popup */
 .tk-pop{position:absolute;bottom:calc(100% + 4px);left:0;width:380px;background:#fff;border:1px solid #ddd;border-radius:9px;box-shadow:0 4px 16px rgba(0,0,0,.12);z-index:100;overflow:hidden;}
 .tk-hd{display:flex;align-items:center;justify-content:space-between;padding:6px 10px;border-bottom:1px solid #f0f0f0;background:#F5F5F5;}
-.tk-hd-title{font-size:13px;font-weight:600;}
+.tk-hd-title{font-size:14px;font-weight:600;}
 .tk-sw{padding:5px 10px;border-bottom:1px solid #f0f0f0;}
-.tk-sw input{width:100%;font-size:12px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;}
+.tk-sw input{width:100%;font-size:14px;padding:3px 6px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;}
 .tk-list{max-height:200px;overflow-y:auto;}
 .tk-i{padding:6px 10px;border-bottom:1px solid #f5f5f5;cursor:pointer;}
 .tk-i:hover{background:#EAF3FB;}
-.tk-i-t{font-size:12px;font-weight:600;margin-bottom:1px;}
-.tk-i-b{font-size:13px;color:#999;line-height:1.3;}
+.tk-i-t{font-size:14px;font-weight:600;margin-bottom:1px;}
+.tk-i-b{font-size:14px;color:#999;line-height:1.3;}
 
 /* ========= RIGHT COL ========= */
 .rs{padding:6px 8px;border-bottom:1px solid #efefef;}
-.rl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
-.rperiod{font-size:13px;color:#ccc;margin-left:3px;cursor:pointer;text-decoration:underline dotted;}
+.rl{font-size:14px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+.rperiod{font-size:14px;color:#ccc;margin-left:3px;cursor:pointer;text-decoration:underline dotted;}
 .rrow{display:flex;align-items:center;gap:3px;padding:2px 0;}
-.rpos{font-size:12px;font-weight:600;width:28px;text-align:right;padding-right:3px;color:#aaa;flex-shrink:0;}
+.rpos{font-size:14px;font-weight:600;width:28px;text-align:right;padding-right:3px;color:#aaa;flex-shrink:0;}
 .rpos.cur{color:#1D9E75;font-weight:800;}
-.rname{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rname{font-size:14px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .rname.cur{font-weight:700;}
-.rval{font-size:12px;color:#666;flex-shrink:0;text-align:right;min-width:44px;}
-.rtotal{font-size:13px;color:#bbb;margin-top:2px;}
+.rval{font-size:14px;color:#666;flex-shrink:0;text-align:right;min-width:44px;}
+.rtotal{font-size:14px;color:#bbb;margin-top:2px;}
 
 /* ai case buttons */
 .ai-case-btn{width:100%;display:flex;flex-direction:column;align-items:flex-start;padding:5px 8px;border:1px solid #C5E5A8;border-radius:7px;background:#fff;cursor:pointer;text-align:left;transition:background .1s;}
 .ai-case-btn:hover{background:#EBF7F0;border-color:#1D9E75;}
 .ai-case-btn.sel{background:#EBF7F0;border-color:#1D9E75;border-width:2px;}
-.ai-case-lbl{font-size:12px;font-weight:700;color:#1D9E75;margin-bottom:2px;}
-.ai-case-txt{font-size:13px;color:#1a1a1a;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
+.ai-case-lbl{font-size:14px;font-weight:700;color:#1D9E75;margin-bottom:2px;}
+.ai-case-txt{font-size:14px;color:#1a1a1a;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;width:100%;}
 
 /* note */
 .note-sec{padding:6px 8px;border-bottom:1px solid #efefef;}
-.sec-lbl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
-.note-ta{width:100%;font-size:13px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;resize:none;font-family:inherit;outline:none;line-height:1.5;}
-.note-st{font-size:13px;color:#1D9E75;margin-top:2px;}
+.sec-lbl{font-size:14px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px;}
+.note-ta{width:100%;font-size:14px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;resize:none;font-family:inherit;outline:none;line-height:1.5;}
+.note-st{font-size:14px;color:#1D9E75;margin-top:2px;}
 
 /* tags */
 .tag-sec{padding:6px 8px;}
 .chips{display:flex;flex-wrap:wrap;gap:3px;margin-bottom:4px;}
-.chip{font-size:12px;padding:2px 6px;border-radius:10px;background:#E6F1FB;color:#0C447C;display:flex;align-items:center;gap:2px;}
+.chip{font-size:14px;padding:2px 6px;border-radius:10px;background:#E6F1FB;color:#0C447C;display:flex;align-items:center;gap:2px;}
 .chip.sf{background:#F1EFE8;color:#666;border:1px dashed #ccc;}
-.chip-x{cursor:pointer;font-size:12px;color:#aaa;line-height:1;}
+.chip-x{cursor:pointer;font-size:14px;color:#aaa;line-height:1;}
 .chip-x:hover{color:#E24B4A;}
-.tag-add{width:100%;font-size:13px;padding:2px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;font-family:inherit;outline:none;}
+.tag-add{width:100%;font-size:14px;padding:2px 5px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;font-family:inherit;outline:none;}
 
 .llm-box{margin:5px 7px;background:#F5F4F0;border-radius:6px;padding:5px 7px;}
-.llm-lbl{font-size:13px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
-.llm-txt{font-size:12px;color:#666;line-height:1.5;}
+.llm-lbl{font-size:14px;color:#aaa;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.llm-txt{font-size:14px;color:#666;line-height:1.5;}
 
 /* ========= MODALS ========= */
 .modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:200;display:flex;align-items:center;justify-content:center;}
 .modal{background:#fff;border-radius:10px;padding:18px 20px;width:285px;box-shadow:0 8px 32px rgba(0,0,0,.2);}
-.modal-t{font-size:12px;font-weight:600;margin-bottom:5px;}
-.modal-sub{font-size:12px;color:#666;margin-bottom:10px;line-height:1.6;}
+.modal-t{font-size:14px;font-weight:600;margin-bottom:5px;}
+.modal-sub{font-size:14px;color:#666;margin-bottom:10px;line-height:1.6;}
 .modal-prev{width:100%;height:76px;background:#F5F4F0;border-radius:7px;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:28px;margin-bottom:6px;}
-.modal-dest-lbl{font-size:12px;color:#aaa;margin-bottom:1px;}
-.modal-dest{background:#F5F4F0;border-radius:6px;padding:5px 8px;font-size:12px;color:#1a1a1a;margin-bottom:12px;}
+.modal-dest-lbl{font-size:14px;color:#aaa;margin-bottom:1px;}
+.modal-dest{background:#F5F4F0;border-radius:6px;padding:5px 8px;font-size:14px;color:#1a1a1a;margin-bottom:12px;}
 .modal-acts{display:flex;gap:6px;}
-.m-cancel{font-size:12px;padding:6px 14px;border-radius:6px;border:1px solid #ddd;background:#F5F4F0;cursor:pointer;}
-.m-ok{font-size:12px;padding:6px 14px;border-radius:6px;border:none;background:#06C755;color:#fff;cursor:pointer;font-weight:600;}
+.m-cancel{font-size:14px;padding:6px 14px;border-radius:6px;border:1px solid #ddd;background:#F5F4F0;cursor:pointer;}
+.m-ok{font-size:14px;padding:6px 14px;border-radius:6px;border:none;background:#06C755;color:#fff;cursor:pointer;font-weight:600;}
 
 /* ========= BROADCAST ========= */
 .bc-left{width:208px;min-width:208px;flex-shrink:0;background:#fff;border-right:1px solid #e0e0e0;display:flex;flex-direction:column;}
 .bc-main{flex:1;min-width:0;overflow-y:auto;padding:10px 12px;display:flex;flex-direction:column;gap:10px;}
 .card{background:#fff;border:1px solid #e0e0e0;border-radius:9px;padding:11px 13px;}
-.card-t{font-size:13px;font-weight:600;margin-bottom:10px;}
+.card-t{font-size:14px;font-weight:600;margin-bottom:10px;}
 .field{margin-bottom:9px;}
-.flbl{font-size:12px;color:#555;font-weight:600;margin-bottom:3px;}
-.fsub{font-size:12px;color:#aaa;margin-top:2px;}
+.flbl{font-size:14px;color:#555;font-weight:600;margin-bottom:3px;}
+.fsub{font-size:14px;color:#aaa;margin-top:2px;}
 .tg-grp{display:flex;gap:3px;flex-wrap:wrap;}
-.tc{font-size:12px;padding:2px 7px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.tc{font-size:14px;padding:2px 7px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
 .tc.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
-.tgnote{font-size:12px;color:#aaa;margin-top:2px;}
+.tgnote{font-size:14px;color:#aaa;margin-top:2px;}
 .dest-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px;}
-.db{font-size:13px;padding:5px 7px;border-radius:6px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;text-align:center;}
+.db{font-size:14px;padding:5px 7px;border-radius:6px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;text-align:center;}
 .db.on{background:#E6F1FB;color:#0C447C;border-color:transparent;font-weight:600;}
 .db.dim{background:#F5F5F5;color:#bbb;border-color:transparent;}
-.bct{width:100%;border:1px solid #ddd;border-radius:6px;padding:7px 9px;font-size:13px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.7;outline:none;overflow:hidden;min-height:90px;}
-.lock-chip{font-size:12px;padding:2px 6px;border-radius:8px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
+.bct{width:100%;border:1px solid #ddd;border-radius:6px;padding:7px 9px;font-size:14px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.7;outline:none;overflow:hidden;min-height:90px;}
+.lock-chip{font-size:14px;padding:2px 6px;border-radius:8px;background:#FAEEDA;color:#7A3D00;font-weight:600;}
 .lock-chip.urg{background:#FCEBEB;color:#791F1F;}
-.dt-inp{font-size:12px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#F5F4F0;outline:none;width:175px;font-family:inherit;}
+.dt-inp{font-size:14px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#F5F4F0;outline:none;width:175px;font-family:inherit;}
 .dt-inp:disabled{opacity:.3;}
 .ck-row{display:flex;align-items:center;gap:6px;margin-bottom:5px;}
 .ck-row input{cursor:pointer;accent-color:#378ADD;}
-.ck-lbl{font-size:13px;cursor:pointer;}
-.rand-note{font-size:12px;color:#aaa;margin-top:1px;}
+.ck-lbl{font-size:14px;cursor:pointer;}
+.rand-note{font-size:14px;color:#aaa;margin-top:1px;}
 .urg-box{background:#fff;border:1.5px solid #E24B4A;border-radius:8px;padding:11px 13px;margin-top:7px;}
-.urg-t{font-size:13px;font-weight:600;color:#A32D2D;margin-bottom:4px;}
-.urg-b{font-size:12px;color:#555;margin-bottom:7px;line-height:1.6;}
-.urg-in{width:100%;border:1px solid #F09595;border-radius:6px;padding:5px 8px;font-size:13px;background:#F5F4F0;font-family:inherit;outline:none;}
+.urg-t{font-size:14px;font-weight:600;color:#A32D2D;margin-bottom:4px;}
+.urg-b{font-size:14px;color:#555;margin-bottom:7px;line-height:1.6;}
+.urg-in{width:100%;border:1px solid #F09595;border-radius:6px;padding:5px 8px;font-size:14px;background:#F5F4F0;font-family:inherit;outline:none;}
 .act-row{display:flex;gap:4px;align-items:center;margin-top:4px;}
-.abtn-d{font-size:13px;padding:3px 8px;border-radius:5px;border:1px solid #F09595;background:transparent;color:#A32D2D;cursor:pointer;}
+.abtn-d{font-size:14px;padding:3px 8px;border-radius:5px;border:1px solid #F09595;background:transparent;color:#A32D2D;cursor:pointer;}
 .gcs-t{width:66px;cursor:pointer;border-radius:7px;border:2px solid transparent;overflow:hidden;position:relative;flex-shrink:0;}
 .gcs-t:hover{border-color:#378ADD;}.gcs-t.sel{border-color:#378ADD;}
 .gcs-ti{width:100%;height:46px;border-radius:4px;}
-.gcs-tn{font-size:13px;color:#666;text-align:center;padding:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.gcs-sb{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:50%;background:#378ADD;color:#fff;font-size:12px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.gcs-tn{font-size:14px;color:#666;text-align:center;padding:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcs-sb{position:absolute;top:3px;right:3px;width:13px;height:13px;border-radius:50%;background:#378ADD;color:#fff;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;}
 .pvc{background:#fff;border:2px solid #378ADD;border-radius:9px;padding:11px 13px;}
 .pvh{display:flex;align-items:center;gap:5px;margin-bottom:9px;}
 .pvdot{width:6px;height:6px;border-radius:50%;background:#378ADD;}
-.pvlbl{font-size:12px;color:#185FA5;font-weight:600;}
+.pvlbl{font-size:14px;color:#185FA5;font-weight:600;}
 .line-bub{background:#06C755;border-radius:10px;padding:8px 11px;margin-bottom:6px;}
-.line-lbl{font-size:12px;color:rgba(255,255,255,.7);margin-bottom:2px;}
-.line-txt{font-size:13px;color:#fff;line-height:1.7;white-space:pre-wrap;}
+.line-lbl{font-size:14px;color:rgba(255,255,255,.7);margin-bottom:2px;}
+.line-txt{font-size:14px;color:#fff;line-height:1.7;white-space:pre-wrap;}
 .mail-b{background:#F5F4F0;border:1px solid #e8e8e8;border-radius:9px;padding:8px 11px;margin-bottom:6px;}
-.mail-hd{font-size:12px;color:#aaa;border-bottom:1px solid #e8e8e8;padding-bottom:4px;margin-bottom:4px;}
-.mail-txt{font-size:13px;line-height:1.7;white-space:pre-wrap;}
-.pv-meta{font-size:12px;color:#aaa;margin-bottom:7px;}
+.mail-hd{font-size:14px;color:#aaa;border-bottom:1px solid #e8e8e8;padding-bottom:4px;margin-bottom:4px;}
+.mail-txt{font-size:14px;line-height:1.7;white-space:pre-wrap;}
+.pv-meta{font-size:14px;color:#aaa;margin-bottom:7px;}
 .hist{flex:1;overflow-y:auto;}
 .hi{padding:8px 9px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
 .hi:hover{background:#F5F5F5;}.hi.sel{background:#EAF3FB;}
 .hi-top{display:flex;align-items:center;gap:3px;margin-bottom:2px;}
-.hi-date{font-size:12px;color:#aaa;flex:1;}
-.hi-sc{font-size:13px;padding:1px 5px;border-radius:5px;background:#D4F0E0;color:#085041;font-weight:600;}
-.hi-prev{font-size:13px;line-height:1.4;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
-.hi-meta{font-size:12px;color:#aaa;margin-bottom:2px;}
-.hi-tog{font-size:12px;padding:1px 6px;border-radius:4px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
-.hi-full{font-size:13px;line-height:1.5;margin-top:5px;padding:6px 8px;background:#F5F4F0;border-radius:6px;white-space:pre-wrap;border:1px solid #e8e8e8;}
+.hi-date{font-size:14px;color:#aaa;flex:1;}
+.hi-sc{font-size:14px;padding:1px 5px;border-radius:5px;background:#D4F0E0;color:#085041;font-weight:600;}
+.hi-prev{font-size:14px;line-height:1.4;margin-bottom:3px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.hi-meta{font-size:14px;color:#aaa;margin-bottom:2px;}
+.hi-tog{font-size:14px;padding:1px 6px;border-radius:4px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.hi-full{font-size:14px;line-height:1.5;margin-top:5px;padding:6px 8px;background:#F5F4F0;border-radius:6px;white-space:pre-wrap;border:1px solid #e8e8e8;}
 
 /* ========= TALENT ========= */
 .tstat{display:flex;padding:5px 7px;gap:5px;border-bottom:1px solid #efefef;}
 .tsi{flex:1;text-align:center;}
-.tsn{font-size:13px;font-weight:600;}.tsl{font-size:13px;color:#aaa;margin-top:1px;}
-.tsec{font-size:13px;color:#aaa;font-weight:700;padding:4px 7px 2px;border-top:1px solid #efefef;text-transform:uppercase;letter-spacing:.04em;}
+.tsn{font-size:14px;font-weight:600;}.tsl{font-size:14px;color:#aaa;margin-top:1px;}
+.tsec{font-size:14px;color:#aaa;font-weight:700;padding:4px 7px 2px;border-top:1px solid #efefef;text-transform:uppercase;letter-spacing:.04em;}
 .ti{display:flex;align-items:flex-start;gap:4px;padding:5px 7px;border-bottom:1px solid #f0f0f0;cursor:pointer;}
 .ti:hover{background:#F5F5F5;}.ti.sel{background:#EAF3FB;}.ti.exc{opacity:.4;}
-.ti-name{font-size:13px;font-weight:600;margin-bottom:1px;}.ti-sub{font-size:12px;color:#999;}
-.tsbadge{font-size:13px;padding:1px 5px;border-radius:5px;font-weight:600;flex-shrink:0;margin-top:2px;}
+.ti-name{font-size:14px;font-weight:600;margin-bottom:1px;}.ti-sub{font-size:14px;color:#999;}
+.tsbadge{font-size:14px;padding:1px 5px;border-radius:5px;font-weight:600;flex-shrink:0;margin-top:2px;}
 .tb-pur{background:#EAE8FD;color:#3C3489;}.tb-gray{background:#F0EFEB;color:#aaa;}
 .tbox{background:#EAE8FD;border-radius:8px;padding:7px 9px;border:1px solid #C5C0F5;margin-bottom:10px;}
-.tbox-l{font-size:13px;color:#534AB7;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
-.tbox-t{font-size:12px;color:#3C3489;line-height:1.5;}
+.tbox-l{font-size:14px;color:#534AB7;font-weight:700;text-transform:uppercase;letter-spacing:.04em;margin-bottom:2px;}
+.tbox-t{font-size:14px;color:#3C3489;line-height:1.5;}
 .tdraft{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:9px 11px;margin-bottom:8px;}
-.tdraft-l{font-size:13px;color:#555;font-weight:600;margin-bottom:5px;}
+.tdraft-l{font-size:14px;color:#555;font-weight:600;margin-bottom:5px;}
 .personal{background:#F5F4F0;border:1px dashed #ccc;border-radius:8px;padding:9px 11px;margin-bottom:8px;}
-.personal-l{font-size:13px;color:#aaa;font-weight:600;margin-bottom:4px;}
-.personal-txt{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:12px;line-height:1.6;margin-bottom:5px;}
+.personal-l{font-size:14px;color:#aaa;font-weight:600;margin-bottom:4px;}
+.personal-txt{background:#fff;border:1px solid #e0e0e0;border-radius:6px;padding:6px 8px;font-size:14px;line-height:1.6;margin-bottom:5px;}
 
 /* ========= NOTES SECTION ========= */
 .notes-sec{max-width:1060px;margin:28px auto;padding:0 18px 50px;}
 .nt{font-size:16px;font-weight:700;padding-bottom:8px;border-bottom:2px solid #378ADD;margin-bottom:3px;}
-.ns-sub{font-size:13px;color:#999;margin-bottom:22px;}
+.ns-sub{font-size:14px;color:#999;margin-bottom:22px;}
 .ns-blk{margin-bottom:20px;}
-.ns-head{font-size:13px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:7px;}
+.ns-head{font-size:14px;font-weight:700;padding:2px 8px;border-radius:5px;display:inline-block;margin-bottom:7px;}
 .nh-b{color:#185FA5;background:#E6F1FB;}.nh-a{color:#7A3D00;background:#FAEEDA;}
 .ni{margin-bottom:7px;padding-left:11px;border-left:2px solid #e8e8e8;}
-.ni-t{font-size:12px;font-weight:600;margin-bottom:2px;}
-.ni-b{font-size:12px;color:#555;line-height:1.6;}
-.ntag{display:inline-block;font-size:12px;padding:1px 5px;border-radius:5px;font-weight:600;margin-right:3px;}
+.ni-t{font-size:14px;font-weight:600;margin-bottom:2px;}
+.ni-b{font-size:14px;color:#555;line-height:1.6;}
+.ntag{display:inline-block;font-size:14px;padding:1px 5px;border-radius:5px;font-weight:600;margin-right:3px;}
 .t-ok{background:#D4F0E0;color:#085041;}.t-open{background:#FAEEDA;color:#7A3D00;}
+
+/* ===== リサイズハンドル ===== */
+.resize-handle{width:4px;flex-shrink:0;cursor:col-resize;background:transparent;position:relative;z-index:10;transition:background .15s;}
+.resize-handle:hover,.resize-handle.dragging{background:#378ADD;}
+.resize-handle::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:2px;height:32px;border-radius:1px;background:rgba(0,0,0,.12);}
 </style>
 </head>
 <body>
 <div style="max-width:1440px;margin:20px auto;padding:0 14px;height:calc(100vh - 40px);display:flex;flex-direction:column;">
-<div style="font-size:11px;color:#aaa;margin-bottom:4px;flex-shrink:0;">YWC 画面モックアップ v11　2026/4/13　カラム幅1:3:1・フォントサイズ調整版</div>
+<div style="font-size:12px;color:#aaa;margin-bottom:4px;flex-shrink:0;">YWC 画面モックアップ v12　2026/4/13　カラム幅10:22:8・リサイズ対応・フォント調整版</div>
 
 <div class="app">
 
@@ -410,7 +415,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#EAE8FD;color:#3C3489;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">渡辺</div>
+     <div class="av" style="background:#EAE8FD;color:#3C3489;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">渡辺</div>
      <div class="ci-body">
       <div class="ci-name">渡辺 さくら（保護者）</div>
       <div class="ci-prev txt">先生、先日はご丁寧に…</div>
@@ -419,7 +424,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">高橋</div>
+     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">高橋</div>
      <div class="ci-body">
       <div class="ci-name">高橋 あおい（生徒）</div>
       <div class="ci-prev meta">音読 国語 8分18秒 · GCS保存</div>
@@ -428,7 +433,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#D4F0E0;color:#085041;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">小林</div>
+     <div class="av" style="background:#D4F0E0;color:#085041;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">小林</div>
      <div class="ci-body">
       <div class="ci-name">小林 颯太（保護者）</div>
       <div class="ci-prev txt">定期テストの結果を送ります</div>
@@ -437,7 +442,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#FAEEDA;color:#7A3D00;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">中村</div>
+     <div class="av" style="background:#FAEEDA;color:#7A3D00;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">中村</div>
      <div class="ci-body">
       <div class="ci-name">中村 ひかり（グループ）</div>
       <div class="ci-prev meta">タゲトモ 🟠2,640点 · 前月比+120</div>
@@ -446,7 +451,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#FAE8E3;color:#712B13;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">松本</div>
+     <div class="av" style="background:#FAE8E3;color:#712B13;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">松本</div>
      <div class="ci-body">
       <div class="ci-name">松本 大翔（保護者）</div>
       <div class="ci-prev txt">面談のご確認ありがとうございます</div>
@@ -455,7 +460,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci">
-     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">藤田</div>
+     <div class="av" style="background:#D7EAFB;color:#0C447C;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">藤田</div>
      <div class="ci-body">
       <div class="ci-name">藤田 きょうか（生徒）</div>
       <div class="ci-prev meta">モノグサ 英語 271問 · 正答率91%</div>
@@ -464,7 +469,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="ci-more">⋯</span>
     </div>
     <div class="ci" style="opacity:.5;">
-     <div class="av" style="background:#EFEFEF;color:#aaa;font-size:10px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">加藤</div>
+     <div class="av" style="background:#EFEFEF;color:#aaa;font-size:11px;font-weight:600;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;">加藤</div>
      <div class="ci-body">
       <div class="ci-name">加藤 ゆい（保護者）</div>
       <div class="ci-prev txt">了解しました。よろしくお願いします</div>
@@ -476,7 +481,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
   </div>
 
   <!-- ==== MID COL ==== -->
-  <div class="col-m">
+  <div class="resize-handle" id="rh-left" onmousedown="startResize(event,'left')"></div><div class="col-m">
    <!-- ヘッダー：氏名＋検索のみ・高さ最小 -->
    <div class="mh">
     <span class="mh-name">その田 せいと（中2）</span>
@@ -497,7 +502,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
     <div class="sig-txt">音読継続日数クラス最長。継続力・自己管理に才能の兆し。</div>
     <div class="sig-meta">直近1週間（変更可）· アーカイブ可 · 非表示可 ▾</div>
    </div>
-   <div id="sig-d" style="display:none;background:#F0EFEB;border-bottom:1px solid #e0e0e0;padding:4px 9px;font-size:10px;color:#666;">
+   <div id="sig-d" style="display:none;background:#F0EFEB;border-bottom:1px solid #e0e0e0;padding:4px 9px;font-size:11px;color:#666;">
     履歴：継続力（4/10）· 集中力（4/3）· 継続力（3/27）　<span style="cursor:pointer;color:#aaa;text-decoration:underline dotted;">アーカイブ一覧</span>
    </div>
 
@@ -530,7 +535,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <div class="bub-from">つみかさね 着信 06:31 · 自動返信済</div>
      <div class="bub-data">
       <div class="bub-data-label tsm">📘 つみかさね</div>
-      <div style="font-size:11px;color:#1a1a1a;">数社 42問 · 正答率88% · 週累計3,840問</div>
+      <div style="font-size:12px;color:#1a1a1a;">数社 42問 · 正答率88% · 週累計3,840問</div>
      </div>
     </div>
 
@@ -539,7 +544,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <div class="bub-from">音読アプリ 着信 06:48 · GCS保存 · Push API</div>
      <div class="bub-data">
       <div class="bub-data-label oto">🎙 音読</div>
-      <div style="font-size:11px;color:#1a1a1a;">英語 · 実質12分18秒 <span style="font-size:10px;color:#1D9E75;cursor:pointer;margin-left:6px;">再生</span></div>
+      <div style="font-size:12px;color:#1a1a1a;">英語 · 実質12分18秒 <span style="font-size:11px;color:#1D9E75;cursor:pointer;margin-left:6px;">再生</span></div>
      </div>
      <div class="bub-auto" style="margin-top:2px;">保護者グループLINEへ自動要約配信（Push API）· 保護者メールへ全文送信（SendGrid）· STT処理完了</div>
     </div>
@@ -547,9 +552,9 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
     <!-- 生徒向けランキング自動返信（TL内・送信済みバブルとして表示） -->
     <div class="bub-wrap">
      <div class="bub-from">システム自動返信 06:48 → 生徒グループLINE</div>
-     <div class="bub-sent" style="background:#9B8FE0;font-size:11px;">🤖 今週の音読時間：78分（中高生6位 / 14名中）
+     <div class="bub-sent" style="background:#9B8FE0;font-size:12px;">🤖 今週の音読時間：78分（中高生6位 / 14名中）
 つみかさね：週累計3,840問（8位 / 22名中）</div>
-     <div style="font-size:9px;color:#aaa;margin-top:1px;">自動返信（FR-51-07）· 先生の操作不要 · グループがない場合は保護者個別へ</div>
+     <div style="font-size:10px;color:#aaa;margin-top:1px;">自動返信（FR-51-07）· 先生の操作不要 · グループがない場合は保護者個別へ</div>
     </div>
 
     <!-- タゲトモ着信（TL内バブル） -->
@@ -557,7 +562,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <div class="bub-from">タゲトモ 着信 06:48 · OCR処理 · 自動返信済</div>
      <div class="bub-data">
       <div class="bub-data-label tsg">🟡 タゲトモ</div>
-      <div style="font-size:11px;color:#1a1a1a;">黄 935点 · 前月比+87 · 4月通算3,210点</div>
+      <div style="font-size:12px;color:#1a1a1a;">黄 935点 · 前月比+87 · 4月通算3,210点</div>
      </div>
     </div>
 
@@ -588,7 +593,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
        <span class="ai-case-txt">ありがとうございます！音読の様子、しっかり受け取りました…</span>
       </button>
      </div>
-     <div style="font-size:9px;color:#aaa;margin-top:4px;">青ラベル＝返信リストからのセマンティック一致（解釈②）· 黒ラベル＝トーン選択（解釈①）· RLHF蓄積により収束予定</div>
+     <div style="font-size:10px;color:#aaa;margin-top:4px;">青ラベル＝返信リストからのセマンティック一致（解釈②）· 黒ラベル＝トーン選択（解釈①）· RLHF蓄積により収束予定</div>
     </div>
 
    </div><!-- /tl -->
@@ -600,7 +605,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
       <span class="s-ico" onclick="toggleTk()" title="定型文">💬</span>
       <!-- 定型文ポップアップ：文中検索可能・最近利用順・プレビューなし -->
       <div id="tk-pop" style="display:none;" class="tk-pop">
-       <div class="tk-hd"><span class="tk-hd-title">定型文（50件）</span><span style="font-size:10px;color:#aaa;">最近利用した順</span></div>
+       <div class="tk-hd"><span class="tk-hd-title">定型文（50件）</span><span style="font-size:11px;color:#aaa;">最近利用した順</span></div>
        <div class="tk-sw"><input placeholder="定型文を検索..." /></div>
        <div class="tk-list">
         <div class="tk-i" onclick="insT('塾生マイページは全県模試でご利用いただけます。最初は慣れない感じで扱いにくいかもしれませんが、ぜひ一度ご覧ください。')"><div class="tk-i-t">塾生マイページ</div><div class="tk-i-b">塾生マイページは全県模試でご利用いただけます…</div></div>
@@ -614,10 +619,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <span class="s-lbl" onclick="showCallModal()">📞 通話リンク</span>
      <span class="s-lbl" onclick="toggleEl('dt-row')">🕐 日時指定</span>
      <span class="s-hint">Ctrl+V で画像</span>
-     <button style="margin-left:auto;font-size:9px;padding:2px 5px;border-radius:4px;border:1px solid #ddd;background:transparent;cursor:pointer;color:#888;" onclick="showFileModal()">Ctrl+V デモ</button>
+     <button style="margin-left:auto;font-size:10px;padding:2px 5px;border-radius:4px;border:1px solid #ddd;background:transparent;cursor:pointer;color:#888;" onclick="showFileModal()">Ctrl+V デモ</button>
     </div>
-    <div id="dt-row" style="display:none;margin-bottom:4px;font-size:10px;color:#aaa;display:flex;gap:5px;align-items:center;">
-     <input style="font-size:13px;padding:3px 7px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;width:185px;font-family:inherit;" placeholder="配信日時を指定..." />
+    <div id="dt-row" style="display:none;margin-bottom:4px;font-size:11px;color:#aaa;display:flex;gap:5px;align-items:center;">
+     <input style="font-size:14px;padding:3px 7px;border:1px solid #ddd;border-radius:5px;background:#F5F4F0;outline:none;width:185px;font-family:inherit;" placeholder="配信日時を指定..." />
      <span>禁止時間帯 → 翌朝6:30〜7:15 ランダム（変更可）</span>
     </div>
     <textarea class="send-ta" id="reply-ta" rows="2" placeholder="Enter で改行 · Ctrl+Enter で送信" oninput="ar(this)">英語音読12分、記録しました。</textarea>
@@ -630,7 +635,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
   </div><!-- /col-m -->
 
   <!-- ==== RIGHT COL ==== -->
-  <div class="col-r">
+  <div class="resize-handle" id="rh-right" onmousedown="startResize(event,'right')"></div><div class="col-r">
 
    <!-- 問題数ランキング -->
    <div class="rs">
@@ -682,11 +687,11 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
    <div class="llm-box" style="margin-top:0;">
     <div class="llm-lbl" style="color:#378ADD;">コンテキスト（蓄積中）</div>
     <div class="llm-txt" style="display:flex;flex-direction:column;gap:5px;">
-     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">学習パターン</span>毎朝6:30〜7:00に音読＋つみかさねを実施。週末は途切れがち。タゲトモは月末に集中する傾向。</div>
-     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">保護者との関係</span>連絡マメで毎日写真を送ってくる。返信に対して素直に反応する。面談は希望が多い。</div>
-     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">才能の兆し</span>継続力が高い。成果が出なくても習慣が崩れない。英語音読の正確さが改善傾向。</div>
-     <div><span style="font-size:9px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">最近の変化</span>3週間前から朝の音読時間が8分→12分に増加。タゲトモスコアが先月比+87点。</div>
-     <div style="font-size:9px;color:#ccc;margin-top:2px;">過去チャット履歴・学習ログ・写真から自動蓄積 · GCS保存</div>
+     <div><span style="font-size:10px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">学習パターン</span>毎朝6:30〜7:00に音読＋つみかさねを実施。週末は途切れがち。タゲトモは月末に集中する傾向。</div>
+     <div><span style="font-size:10px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">保護者との関係</span>連絡マメで毎日写真を送ってくる。返信に対して素直に反応する。面談は希望が多い。</div>
+     <div><span style="font-size:10px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">才能の兆し</span>継続力が高い。成果が出なくても習慣が崩れない。英語音読の正確さが改善傾向。</div>
+     <div><span style="font-size:10px;color:#aaa;font-weight:700;display:block;margin-bottom:1px;">最近の変化</span>3週間前から朝の音読時間が8分→12分に増加。タゲトモスコアが先月比+87点。</div>
+     <div style="font-size:10px;color:#ccc;margin-top:2px;">過去チャット履歴・学習ログ・写真から自動蓄積 · GCS保存</div>
     </div>
    </div>
 
@@ -698,7 +703,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
  <div id="tab-bc" class="cols" style="display:none;">
   <div class="bc-left">
    <div class="lsearch" style="padding:7px 8px;">
-    <div style="font-size:13px;font-weight:600;margin-bottom:1px;">過去の類似配信</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:1px;">過去の類似配信</div>
     <div class="lsearch-note">入力内容から自動検索 · 全文表示可</div>
    </div>
    <div class="hist">
@@ -748,14 +753,14 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
     </div>
     <div class="field">
      <div class="flbl">画像添付（GCS · 最大2枚 · Ctrl+クリックで複数選択）</div>
-     <div style="font-size:9px;color:#aaa;margin-bottom:4px;">GCS / ywc-delivery / 2026-04 / — 最新8件</div>
+     <div style="font-size:10px;color:#aaa;margin-bottom:4px;">GCS / ywc-delivery / 2026-04 / — 最新8件</div>
      <div style="display:flex;gap:4px;flex-wrap:wrap;" id="bc-ig">
       <div class="gcs-t sel" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#D3E8FF;"></div><div class="gcs-tn">授業風景.jpg</div><div class="gcs-sb">1</div></div>
       <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#D4F0E0;"></div><div class="gcs-tn">ホワイトボード.jpg</div></div>
       <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#FFF0CC;"></div><div class="gcs-tn">春期講習.jpg</div></div>
       <div class="gcs-t" onclick="togImg(this,'bc')"><div class="gcs-ti" style="background:#F5D0D0;"></div><div class="gcs-tn">スコア表.jpg</div></div>
      </div>
-     <div style="font-size:9px;color:#1870C0;margin-top:3px;" id="bc-ig-lbl">選択中：授業風景.jpg（1枚 / 残1枚選択可）</div>
+     <div style="font-size:10px;color:#1870C0;margin-top:3px;" id="bc-ig-lbl">選択中：授業風景.jpg（1枚 / 残1枚選択可）</div>
     </div>
     <div class="field">
      <div class="flbl">送信テキスト</div>
@@ -809,7 +814,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
  <div id="tab-talent" class="cols" style="display:none;">
   <div class="bc-left">
    <div class="lsearch" style="padding:7px 8px;">
-    <div style="font-size:13px;font-weight:600;margin-bottom:1px;">才能シグナル配信</div>
+    <div style="font-size:14px;font-weight:600;margin-bottom:1px;">才能シグナル配信</div>
     <div class="lsearch-note">日次バッチ生成 · 送信待ち順</div>
    </div>
    <div class="tstat">
@@ -819,19 +824,19 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
    </div>
    <div class="clist">
     <div class="tsec">送信待ち</div>
-    <div class="ti sel"><div class="av av-b" style="width:24px;height:24px;font-size:10px;">その田</div><div style="flex:1;min-width:0;"><div class="ti-name">その田 せいと（中2）</div><div class="ti-sub">継続力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
-    <div class="ti"><div class="av av-g" style="width:24px;height:24px;font-size:10px;">佐藤</div><div style="flex:1;min-width:0;"><div class="ti-name">佐藤 花（中3）</div><div class="ti-sub">集中力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
-    <div class="ti"><div class="av av-a" style="width:24px;height:24px;font-size:10px;">山田</div><div style="flex:1;min-width:0;"><div class="ti-name">山田 翔（小6）</div><div class="ti-sub">粘り強さシグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="ti sel"><div class="av av-b" style="width:24px;height:24px;font-size:11px;">その田</div><div style="flex:1;min-width:0;"><div class="ti-name">その田 せいと（中2）</div><div class="ti-sub">継続力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="ti"><div class="av av-g" style="width:24px;height:24px;font-size:11px;">佐藤</div><div style="flex:1;min-width:0;"><div class="ti-name">佐藤 花（中3）</div><div class="ti-sub">集中力シグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
+    <div class="ti"><div class="av av-a" style="width:24px;height:24px;font-size:11px;">山田</div><div style="flex:1;min-width:0;"><div class="ti-name">山田 翔（小6）</div><div class="ti-sub">粘り強さシグナル</div></div><div class="tsbadge tb-pur">シグナル</div></div>
     <div class="tsec">除外中（5日以内に配信済）</div>
-    <div class="ti exc"><div class="av" style="width:24px;height:24px;font-size:10px;background:#D4F0E0;color:#085041;">木村</div><div style="flex:1;min-width:0;"><div class="ti-name">木村 陸（中1）</div><div class="ti-sub">3日前に送信済み</div></div><div class="tsbadge tb-gray">除外</div></div>
+    <div class="ti exc"><div class="av" style="width:24px;height:24px;font-size:11px;background:#D4F0E0;color:#085041;">木村</div><div style="flex:1;min-width:0;"><div class="ti-name">木村 陸（中1）</div><div class="ti-sub">3日前に送信済み</div></div><div class="tsbadge tb-gray">除外</div></div>
    </div>
   </div>
   <div class="bc-main">
    <div class="card">
     <div style="display:flex;align-items:center;gap:7px;margin-bottom:11px;">
-     <div class="av av-b" style="width:26px;height:26px;font-size:11px;flex-shrink:0;">その田</div>
-     <div><div style="font-size:12px;font-weight:600;">その田 せいと（中2）</div><div style="font-size:10px;color:#999;">全体配信（匿名）· 日次バッチ生成</div></div>
-     <div style="margin-left:auto;font-size:10px;padding:2px 7px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;">才能シグナル</div>
+     <div class="av av-b" style="width:26px;height:26px;font-size:12px;flex-shrink:0;">その田</div>
+     <div><div style="font-size:13px;font-weight:600;">その田 せいと（中2）</div><div style="font-size:11px;color:#999;">全体配信（匿名）· 日次バッチ生成</div></div>
+     <div style="margin-left:auto;font-size:11px;padding:2px 7px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;">才能シグナル</div>
     </div>
     <!-- talent_signal：教師確認用 -->
     <div class="tbox">
@@ -845,18 +850,18 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
      <textarea class="bct" id="talent-txt" oninput="ar(this);syncTPv()" style="min-height:80px;">★↑中2！
 
 毎朝欠かさず音読を続けている生徒さんがいます。直近1ヶ月でクラス上位6位の記録。成果が見えにくくても継続できる力——これは、学習を超えた本物の強さだと感じています。</textarea>
-     <div style="font-size:10px;color:#aaa;margin-top:2px;">「★↑学年！」で始め、事実→所見の順。匿名のため名前は使わない。</div>
+     <div style="font-size:11px;color:#aaa;margin-top:2px;">「★↑学年！」で始め、事実→所見の順。匿名のため名前は使わない。</div>
     </div>
     <!-- ②個別送信文 -->
     <div class="personal">
      <div class="personal-l">② 個別送信文（名前あり · メッセージタブから手動送信）</div>
      <div class="personal-txt">その田せいとさん、毎朝欠かさず音読を続けてくれていますね。直近1ヶ月で中高生6位の記録です。この継続力は、本当に素晴らしい力です。</div>
-     <div style="font-size:10px;color:#aaa;margin-bottom:5px;">全体配信文をもとにLLMが個別トーンで生成。コピーして<strong>メッセージタブ</strong>から手動送信してください。</div>
-     <button class="abtn" style="background:#EBF7F0;color:#085041;border-color:rgba(27,158,117,.3);font-size:11px;" onclick="copyP()">📋 コピー</button>
+     <div style="font-size:11px;color:#aaa;margin-bottom:5px;">全体配信文をもとにLLMが個別トーンで生成。コピーして<strong>メッセージタブ</strong>から手動送信してください。</div>
+     <button class="abtn" style="background:#EBF7F0;color:#085041;border-color:rgba(27,158,117,.3);font-size:12px;" onclick="copyP()">📋 コピー</button>
     </div>
     <!-- FB＋再生成 -->
     <div style="background:#F5F4F0;border:1px solid #e8e8e8;border-radius:7px;padding:7px 9px;margin-bottom:9px;">
-     <div style="font-size:11px;color:#555;font-weight:600;margin-bottom:5px;">talent_signalへのFB（RLHF用）＋再生成</div>
+     <div style="font-size:12px;color:#555;font-weight:600;margin-bottom:5px;">talent_signalへのFB（RLHF用）＋再生成</div>
      <div class="fb-row" style="margin-bottom:5px;">
       <button class="fb-btn" onclick="selFb(this)">👍 良い</button>
       <button class="fb-btn" onclick="selFb(this)">事実と異なる</button>
@@ -864,10 +869,10 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
       <button class="fb-btn" onclick="selFb(this)">時期が早い</button>
       <button class="fb-btn" onclick="selFb(this)">似すぎ</button>
      </div>
-     <textarea style="width:100%;font-size:11px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#fff;font-family:inherit;outline:none;resize:none;" rows="1" placeholder="その他・自由記述..."></textarea>
+     <textarea style="width:100%;font-size:12px;padding:3px 5px;border:1px solid #ddd;border-radius:5px;background:#fff;font-family:inherit;outline:none;resize:none;" rows="1" placeholder="その他・自由記述..."></textarea>
      <div style="display:flex;gap:4px;margin-top:5px;">
-      <button class="abtn" style="font-size:11px;">FB入力して再生成</button>
-      <span style="font-size:10px;color:#aaa;align-self:center;">再生成 1/3回</span>
+      <button class="abtn" style="font-size:12px;">FB入力して再生成</button>
+      <span style="font-size:11px;color:#aaa;align-self:center;">再生成 1/3回</span>
      </div>
     </div>
     <div class="field">
@@ -890,7 +895,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
       <div class="gcs-t" onclick="togImg(this,'t')"><div class="gcs-ti" style="background:#D4F0E0;"></div><div class="gcs-tn">ホワイトボード.jpg</div></div>
       <div class="gcs-t" onclick="togImg(this,'t')"><div class="gcs-ti" style="background:#FFF0CC;"></div><div class="gcs-tn">春期講習.jpg</div></div>
      </div>
-     <div style="font-size:9px;color:#1870C0;margin-top:3px;" id="t-ig-lbl">未選択（最大2枚）</div>
+     <div style="font-size:10px;color:#1870C0;margin-top:3px;" id="t-ig-lbl">未選択（最大2枚）</div>
     </div>
     <div class="field">
      <div class="flbl">配信日時</div>
@@ -946,7 +951,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI'
  <div class="modal">
   <div class="modal-t">このファイルを送信しますか？</div>
   <div class="modal-prev">🖼</div>
-  <div style="font-size:10px;color:#aaa;margin-bottom:5px;">screenshot_20260411.png</div>
+  <div style="font-size:11px;color:#aaa;margin-bottom:5px;">screenshot_20260411.png</div>
   <div class="modal-dest-lbl">送信先</div>
   <div class="modal-dest">その田 せいと（保護者LINE · 個別）</div>
   <div class="modal-acts">
@@ -1026,6 +1031,40 @@ function togTN(c){const d=document.getElementById('t-dt');if(c)d.disabled=true;e
 function togHi(btn){const f=btn.nextElementSibling;const s=f.style.display==='none';f.style.display=s?'block':'none';btn.textContent=s?'閉じる':'全文を見る';}
 ['reply-ta','bc-txt','talent-txt'].forEach(id=>{const el=document.getElementById(id);if(el){el.style.height='auto';el.style.height=el.scrollHeight+'px';}});
 initDts();syncPv();syncTPv();
+</script>
+
+<script>
+(function(){
+  function startResize(e, side){
+    e.preventDefault();
+    const colL = document.querySelector('.col-l');
+    const colR = document.querySelector('.col-r');
+    const startX = e.clientX;
+    const startL = colL.offsetWidth;
+    const startR = colR.offsetWidth;
+    const handle = e.currentTarget;
+    handle.classList.add('dragging');
+
+    function onMove(e){
+      const dx = e.clientX - startX;
+      if(side === 'left'){
+        const w = Math.max(160, Math.min(480, startL + dx));
+        colL.style.width = colL.style.minWidth = colL.style.maxWidth = w + 'px';
+      } else {
+        const w = Math.max(120, Math.min(480, startR - dx));
+        colR.style.width = colR.style.minWidth = colR.style.maxWidth = w + 'px';
+      }
+    }
+    function onUp(){
+      handle.classList.remove('dragging');
+      document.removeEventListener('mousemove', onMove);
+      document.removeEventListener('mouseup', onUp);
+    }
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onUp);
+  }
+  window.startResize = startResize;
+})();
 </script>
 </body>
 </html>
