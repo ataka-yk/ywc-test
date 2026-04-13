@@ -90,9 +90,9 @@
   .chat { display: flex; flex-direction: column; gap: 13px; }
 
   /* 保護者 → 左寄せ */
-  .row-l { display: flex; gap: 9px; align-items: flex-start; }
+  .row-l { display: flex; gap: 9px; align-items: flex-start; flex-direction: row-reverse; }
   /* おばちゃん / YWC → 右寄せ */
-  .row-r { display: flex; gap: 9px; align-items: flex-start; flex-direction: row-reverse; }
+  .row-r { display: flex; gap: 9px; align-items: flex-start; }
 
   .av { width: 28px; height: 28px; border-radius: 50%; font-size: 10px; font-weight: 700; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: var(--mono); }
   .av.par { background: #2a3244; color: var(--text2); }
@@ -102,11 +102,11 @@
 
   .bub { max-width: 80%; padding: 9px 12px; font-size: 12px; line-height: 1.65; }
   /* 保護者：左から */
-  .bub.par { background: var(--surface2); border: 1px solid var(--border2); border-radius: 4px 12px 12px 12px; }
+  .bub.par { background: var(--surface2); border: 1px solid var(--border2); border-radius: 12px 4px 12px 12px; }
   /* おばちゃん：右から */
-  .bub.oba { background: var(--oba-dim); border: 1px solid var(--oba-border); border-radius: 12px 4px 12px 12px; }
+  .bub.oba { background: var(--oba-dim); border: 1px solid var(--oba-border); border-radius: 4px 12px 12px 12px; }
   /* YWC：右から */
-  .bub.ywc { background: var(--ywc-dim); border: 1px solid var(--ywc-border); border-radius: 12px 4px 12px 12px; }
+  .bub.ywc { background: var(--ywc-dim); border: 1px solid var(--ywc-border); border-radius: 4px 12px 12px 12px; }
   /* システム */
   .bub.sys { background: #111520; border: 1px dashed var(--border2); border-radius: 6px; font-family: var(--mono); font-size: 11px; color: var(--text3); max-width: 100%; }
 
@@ -284,7 +284,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">夏期講習の申込はどこからできますか？</div>
-                <div class="meta">保護者 — 14:03</div>
+                <div class="meta r">保護者 — 14:03</div>
               </div>
             </div>
 
@@ -298,7 +298,7 @@
                   千題座席予約：forms.gle/…<br>
                   <span style="color:var(--ywc);font-size:11px;">先生への相談：（YWCリンク）</span>
                 </div>
-                <div class="meta r">おばちゃん（自動） — 14:03 <span class="sp auto">完全一致</span></div>
+                <div class="meta">おばちゃん（自動） — 14:03 <span class="sp auto">完全一致</span></div>
               </div>
             </div>
 
@@ -307,7 +307,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">夏休みに何か申し込むものはありましたっけ？</div>
-                <div class="meta">別の保護者 — 15:22</div>
+                <div class="meta r">別の保護者 — 15:22</div>
               </div>
             </div>
 
@@ -326,7 +326,7 @@
                   スケジュール：drive.google.com/…<br>
                   <span style="color:var(--ywc);font-size:11px;">先生への相談：（YWCリンク）</span>
                 </div>
-                <div class="meta r">おばちゃん（LLM選択） — 15:22 <span class="sp ai">LLM</span></div>
+                <div class="meta">おばちゃん（LLM選択） — 15:22 <span class="sp ai">LLM</span></div>
               </div>
             </div>
 
@@ -335,7 +335,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">振込先の口座番号を教えてください</div>
-                <div class="meta">別の保護者 — 16:40</div>
+                <div class="meta r">別の保護者 — 16:40</div>
               </div>
             </div>
             <div class="row-r">
@@ -345,7 +345,7 @@
                   PayPay銀行：〇〇〇〇 / 横浜信金：△△△△<br>
                   <span style="font-size:11px;color:var(--text3);">詳細は請求書をご確認ください</span>
                 </div>
-                <div class="meta r">おばちゃん（自動） — 16:40 <span class="sp auto">SF管理</span></div>
+                <div class="meta">おばちゃん（自動） — 16:40 <span class="sp auto">SF管理</span></div>
               </div>
             </div>
 
@@ -452,7 +452,7 @@
               <div class="av par">生</div>
               <div>
                 <div class="bub par">[音声ファイル] 英語 10:18</div>
-                <div class="meta">音読アプリ経由 — 10:18</div>
+                <div class="meta r">音読アプリ経由 — 10:18</div>
               </div>
             </div>
 
@@ -460,7 +460,7 @@
             <div class="row-r">
               <div class="av ywc">YW</div>
               <div>
-                <div class="fact-box" style="border-radius:12px 4px 12px 12px;max-width:80%;">
+                <div class="fact-box" style="border-radius:4px 12px 12px 12px;max-width:80%;">
                   <div class="fact-hd">✅ 事実返信（YWC自動 / 教師介在なし）</div>
                   音読を受け取りました！📖<br><br>
                   <strong>＜直近2週間の音読状況＞</strong><br>
@@ -474,7 +474,7 @@
                   あなた：380問<br>
                   1位：4,220問 / 2位：3,280問
                 </div>
-                <div class="meta r">YWC（自動） — 10:18 <span class="sp auto">1回目</span></div>
+                <div class="meta">YWC（自動） — 10:18 <span class="sp auto">1回目</span></div>
               </div>
             </div>
 
@@ -485,7 +485,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">リスニングが苦手みたいで、どう練習すればいいか悩んでいます。</div>
-                <div class="meta">保護者 — 11:08</div>
+                <div class="meta r">保護者 — 11:08</div>
               </div>
             </div>
 
@@ -534,7 +534,7 @@
                 <div class="av par">保</div>
                 <div>
                   <div class="bub par" style="max-width:100%;font-size:11px;">リスニングが苦手みたいで、どう練習すればいいか悩んでいます。</div>
-                  <div class="meta">〇〇さん保護者 — 11:08</div>
+                  <div class="meta r">〇〇さん保護者 — 11:08</div>
                 </div>
               </div>
               <div class="btns" style="margin-top:10px;">
@@ -575,7 +575,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">リスニングが苦手みたいで、どう練習すればいいか悩んでいます。</div>
-                <div class="meta">〇〇さん保護者 — 11:08</div>
+                <div class="meta r">〇〇さん保護者 — 11:08</div>
               </div>
             </div>
 
@@ -667,7 +667,7 @@
                 <div class="av ywc">先</div>
                 <div>
                   <div class="bub ywc" id="sentBub"></div>
-                  <div class="meta r">先生 — 送信済み <span class="sp sent">SENT</span></div>
+                  <div class="meta">先生 — 送信済み <span class="sp sent">SENT</span></div>
                 </div>
               </div>
             </div>
@@ -732,7 +732,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">最近うちの子、英語が伸び悩んでいて、どうすればいいか相談したいのですが。</div>
-                <div class="meta">保護者 — 17:02</div>
+                <div class="meta r">保護者 — 17:02</div>
               </div>
             </div>
             <div class="row-r">
@@ -742,7 +742,7 @@
                   学習相談はYWC（先生）へどうぞ：<br>
                   （YWCリンク）
                 </div>
-                <div class="meta r">おばちゃん（自動） — 17:02</div>
+                <div class="meta">おばちゃん（自動） — 17:02</div>
               </div>
             </div>
           </div>
@@ -766,7 +766,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">今日の音読は何分くらいやればいいですか？</div>
-                <div class="meta">〇〇さん保護者 — 10:45</div>
+                <div class="meta r">〇〇さん保護者 — 10:45</div>
               </div>
             </div>
 
@@ -785,7 +785,7 @@
                   → <span style="color:var(--ywc);opacity:.8;">（音読説明Driveリンク）</span><br>
                   1セッション10分が目安です！
                 </div>
-                <div class="meta r">YWC（自動） — 10:45 <span class="sp auto">返信リスト</span></div>
+                <div class="meta">YWC（自動） — 10:45 <span class="sp auto">返信リスト</span></div>
               </div>
             </div>
 
@@ -803,7 +803,7 @@
               <div class="av par">保</div>
               <div>
                 <div class="bub par">振替授業の手続きはどこでできますか？</div>
-                <div class="meta">△△さん保護者 — 13:12</div>
+                <div class="meta r">△△さん保護者 — 13:12</div>
               </div>
             </div>
 
@@ -820,7 +820,7 @@
                   <strong>事務LINE（おばちゃん）</strong>にお問い合わせいただくとスムーズです😊<br><br>
                   <span class="redir to-oba" style="display:inline-flex;">📋 事務LINEへ</span>
                 </div>
-                <div class="meta r">YWC（自動） — 13:12 <span class="sp auto">リダイレクト</span></div>
+                <div class="meta">YWC（自動） — 13:12 <span class="sp auto">リダイレクト</span></div>
               </div>
             </div>
 
