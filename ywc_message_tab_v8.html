@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YWC メッセージタブ v8 — おばちゃん事務LINE統合版</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif}
+body{background:#f5f4f0;min-height:100vh;padding:12px}
+.app{width:100%;max-width:1100px;margin:0 auto;background:#f5f4f0;border-radius:12px;overflow:hidden;font-size:12px;color:#1a1a18;box-shadow:0 1px 4px rgba(0,0,0,0.08)}
+.topbar{background:#185FA5;display:flex;align-items:center;padding:0 10px;height:34px}
+.tab{padding:0 12px;height:34px;display:flex;align-items:center;font-size:11px;color:rgba(255,255,255,0.65);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
+.tab.active{color:#fff;border-bottom-color:#fff}
+.tr{margin-left:auto;display:flex;align-items:center;gap:8px}
+.rsel{font-size:10px;padding:2px 7px;border-radius:999px;border:0.5px solid rgba(255,255,255,0.4);background:rgba(255,255,255,0.15);color:#fff;cursor:pointer}
+.rsel option{color:#000;background:#fff}
+.cm{font-size:10px;color:rgba(255,255,255,0.75);display:flex;align-items:center;gap:4px}
+.tg{width:26px;height:14px;background:rgba(255,255,255,0.3);border-radius:999px;position:relative;cursor:pointer}
+.tg.on{background:#4CAF50}
+.tg::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:#fff;transition:left 0.15s}
+.tg.on::after{left:14px}
+.cols{display:grid;grid-template-columns:188px 1fr 164px;height:680px}
+.col{background:#fff;overflow-y:auto}
+.cl{border-right:0.5px solid rgba(0,0,0,0.08)}
+.cr{border-left:0.5px solid rgba(0,0,0,0.08);background:#f8f7f3}
+.cm2{display:flex;flex-direction:column;overflow:hidden}
+.sb{padding:6px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.sb input{width:100%;padding:3px 7px;border:0.5px solid rgba(0,0,0,0.18);border-radius:999px;font-size:10px;background:#f8f7f3;color:#1a1a18}
+.fr{display:flex;gap:2px;padding:5px 7px;flex-wrap:wrap;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.ft{font-size:9px;padding:1px 6px;border-radius:999px;border:0.5px solid rgba(0,0,0,0.15);cursor:pointer;color:#5f5e5a;white-space:nowrap}
+.ft.on{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.ci{padding:7px 8px;border-bottom:0.5px solid rgba(0,0,0,0.08);cursor:pointer;display:flex;gap:6px;align-items:flex-start}
+.ci:hover{background:#f8f7f3}
+.ci.sel{background:#E6F1FB}
+.av{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;flex-shrink:0;font-weight:500}
+.ab{background:#B5D4F4;color:#0C447C}
+.at{background:#9FE1CB;color:#085041}
+.aa{background:#FAC775;color:#633806}
+.cb{flex:1;min-width:0}
+.cn{font-size:10px;font-weight:500;display:flex;align-items:center;gap:3px;flex-wrap:wrap}
+.cm3{font-size:9px;color:#888780;margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.st{font-size:8px;padding:1px 4px;border-radius:999px;flex-shrink:0}
+.su{background:#FCEBEB;color:#791F1F}
+.sai{background:#E6F1FB;color:#0C447C}
+.sok{background:#EAF3DE;color:#27500A}
+.sau{background:#FAEEDA;color:#633806}
+.swn{background:#FAEEDA;color:#633806}
+.mh{padding:7px 10px;border-bottom:0.5px solid rgba(0,0,0,0.08);display:flex;align-items:center;gap:6px;flex-shrink:0}
+.mn{font-weight:500;font-size:12px}
+.mt{font-size:9px;padding:1px 5px;border-radius:999px;background:#FAEEDA;color:#633806}
+.mt.b{background:#E6F1FB;color:#0C447C}
+.ma{margin-left:auto;display:flex;gap:3px}
+.ib{font-size:9px;color:#5f5e5a;cursor:pointer;padding:2px 5px;border-radius:6px;border:0.5px solid rgba(0,0,0,0.12)}
+.tl{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:0}
+.dv{font-size:9px;color:#888780;text-align:center;display:flex;align-items:center;gap:5px;margin:2px 0}
+.dv::before,.dv::after{content:'';flex:1;height:0.5px;background:rgba(0,0,0,0.1)}
+.bw{display:flex;flex-direction:column;gap:1px}
+.bw.r{align-items:flex-end}
+.bl{font-size:8px;color:#888780;padding:0 3px;display:flex;align-items:center;gap:3px}
+.bdg{font-size:7px;padding:1px 4px;border-radius:3px;white-space:nowrap}
+.bp{background:#E6F1FB;color:#0C447C}
+.br2{background:#EAF3DE;color:#27500A}
+.brl{background:#E1F5EE;color:#0F6E56}
+.bai{background:#FAEEDA;color:#633806}
+.bm4{background:#E1F5EE;color:#085041}
+.bst{background:#EEEDFE;color:#3C3489}
+.bht{background:#FAEEDA;color:#633806}
+.bwn{background:#FAEEDA;color:#633806}
+.boa{background:#185FA5;color:#fff}
+.bb{padding:6px 9px;font-size:10px;line-height:1.55;max-width:92%;border-radius:8px}
+.bin{background:#f8f7f3;border-radius:2px 8px 8px 8px}
+.bsy{background:#f0efeb;border:0.5px solid rgba(0,0,0,0.1);border-radius:8px;font-size:9px;color:#5f5e5a}
+.bm{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:8px 8px 8px 2px}
+.bmn{font-size:8px;color:#0F6E56;margin-top:3px;padding-top:3px;border-top:0.5px solid rgba(93,202,165,0.35)}
+.bmw{font-size:9px;color:#085041;margin-top:4px;padding:4px 6px;background:rgba(29,158,117,0.08);border-radius:4px}
+.bsh{background:#FFF3E0;border:0.5px solid #EF9F27;border-radius:8px 8px 8px 2px}
+.bshn{font-size:8px;color:#854F0B;margin-top:3px;padding-top:3px;border-top:0.5px solid rgba(239,159,39,0.35)}
+.bwarn{background:#FAEEDA;border:0.5px solid #EF9F27;border-radius:8px;font-size:9px;color:#633806}
+.bsnt{background:#185FA5;color:#fff;border-radius:8px 8px 2px 8px}
+.brh{background:#E1F5EE;border:0.5px solid #5DCAA5;border-radius:8px 8px 2px 8px}
+.oba-wrap{border:0.5px solid #185FA5;border-radius:8px 8px 8px 2px;overflow:hidden;max-width:92%}
+.oba-hdr{background:#E6F1FB;padding:5px 9px;display:flex;align-items:center;gap:5px;cursor:pointer;font-size:9px;color:#0C447C}
+.oba-hdr .arrow{font-size:8px;margin-left:auto;transition:transform 0.15s}
+.oba-hdr.open .arrow{transform:rotate(180deg)}
+.oba-detail{display:none;padding:6px 9px;background:#fff;border-top:0.5px solid #B5D4F4}
+.oba-detail.show{display:block}
+.oba-msg{font-size:9px;margin-bottom:4px;display:flex;gap:5px;align-items:flex-start}
+.oba-msg .who{font-size:8px;color:#888780;white-space:nowrap;padding-top:1px}
+.oba-msg .txt{font-size:9px;padding:3px 7px;border-radius:6px;line-height:1.5}
+.oba-p{background:#f8f7f3}
+.oba-b{background:#185FA5;color:#fff}
+.oba-note{font-size:8px;color:#0C447C;margin-top:4px;padding-top:4px;border-top:0.5px solid #B5D4F4}
+.ml{font-size:9px;color:#888780;background:#f0efeb;border:0.5px solid rgba(0,0,0,0.1);border-radius:6px;padding:4px 8px;margin:0 auto;max-width:96%;display:flex;flex-direction:column;gap:2px}
+.mlr{display:flex;align-items:center;gap:4px;flex-wrap:wrap}
+.kw{font-size:8px;background:#FAEEDA;color:#633806;padding:1px 5px;border-radius:999px}
+.kw.ms{background:#F1EFE8;color:#5F5E5A}
+.kw.st2{background:#EEEDFE;color:#3C3489}
+.lb2{background:#f8f7f3;border:0.5px solid rgba(0,0,0,0.15);border-radius:12px;padding:8px 9px;margin:2px 0}
+.lh{font-size:9px;color:#5f5e5a;display:flex;align-items:center;gap:5px;margin-bottom:6px;flex-wrap:wrap}
+.lh b{color:#1a1a18}
+.rc{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:8px;padding:6px 8px;margin-bottom:4px}
+.rc:last-of-type{margin-bottom:0}
+.rc.adopted{border-color:#185FA5;border-width:1.5px}
+.rc.dismissed{opacity:0.28;pointer-events:none}
+.rct{display:flex;align-items:flex-start;gap:5px}
+.rcb{font-size:8px;font-weight:500;padding:1px 5px;border-radius:999px;background:#E6F1FB;color:#0C447C;flex-shrink:0;margin-top:1px}
+.rcy{font-size:8px;color:#888780;margin-bottom:1px}
+.rctx{font-size:10px;line-height:1.5;flex:1;cursor:pointer}
+.rctx:hover{color:#185FA5}
+.rcbt{display:flex;gap:3px;margin-top:4px;align-items:center;flex-wrap:wrap}
+.rb{font-size:8px;padding:2px 7px;border-radius:999px;cursor:pointer;border:0.5px solid;line-height:1.4}
+.rba{background:#185FA5;color:#fff;border-color:#185FA5}
+.rbr{background:transparent;color:#5f5e5a;border-color:rgba(0,0,0,0.18)}
+.rball{background:transparent;color:#A32D2D;border-color:#E24B4A;margin-left:auto}
+.lbb{font-size:8px;padding:1px 5px;border-radius:999px;background:#EAF3DE;color:#27500A;display:none;margin-left:4px}
+.rp{display:none;margin-top:5px;padding-top:5px;border-top:0.5px solid rgba(0,0,0,0.08)}
+.ch{display:flex;gap:2px;flex-wrap:wrap;margin-bottom:4px}
+.chip{font-size:8px;padding:1px 6px;border-radius:999px;border:0.5px solid rgba(0,0,0,0.15);cursor:pointer;background:#f8f7f3;color:#5f5e5a}
+.chip.sel{background:#FCEBEB;color:#791F1F;border-color:#E24B4A}
+.rp textarea{width:100%;font-size:9px;padding:3px 6px;border:0.5px solid rgba(0,0,0,0.15);border-radius:6px;background:#fff;color:#1a1a18;resize:none;height:28px}
+.rpok{margin-top:3px;font-size:8px;padding:2px 7px;border-radius:999px;border:0.5px solid #E24B4A;background:transparent;color:#A32D2D;cursor:pointer}
+.alp{display:none;background:#FCEBEB;border-radius:8px;padding:5px 8px;font-size:9px;color:#791F1F;margin-top:4px}
+.alok{margin-top:3px;font-size:8px;padding:2px 7px;border-radius:999px;border:0.5px solid #E24B4A;background:#E24B4A;color:#fff;cursor:pointer}
+.sndb{border-top:0.5px solid rgba(0,0,0,0.08);padding:6px 10px;flex-shrink:0;background:#fff}
+textarea#draft{width:100%;font-size:10px;padding:4px 7px;border:0.5px solid rgba(0,0,0,0.18);border-radius:6px;background:#fff;color:#1a1a18;resize:none;height:38px;margin-bottom:4px}
+.sr{display:flex;gap:4px;align-items:center}
+.bs{padding:4px 13px;border-radius:999px;font-size:10px;font-weight:500;cursor:pointer;border:none}
+.bson{background:#185FA5;color:#fff}
+.bsoff{background:#f0efeb;color:#888780;cursor:not-allowed}
+.bln{padding:4px 11px;border-radius:999px;font-size:10px;border:0.5px solid rgba(0,0,0,0.18);background:transparent;color:#1a1a18;cursor:pointer}
+.sn2{font-size:9px;color:#5f5e5a}
+.acs{border-top:0.5px solid rgba(0,0,0,0.08);flex-shrink:0}
+.act{display:flex;align-items:center;gap:5px;padding:4px 10px;cursor:pointer;background:#f8f7f3;font-size:9px;color:#5f5e5a}
+.acb2{font-size:8px;padding:1px 5px;border-radius:3px;background:#185FA5;color:#fff}
+.acbd{display:none;padding:7px 10px;font-size:9px;line-height:1.6;border-top:0.5px solid rgba(0,0,0,0.08);background:#f8f7f3}
+.acs2{display:flex;gap:5px;margin-bottom:5px}
+.sn3{width:15px;height:15px;border-radius:50%;background:#185FA5;color:#fff;font-size:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.rs{padding:8px 8px 0}
+.rl{font-size:8px;color:#888780;font-weight:500;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px;margin-top:8px}
+.rl:first-child{margin-top:0}
+.rr{font-size:9px;padding:1px 0;display:flex;justify-content:space-between}
+.rme{font-weight:500;color:#185FA5}
+.sl{font-size:9px;display:flex;justify-content:space-between;padding:2px 0;border-bottom:0.5px solid rgba(0,0,0,0.08)}
+.sl:last-child{border-bottom:none}
+.sv{font-weight:500}
+.tgr{display:flex;gap:2px;flex-wrap:wrap;margin-top:3px}
+.tg2{font-size:8px;padding:1px 5px;border-radius:999px;border:0.5px solid rgba(0,0,0,0.15);color:#5f5e5a}
+.tg2.m{background:#E6F1FB;color:#0C447C;border-color:#85B7EB}
+.ntb{font-size:8px;padding:1px 6px;border-radius:999px;border:0.5px solid rgba(0,0,0,0.15);background:transparent;color:#5f5e5a;cursor:pointer}
+.nta{display:none;width:100%;font-size:9px;padding:3px 6px;border:0.5px solid rgba(0,0,0,0.15);border-radius:6px;background:#fff;color:#1a1a18;resize:none;height:44px;margin-top:3px}
+.ib2{background:#fff;border:0.5px solid rgba(0,0,0,0.1);border-radius:8px;padding:6px 7px;margin-top:5px;font-size:9px;line-height:1.6;color:#5f5e5a}
+.it{font-size:8px;font-weight:500;color:#888780;text-transform:uppercase;letter-spacing:0.04em;margin-bottom:3px}
+.version-note{text-align:center;font-size:9px;color:#888780;padding:4px;background:#f0efeb;border-top:0.5px solid rgba(0,0,0,0.08)}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="topbar">
+  <div class="tab active">メッセージ <span style="background:#E24B4A;color:#fff;font-size:8px;padding:1px 4px;border-radius:999px;margin-left:3px">3</span></div>
+  <div class="tab">配信</div>
+  <div class="tab">才能</div>
+  <div class="tr">
+    <div class="cm">連続処理<div class="tg on" onclick="this.classList.toggle('on')"></div></div>
+    <div style="font-size:9px;color:rgba(255,255,255,0.7)">ロール：</div>
+    <select class="rsel" id="rsel" onchange="applyRole()">
+      <option value="admin">責任者</option>
+      <option value="mentor">メンター</option>
+      <option value="teacher">先生</option>
+    </select>
+  </div>
+</div>
+<div class="cols">
+<div class="col cl">
+  <div class="sb"><input placeholder="生徒名・タグ・メッセージ検索"/></div>
+  <div class="fr">
+    <span class="ft on" onclick="this.classList.toggle('on')">未返信</span>
+    <span class="ft" onclick="this.classList.toggle('on')">AI済</span>
+    <span class="ft" onclick="this.classList.toggle('on')">中</span>
+    <span class="ft" onclick="this.classList.toggle('on')">英検</span>
+    <span class="ft" onclick="this.classList.toggle('on')">要対応</span>
+  </div>
+  <div class="ci sel" onclick="selC(this)"><div class="av ab">田</div><div class="cb"><div class="cn">田中さくら保護者 <span class="st su">未返信</span></div><div class="cm3">zoom→事務LINE / 音読 8m40s</div></div></div>
+  <div class="ci" onclick="selC(this)"><div class="av at" style="border-radius:6px;font-size:9px">G</div><div class="cb"><div class="cn">山本グループ <span class="st sai">AI生成済</span></div><div class="cm3">タゲトモ 黄 935点 / 前月比+87</div></div></div>
+  <div class="ci" onclick="selC(this)"><div class="av aa">鈴</div><div class="cb"><div class="cn"><span style="font-size:8px;color:#888780">★</span> 鈴木はると <span class="st swn">要確認</span></div><div class="cm3">写真・PDF — 学習関連不明</div></div></div>
+  <div class="ci" onclick="selC(this)"><div class="av ab">佐</div><div class="cb"><div class="cn">佐々木みなみ <span class="st sok">送信済</span></div><div class="cm3">音読 英語 10m00s</div></div></div>
+  <div class="ci" onclick="selC(this)"><div class="av at">高</div><div class="cb"><div class="cn">高橋けんた（生徒） <span class="st sok">対応済</span></div><div class="cm3">緊急 — 授業休みます</div></div></div>
+</div>
+<div class="col cm2">
+  <div class="mh">
+    <div><div class="mn" id="mname">田中さくら保護者</div><div style="margin-top:2px;display:flex;gap:2px" id="mtags"><span class="mt">中2</span><span class="mt b">英検準2</span><span class="mt">音読継続中</span></div></div>
+    <div class="ma"><span class="ib">→次</span><span class="ib">検索</span><span class="ib">⋯</span></div>
+  </div>
+  <div class="tl" id="tl">
+    <div class="dv">4月14日（月）</div>
+    <div class="bw"><div class="bl">田中さくら保護者 11:20</div><div class="bb bin">先週の英検の結果が出ました。リスニングが思ったより低くて…</div></div>
+    <div class="bw r"><div class="bl" style="justify-content:flex-end"><span class="bdg bp">Push API</span> 責任者 11:35</div><div class="bb bsnt">英検の結果、確認しました。リスニングは継続的な積み重ねが大切ですので、音読の習慣を続けながら少しずつ強化していきましょう。</div></div>
+    <div class="dv">4月17日（木）— ケース① 事務LINE（おばちゃん）対応</div>
+    <div class="bw"><div class="bl">田中さくら保護者 19:42</div><div class="bb bin">zoomがつながりません、どうしたらいいですか？</div></div>
+    <div class="ml"><div class="mlr"><span>セマンティックマッチ実行 →</span><span class="kw">zoom</span><span class="kw">オンライン</span><span class="kw">カメラ</span><span style="color:#27500A;font-size:8px;font-weight:500">HIT — SF返信リスト</span></div><div class="mlr" style="color:#888780;font-size:8px">※このログはモック説明用。実際の教師画面には非表示。</div></div>
+    <div class="bw r">
+      <div class="bl" style="justify-content:flex-end"><span class="bdg bai">[ai]</span><span class="bdg bht">SF返信リストHIT</span><span class="bdg br2">Reply API</span> YWC自動返信 19:42</div>
+      <div class="oba-wrap">
+        <div class="oba-hdr" id="obaH" onclick="toggleOba()"><span class="bdg boa" style="font-size:7px;padding:1px 4px;border-radius:3px">事務LINE</span><span style="margin-left:5px">zoomの接続トラブル → 事務LINEで自動返信済み</span><span class="arrow">▼</span></div>
+        <div class="oba-detail" id="obaD">
+          <div style="font-size:8px;color:#888780;margin-bottom:5px">▼ 保護者と事務LINE（おばちゃん）のやりとり（モック説明用）</div>
+          <div class="oba-msg"><span class="who">保護者</span><div class="txt oba-p">zoomがつながりません、どうしたらいいですか？</div></div>
+          <div class="oba-msg" style="flex-direction:row-reverse"><span class="who" style="text-align:right">事務LINE</span><div class="txt oba-b">事務LINEの自動応答です。zoomの接続トラブルは以下をお試しください：①アプリを再起動 ②URLを再クリック ③ブラウザ版（<a href="https://lin.ee/IgJfcCF" style="color:#fff;text-decoration:underline">lin.ee/IgJfcCF</a>）にアクセス。解決しない場合はこのLINEにご連絡ください。[ai]</div></div>
+          <div class="oba-msg"><span class="who">保護者</span><div class="txt oba-p">ありがとうございます！ブラウザで入れました。</div></div>
+          <div class="oba-note">事務LINE（おばちゃん）が単独で対応完了。教師対応不要。YWC教師画面には自動返信済みとして記録。自動返信後の先生送信は2通目として届く。</div>
+        </div>
+      </div>
+    </div>
+    <div class="dv">4月19日（土）</div>
+    <div class="bw"><div class="bl">田中さくら保護者 09:10</div><div class="bb bsy">[写真・PDF] 授業プリント — ファイル種別: 画像/PDF</div></div>
+    <div class="ml"><div class="mlr"><span>ファイル着信 → 学習関連判定 →</span><span style="color:#791F1F;font-size:8px;font-weight:500">学習関連不明 — 先生確認が必要</span></div><div class="mlr" style="color:#888780;font-size:8px">※このログはモック説明用。実際の教師画面には非表示。</div></div>
+    <div class="bw"><div class="bl"><span class="bdg bwn">要確認</span> システム 09:10</div><div class="bb bwarn">写真・PDFの内容が学習関連か判定できませんでした。先生が内容を確認してください。</div></div>
+    <div class="bw"><div class="bl">田中さくら保護者 09:15</div><div class="bb bsy">[タゲトモ スクショ] 黄・935点 — OCR処理済</div></div>
+    <div class="ml"><div class="mlr"><span>ファイル着信 → M-4 学習データ自動返信（返信リストと無関係）</span></div></div>
+    <div class="bw r"><div class="bl" style="justify-content:flex-end"><span class="bdg bm4">学習データ M-4</span><span class="bdg br2">Reply API</span> YWC自動返信 09:15</div><div class="bb bm">タゲトモ受け取りました！<br>今月スコア：935点（前月比+87点）<br>ランキング：1位 1,020点 / 2位 901点 / あなた 935点（9位）<div class="bmn">学習データ M-4 — LINE=要約（TOP2+自分）、メール=全文（TOP10）。教師対応不要。</div></div></div>
+    <div class="dv">4月21日（月）— ケース② 音読着信（8分以上）→ STT → M-4自動返信（単語解説統合）</div>
+    <div class="bw"><div class="bl">田中さくら保護者 10:18</div><div class="bb bsy">[音声ファイル] 英語 10:18 — 音読アプリ経由 ▶ 再生リンク</div></div>
+    <div class="ml"><div class="mlr"><span>ファイル着信 → 実質音読時間：</span><span style="color:#3C3489;font-size:8px;font-weight:500">8分40秒 ≥ 8分 → STT処理</span></div><div class="mlr"><span>最難単語を抽出：</span><span class="kw st2">perseverance</span><span class="kw st2">determination</span><span class="kw st2">accomplish</span><span style="color:#085041;font-size:8px;font-weight:500">→ M-4に統合</span></div><div class="mlr" style="color:#888780;font-size:8px">※このログはモック説明用。実際の教師画面には非表示。</div></div>
+    <div class="bw r"><div class="bl" style="justify-content:flex-end"><span class="bdg bm4">学習データ M-4</span><span class="bdg bst">STT統合</span><span class="bdg br2">Reply API</span> YWC自動返信 10:18</div><div class="bb bm">音読を受け取りました！<br>＜直近2週間＞ 04/21 英語 8m40s / 04/19 英語 10m00s<br>ランキング：1位 148分 / 2位 101分 / あなた 29分（26位）<div class="bmw">今日の音読で出てきた難単語：<br><b>perseverance</b>（パーシヴィアランス）= 粘り強さ・忍耐力<br>用例：Her perseverance helped her pass the exam.<br>※英検準2でも頻出の重要語です！</div><div class="bmn">学習データ M-4 + STT単語解説 — LINE=要約（TOP2+自分）、メール=全文（TOP10）。教師対応不要。</div></div></div>
+    <div class="dv">4月21日（月）— ケース③ 保護者テキスト → セマンティックマッチ → LLM3案</div>
+    <div class="bw"><div class="bl">田中さくら保護者 11:08</div><div class="bb bin">リスニングが苦手みたいで、どう練習すればいいか悩んでいます。</div></div>
+    <div class="ml"><div class="mlr"><span>セマンティックマッチ実行 →</span><span class="kw">リスニング</span><span class="kw">英語</span><span class="kw">練習</span><span class="kw ms">苦手</span></div><div class="mlr"><span style="color:#791F1F;font-size:8px;font-weight:500">指導内容 — 閾値未達 → LLM3案を生成</span></div><div class="mlr" style="color:#888780;font-size:8px">※このログはモック説明用。実際の教師画面には非表示。</div></div>
+    <div class="lb2" id="llmB">
+      <div class="lh"><b>LLM返信案</b><span class="bdg bp">Push API</span><span>再生成 残り3回</span><span style="margin-left:auto;color:#888780">生成中も他の生徒へ遷移可</span></div>
+      <div class="rc" id="rca"><div class="rct"><span class="rcb">案 A</span><div style="flex:1"><div class="rcy">継続型アドバイス — クリックで入力欄へコピー</div><div class="rctx" onclick="cpTo('a')">音読ログを見ると英語を毎日コツコツ続けられていますね。リスニングは「量より質」で、スクリプトを見ながら1日10分の精聴から始めるのがおすすめです。モノグサの英語語彙と合わせて進めるとシナジーが出ます！</div></div><span class="lbb" id="lba">学習済み</span></div><div class="rcbt"><button class="rb rba" onclick="adopt('a')">採用</button><button class="rb rbr" onclick="toggleRP('a')">却下</button></div><div class="rp" id="rpa"><div class="ch"><span class="chip" onclick="this.classList.toggle('sel')">状況と合わない</span><span class="chip" onclick="this.classList.toggle('sel')">語調が合わない</span><span class="chip" onclick="this.classList.toggle('sel')">方向性が違う</span><span class="chip" onclick="this.classList.toggle('sel')">指導方針と異なる</span></div><textarea placeholder="その他の理由（任意）"></textarea><button class="rpok" onclick="doRej('a')">却下を確定（RLHF記録）</button></div></div>
+      <div class="rc" id="rcb"><div class="rct"><span class="rcb">案 B</span><div style="flex:1"><div class="rcy">シンプル提案 — クリックで入力欄へコピー</div><div class="rctx" onclick="cpTo('b')">リスニングはまずシャドーイングが効果的です。短い文から始めて、音のつながりに慣れることが大切です。</div></div><span class="lbb" id="lbb2">学習済み</span></div><div class="rcbt"><button class="rb rba" onclick="adopt('b')">採用</button><button class="rb rbr" onclick="toggleRP('b')">却下</button><button class="rb rball" onclick="toggleAll()">3件まとめて却下</button></div><div class="rp" id="rpb"><div class="ch"><span class="chip" onclick="this.classList.toggle('sel')">状況と合わない</span><span class="chip" onclick="this.classList.toggle('sel')">語調が合わない</span><span class="chip" onclick="this.classList.toggle('sel')">方向性が違う</span><span class="chip" onclick="this.classList.toggle('sel')">指導方針と異なる</span></div><textarea placeholder="その他の理由（任意）"></textarea><button class="rpok" onclick="doRej('b')">却下を確定（RLHF記録）</button></div></div>
+      <div class="rc" id="rcc"><div class="rct"><span class="rcb">案 C</span><div style="flex:1"><div class="rcy">対話促進型 — クリックで入力欄へコピー</div><div class="rctx" onclick="cpTo('c')">どんな場面でリスニングが難しいと感じていますか？（英検のリスニング / 学校のテスト）場面によって練習方法が変わります。</div></div><span class="lbb" id="lbc">学習済み</span></div><div class="rcbt"><button class="rb rba" onclick="adopt('c')">採用</button><button class="rb rbr" onclick="toggleRP('c')">却下</button></div><div class="rp" id="rpc"><div class="ch"><span class="chip" onclick="this.classList.toggle('sel')">状況と合わない</span><span class="chip" onclick="this.classList.toggle('sel')">語調が合わない</span><span class="chip" onclick="this.classList.toggle('sel')">方向性が違う</span><span class="chip" onclick="this.classList.toggle('sel')">指導方針と異なる</span></div><textarea placeholder="その他の理由（任意）"></textarea><button class="rpok" onclick="doRej('c')">却下を確定（RLHF記録）</button></div></div>
+      <div class="alp" id="alp"><div style="font-weight:500;margin-bottom:4px">3件まとめて却下 — 理由（RLHF記録）</div><div class="ch" style="margin-bottom:3px"><span class="chip" onclick="this.classList.toggle('sel')">全体的に合わない</span><span class="chip" onclick="this.classList.toggle('sel')">語調・文体が合わない</span><span class="chip" onclick="this.classList.toggle('sel')">内容・方向性が違う</span><span class="chip" onclick="this.classList.toggle('sel')">事実誤認・エラー</span><span class="chip" onclick="this.classList.toggle('sel')">指導方針と異なる</span></div><textarea style="width:100%;font-size:9px;padding:3px 6px;border:0.5px solid #E24B4A;border-radius:6px;resize:none;height:28px;background:#fff;color:#333" placeholder="その他の理由（任意）"></textarea><button class="alok" onclick="doAllRej()">3件まとめて却下を確定（RLHF記録）</button></div>
+    </div>
+    <div class="bw r" id="rlhfW" style="display:none"><div class="bl" style="justify-content:flex-end"><span class="bdg brl">RLHF</span> 先生FB済（未送信）</div><div class="bb brh" id="rlhfT"></div></div>
+    <div class="bw r" id="sentW" style="display:none"><div class="bl" style="justify-content:flex-end"><span class="bdg bp">Push API</span> 責任者 送信済</div><div class="bb bsnt" id="sentT"></div></div>
+  </div>
+  <div class="sndb">
+    <textarea id="draft" placeholder="返信を入力（Enter=改行 / Ctrl+Enter=送信）"></textarea>
+    <div class="sr"><button class="bs bson" id="bsend" onclick="doSend()">送信</button><button class="bln" id="blearn" onclick="doLearn()">学習</button><span id="snote" class="sn2"></span></div>
+  </div>
+  <div class="acs">
+    <div class="act" onclick="var b=document.getElementById('acbd');b.style.display=b.style.display==='block'?'none':'block'"><span class="acb2">YWC</span> 自動返信ロジック — SF返信リスト × セマンティックマッチ（参考）<span style="margin-left:auto">▼</span></div>
+    <div class="acbd" id="acbd">
+      <div class="acs2"><span class="sn3">1</span><div>着信 → SF返信リスト（約100件）でセマンティックマッチ。閾値達成 → 自動返信（[ai]アイコン）。閾値未達 → LLM3案生成。</div></div>
+      <div class="acs2"><span class="sn3">2</span><div>ファイル着信（音読・タゲトモ等）はM-4自動返信が独立して動く。音読8分以上はSTT処理 → 最難単語解説をM-4に統合。</div></div>
+      <div class="acs2"><span class="sn3">3</span><div>写真・PDFは学習関連判定。不明なら先生確認バブル。</div></div>
+      <div class="acs2"><span class="sn3">4</span><div>事務的質問（zoom・欠席等）は事務LINE（おばちゃん）が単独対応。教師TLには「事務LINE自動返信済み」として表示（展開で往復詳細を確認可）。</div></div>
+    </div>
+  </div>
+</div>
+<div class="col cr">
+  <div class="rs">
+    <div class="rl">音読ランキング（今月・中高生）</div>
+    <div class="rr"><span>25位：まえのたろう</span><span style="color:#888780">148分</span></div>
+    <div class="rr rme"><span>26位：田中さくら ←</span><span>29分</span></div>
+    <div class="rr"><span>27位：つぎのじろう</span><span style="color:#888780">25分</span></div>
+    <div class="rl">モノグサ（2週間）</div>
+    <div class="rr"><span>11位：まえのはなこ</span><span style="color:#888780">430問</span></div>
+    <div class="rr rme"><span>12位：田中さくら ←</span><span>380問</span></div>
+    <div class="rr"><span>13位：つぎのたろう</span><span style="color:#888780">360問</span></div>
+    <div class="rl">タゲトモ（今月）</div>
+    <div class="rr"><span>8位：まえのせいと</span><span style="color:#888780">1,020点</span></div>
+    <div class="rr rme"><span>9位：田中さくら ←</span><span>935点</span></div>
+    <div class="rr"><span>10位：つぎのせいと</span><span style="color:#888780">901点</span></div>
+    <div class="rl">学習サマリ（2週間）</div>
+    <div class="sl"><span>音読</span><span class="sv">8m40s / 3回</span></div>
+    <div class="sl"><span>モノグサ</span><span class="sv">380問</span></div>
+    <div class="sl"><span>タゲトモ</span><span class="sv">黄・935点</span></div>
+    <div class="sl"><span>つみかさね</span><span class="sv">220問</span></div>
+    <div class="rl">タグ</div>
+    <div class="tgr"><span class="tg2">中2</span><span class="tg2">保護者</span><span class="tg2 m">英検準2</span><span class="tg2 m">音読継続中</span><span class="tg2" style="cursor:pointer;color:#888780">＋</span></div>
+    <div class="rl">ノート <button class="ntb" id="ntbtn" onclick="var n=document.getElementById('nta2');var b=document.getElementById('ntbtn');n.style.display=n.style.display==='block'?'none':'block';b.textContent=n.style.display==='block'?'閉じる':'展開'">展開</button></div>
+    <textarea class="nta" id="nta2">英検準2対策中。先月リスニング相談あり。音読は継続提出。</textarea>
+    <div class="ib2"><div class="it">LLM所感 + 過去やりとり要約</div>先月もリスニング相談あり（4/14）——今回で2回目。英検準2対策の文脈で返信するとよい。音読継続率は安定。<br><span style="color:#888780">全体所感：中高生音読継続率+18%。田中さくらは前月比+3分で安定継続中。</span></div>
+  </div>
+</div>
+</div>
+<div class="version-note">ywc_message_tab_v8.html — メッセージタブ v2+v7 統合版（事務LINE+LLM返信+自動返信） — 2026-04-24 — 設計合意用 DRAFT</div>
+</div>
+<script>
+var role='admin',adopted=null,rejected=[];
+var txts={a:'音読ログを見ると英語を毎日コツコツ続けられていますね。リスニングは「量より質」で、スクリプトを見ながら1日10分の精聴から始めるのがおすすめです。モノグサの英語語彙と合わせて進めるとシナジーが出ます！',b:'リスニングはまずシャドーイングが効果的です。短い文から始めて、音のつながりに慣れることが大切です。',c:'どんな場面でリスニングが難しいと感じていますか？（英検のリスニング / 学校のテスト）場面によって練習方法が変わります。'};
+function selC(el){document.querySelectorAll('.ci').forEach(function(c){c.classList.remove('sel')});el.classList.add('sel')}
+function toggleOba(){var h=document.getElementById('obaH');var d=document.getElementById('obaD');h.classList.toggle('open');d.classList.toggle('show');}
+function applyRole(){role=document.getElementById('rsel').value;var bs=document.getElementById('bsend');var sn=document.getElementById('snote');var mn=document.getElementById('mname');var mt=document.getElementById('mtags');mn.textContent='田中さくら保護者';mt.innerHTML='<span class="mt">中2</span><span class="mt b">英検準2</span><span class="mt">音読継続中</span>';sn.textContent='';if(role==='admin'){bs.className='bs bson';}else if(role==='mentor'){bs.className='bs bsoff';sn.textContent='送信は責任者のみ';}else{bs.className='bs bsoff';sn.textContent='送信は責任者のみ';mn.innerHTML='<span style="background:#f0efeb;color:#888780;padding:1px 6px;border-radius:3px;font-size:10px">生徒名 非表示</span>';mt.innerHTML='<span class="mt">中2</span><span class="mt b">英検準2</span>';}}
+function cpTo(id){document.getElementById('draft').value=txts[id];adopt(id);}
+function adopt(id){['a','b','c'].forEach(function(x){var c=document.getElementById('rc'+x);c.classList.remove('adopted');if(x!==id&&!rejected.includes(x))c.classList.add('dismissed');});document.getElementById('rc'+id).classList.remove('dismissed');document.getElementById('rc'+id).classList.add('adopted');adopted=id;if(!document.getElementById('draft').value)document.getElementById('draft').value=txts[id];}
+function toggleRP(id){var r=document.getElementById('rp'+id);r.style.display=r.style.display==='block'?'none':'block';}
+function doRej(id){document.getElementById('rc'+id).classList.add('dismissed');document.getElementById('rp'+id).style.display='none';if(!rejected.includes(id))rejected.push(id);}
+function toggleAll(){var p=document.getElementById('alp');p.style.display=p.style.display==='block'?'none':'block';}
+function doAllRej(){['a','b','c'].forEach(function(x){document.getElementById('rc'+x).classList.add('dismissed');if(!rejected.includes(x))rejected.push(x);});document.getElementById('alp').innerHTML='<div style="font-size:9px;font-weight:500">3件まとめて却下しました（RLHF記録済み）。手動返信するか次の生徒へ進んでください。</div>';}
+function doSend(){if(role!=='admin')return;if(!adopted){alert('案を採用またはクリックしてからお試しください');return;}var txt=document.getElementById('draft').value;document.getElementById('sentT').textContent=txt;document.getElementById('sentW').style.display='flex';document.getElementById('lb'+adopted).style.display='inline';document.getElementById('bsend').textContent='送信済み';document.getElementById('bsend').className='bs bsoff';document.getElementById('llmB').style.display='none';var tl=document.getElementById('tl');tl.scrollTop=tl.scrollHeight;}
+function doLearn(){if(!adopted){alert('案を採用またはクリックしてからお試しください');return;}var txt=document.getElementById('draft').value;document.getElementById('rlhfT').textContent=txt;document.getElementById('rlhfW').style.display='flex';document.getElementById('lb'+adopted).style.display='inline';document.getElementById('blearn').textContent='学習済み';var tl=document.getElementById('tl');tl.scrollTop=tl.scrollHeight;}
+</script>
+</body>
+</html>
