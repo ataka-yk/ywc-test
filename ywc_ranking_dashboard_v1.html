@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YWC ランキングダッシュボード</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Hiragino Kaku Gothic ProN','Yu Gothic',sans-serif;background:#f5f5f4;color:#1a1a1a;font-size:14px;line-height:1.5}
+.db{max-width:1400px;margin:0 auto;padding:20px 24px}
+.db-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:8px}
+.db-title{font-size:16px;font-weight:500}
+.db-sub{font-size:12px;color:#888;margin-top:2px}
+.topn-row{display:flex;align-items:center;gap:8px}
+.s-lbl{font-size:12px;color:#666}
+.s-inp{width:56px;font-size:12px;padding:4px 8px;border:1px solid #d0cfc8;border-radius:6px;background:#fff;color:#1a1a1a;text-align:center;outline:none}
+.s-inp:focus{border-color:#888}
+.s-note{font-size:11px;color:#aaa}
+button{font-size:12px;padding:4px 12px;border:1px solid #d0cfc8;border-radius:6px;background:#fff;color:#1a1a1a;cursor:pointer}
+button:hover{background:#f0efe8}
+.rg2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rg{display:flex;flex-direction:column;gap:12px}
+.fc{grid-column:1/-1}
+.rc{background:#fff;border:1px solid #e8e7e0;border-radius:10px;overflow:hidden}
+.rch{padding:10px 16px 9px;border-bottom:1px solid #e8e7e0;display:flex;align-items:baseline;justify-content:space-between}
+.rcl{font-size:13px;font-weight:500}
+.rcm{font-size:11px;color:#999}
+.rcf{padding:5px 16px;border-top:1px solid #e8e7e0;font-size:11px;color:#aaa}
+.br{display:inline-block;font-size:10px;padding:1px 7px;background:#fef3c7;color:#92400e;border-radius:5px;margin-left:6px}
+.pw{display:grid;grid-template-columns:repeat(4,1fr)}.pw2{display:grid;grid-template-columns:repeat(2,1fr)}.pw3{display:grid;grid-template-columns:repeat(3,1fr)}
+.pc{border-right:1px solid #e8e7e0}
+.pc:last-child{border-right:none}
+.pt{padding:5px 12px;font-size:11px;font-weight:500;color:#666;border-bottom:1px solid #e8e7e0;background:#fafaf8}
+.tb{width:100%;border-collapse:collapse;table-layout:fixed}
+.tb th{font-size:10px;font-weight:500;color:#888;padding:5px 12px;border-bottom:1px solid #e8e7e0;text-align:left;background:#fafaf8;white-space:nowrap;overflow:hidden}
+.tb th.r{text-align:right}
+.tb td{font-size:12px;padding:5px 12px;border-bottom:1px solid #f0efe8;vertical-align:middle;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#1a1a1a}
+.tb tr:last-child td{border-bottom:none}
+.tb tr:hover td{background:#fafaf8}
+.tb td.r{text-align:right;font-variant-numeric:tabular-nums}
+.tb td.dim{color:#bbb;font-size:11px}
+.tb td.bld{font-weight:500}
+.gb{display:inline-block;font-size:10px;padding:1px 6px;border-radius:5px}
+.gb-es{background:#e6f1fb;color:#0c447c}
+.gb-ms{background:#f1efe8;color:#5f5e5a}
+.cdot{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;vertical-align:middle;margin-left:4px;flex-shrink:0;font-size:9px;font-weight:700;line-height:1;}
+.up{font-size:11px;color:#1d9e75;font-weight:500;margin-left:3px}
+/* タゲトモ4色（旺文社表紙色） */
+/* 1200黄:#f8b500 / 1400緑:#009342 / 1900青:#0052a4 / 熟語1000橙:#ffe500 */
+</style>
+</head>
+<body>
+<div class="db">
+  <div class="db-hd">
+    <div>
+      <div class="db-title">ランキング</div>
+      <div class="db-sub">記録がある生徒のみ / 同点は同順位・次飛ばし</div>
+    </div>
+    <div class="topn-row">
+      <span class="s-lbl">表示件数</span>
+      <input class="s-inp" type="number" id="top-n" min="1" max="100" value="20"/>
+      <span class="s-lbl">件</span>
+      <button onclick="applyN()">適用</button>
+      <span class="s-note">伸び判定・件数は設定ファイルで管理（rise_threshold_pct / ranking_display_count）</span>
+    </div>
+  </div>
+  <div style="font-size:10px;color:#aaa;margin-bottom:6px;">YWC ランキングダッシュボード　<span style="background:#378ADD;color:#fff;padding:1px 6px;border-radius:3px;font-weight:700;">V1</span>　2026/4/29</div><div id="dc"></div>
+</div>
+
+<script>
+const ES=['山田はなこ','鈴木たろう','田中みき','佐藤けんた','中村あいこ','小川りく','松本ゆい','井上そら','木村はると','林さくら','清水けいた','山口なな','斎藤こうき','中島みおん','藤田りょうた','岡田ひかり','橋本しゅん','前田えみ','高野だいき','松田あゆみ'];
+const MS=['高橋りょう','渡辺ゆき','伊藤しゅん','小林なな','加藤そうた','吉田あおい','山本けんと','中田みさき','石川たける','村上さや','長谷川こうへい','近藤ひな','西村まさと','坂本れな','横山たつや','福田このか','三浦まなぶ','原田ちひろ','後藤りきや','大塚みほ'];
+const ALL=[...ES.map(n=>({name:n,grade:'es'})),...MS.map(n=>({name:n,grade:'ms'}))];
+
+/* タゲトモ色コード（旺文社表紙色・チャット5b1c5946確定値） */
+const TAGE_COLORS={
+  // 旺文社表紙色（チャット5b1c5946確定値）
+  '黄1200':'#f8b500',
+  '緑1400':'#009342',
+  '青1900':'#0052a4',
+  '熟語1000':'#ffe500'
+};
+const RISE_PCT=20;
+const RISE_PCT2=30;
+
+function seed(s){let h=0;for(let i=0;i<s.length;i++)h=(h*31+s.charCodeAt(i))>>>0;return h}
+function prevRatio(s){return 0.6+(seed(s)%100)/100*0.9}
+function upLevel(name,val){const prev=val/prevRatio(name);const r=prev>0?val/prev:1;if(r>=(1+RISE_PCT2/100))return 2;if(r>=(1+RISE_PCT/100))return 1;return 0;}
+function fmt(n){return n>=10000?(n/10000).toFixed(1)+'万':n.toLocaleString()}
+function gb(g){return g==='es'?'<span class="gb gb-es">小</span>':'<span class="gb gb-ms">中高</span>'}
+
+function makeRank(valFn,colorFn){
+  return ALL.map(s=>({...s,val:valFn(s),color:colorFn?colorFn(s):null}))
+    .sort((a,b)=>b.val-a.val)
+    .map((s,i,arr)=>({...s,rank:i>0&&arr[i].val===arr[i-1].val?arr[i-1].rank:i+1}));
+}
+
+function sTable(rows,unit,topN,wName,wGrade,wVal){
+  const body=rows.slice(0,topN).map(r=>{
+    const b=r.rank<=3?' bld':'';
+    const lv=upLevel(r.name,r.val);const arrow=lv===2?'<span class="up">↑↑</span>':lv===1?'<span class="up">↑</span>':'';
+    const TAGE_LABEL={'黄1200':'黄','緑1400':'緑','青1900':'青','熟語1000':'熟'};
+    const TAGE_TEXT_COLOR={'黄1200':'#fff','緑1400':'#fff','青1900':'#fff','熟語1000':'#5a3d00'};
+    const dot=r.color?`<span class="cdot" style="background:${TAGE_COLORS[r.color]||'#888'};color:${TAGE_TEXT_COLOR[r.color]||'#fff'}">${TAGE_LABEL[r.color]||'?'}</span>`:'';
+    return `<tr>
+      <td class="dim" style="width:36px">${r.rank}</td>
+      <td class="${b}" style="width:${wName}px">${r.name}${arrow}</td>
+      <td style="width:${wGrade}px">${gb(r.grade)}${dot}</td>
+      <td class="r${b}" style="width:${wVal}px">${fmt(r.val)}<span style="font-size:10px;color:#bbb;margin-left:2px">${unit}</span></td>
+    </tr>`;
+  }).join('');
+  return `<table class="tb">
+    <thead><tr>
+      <th style="width:36px">順位</th>
+      <th style="width:${wName}px">氏名</th>
+      <th style="width:${wGrade}px">区分</th>
+      <th class="r" style="width:${wVal}px">記録</th>
+    </tr></thead>
+    <tbody>${body}</tbody>
+  </table>`;
+}
+
+const legend='<span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:#0052a4;color:#fff;font-size:9px;font-weight:700">青</span>青1900</span><span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:#009342;color:#fff;font-size:9px;font-weight:700">緑</span>緑1400</span><span style="display:inline-flex;align-items:center;gap:4px;margin-right:8px"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:#f8b500;color:#fff;font-size:9px;font-weight:700">黄</span>黄1200</span><span style="display:inline-flex;align-items:center;gap:4px"><span style="display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;border-radius:3px;background:#ffe500;color:#5a3d00;font-size:9px;font-weight:700">熟</span>熟語1000</span>';
+function pCol(period,label,topN){
+  const bases={all:[310000,520000],y:[42200,68400],m:[4220,6820],w:[1240,1920],h:[380,680]};
+  const [eb,mb]=bases[period];
+  const rows=makeRank(s=>{
+    const base=s.grade==='es'?eb:mb;
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    return Math.max(1,Math.round(base*Math.pow(0.89,idx)));
+  });
+  const body=rows.slice(0,topN).map(r=>{
+    const b=r.rank<=3?' bld':'';
+    const lv=upLevel(r.name+period,r.val);const arrow=lv===2?'<span class="up" style="font-size:10px">↑↑</span>':lv===1?'<span class="up" style="font-size:10px">↑</span>':'';
+    return `<tr>
+      <td class="dim" style="width:28px">${r.rank}</td>
+      <td class="${b}">${r.name}${arrow}</td>
+      <td style="width:42px">${gb(r.grade)}</td>
+      <td class="r${b}" style="width:76px">${fmt(r.val)}<span style="font-size:9px;color:#bbb;margin-left:1px">問</span></td>
+    </tr>`;
+  }).join('');
+  return `<div class="pc">
+    <div class="pt">${label}</div>
+    <table class="tb">
+      <thead><tr>
+        <th style="width:28px">順</th>
+        <th>氏名</th>
+        <th style="width:42px">区分</th>
+        <th class="r" style="width:76px">問題数</th>
+      </tr></thead>
+      <tbody>${body}</tbody>
+    </table>
+  </div>`;
+}
+
+function render(topN){
+  const ondo=makeRank(s=>{
+    const base=s.grade==='es'?148:201;
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    return Math.max(1,Math.round(base*Math.pow(0.89,idx)));
+  });
+  const tgscore=makeRank(s=>{
+    const base=s.grade==='es'?5099:7210;
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    return Math.max(1,Math.round(base*Math.pow(0.88,idx)));
+  },s=>{
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    /* 小学生:黄1200→緑1400が主。中高生:緑1400→青1900が主。熟語1000は上位層 */
+    const t=s.grade==='es'
+      ?['緑1400','緑1400','黄1200','黄1200','黄1200','黄1200','黄1200','熟語1000','熟語1000','熟語1000']
+      :['青1900','青1900','青1900','緑1400','緑1400','緑1400','黄1200','黄1200','熟語1000','熟語1000'];
+    return t[Math.min(idx,t.length-1)]||'黄1200';
+  });
+  const ondoCount=makeRank(s=>{
+    const base=s.grade==='es'?12:16;
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    return Math.max(1,Math.round(base*Math.pow(0.88,idx)));
+  });
+  const tgcount=makeRank(s=>{
+    const base=s.grade==='es'?18:22;
+    const idx=(s.grade==='es'?ES:MS).indexOf(s.name);
+    return Math.max(1,Math.round(base*Math.pow(0.88,idx)));
+  });
+
+  document.getElementById('dc').innerHTML=`
+    <div class="rg">
+
+      <!-- 1段目: つみモノ 月間・週間・24時間 -->
+      <div class="rc">
+        <div class="rch">
+          <span class="rcl">問題数（月間・週間・24時間）</span>
+          <span class="rcm">つみかさね＋モノグサ / TOP${topN}</span>
+        </div>
+        <div class="pw3">
+          ${pCol('m','月間',topN)}
+          ${pCol('w','週間',topN)}
+          ${pCol('h','24時間',topN)}
+        </div>
+        <div class="rcf">つみかさね＋モノグサ合算　<span class="up up1">↑</span>前期間比${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上（設定: rise_threshold_pct）</div>
+      </div>
+
+      <!-- 2段目: 音読時間 / タゲトモスコア -->
+      <div class="rg2">
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">音読時間</span>
+            <span class="rcm">7日間累積 / TOP${topN}</span>
+          </div>
+          ${sTable(ondo,'分',topN,180,72,90)}
+          <div class="rcf"><span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上</div>
+        </div>
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">タゲトモスコア</span>
+            <span class="rcm">直近（月末リセット） / TOP${topN}</span>
+          </div>
+          ${sTable(tgscore,'pt',topN,160,90,90)}
+          <div class="rcf">
+            ● 色：${legend}
+            　<span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上
+          </div>
+        </div>
+      </div>
+
+      <!-- 3段目: 音読送信回数 / タゲトモ送信回数 -->
+      <div class="rg2">
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">音読送信回数</span>
+            <span class="rcm">7日間累積 / TOP${topN}</span>
+          </div>
+          ${sTable(ondoCount,'回',topN,180,72,80)}
+          <div class="rcf"><span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上</div>
+        </div>
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">タゲトモ送信回数</span>
+            <span class="rcm">7日間累積 / TOP${topN}</span>
+          </div>
+          ${sTable(tgcount,'回',topN,180,72,80)}
+          <div class="rcf"><span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上</div>
+        </div>
+      </div>
+
+      <!-- 4段目: つみモノ 通算・年間 -->
+      <div class="rg2">
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">問題数（通算）</span>
+            <span class="rcm">つみかさね＋モノグサ / TOP${topN}</span>
+          </div>
+          ${pCol('all','通算',topN)}
+          <div class="rcf">つみかさね＋モノグサ合算　<span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上</div>
+        </div>
+        <div class="rc">
+          <div class="rch">
+            <span class="rcl">問題数（年間）</span>
+            <span class="rcm">つみかさね＋モノグサ / TOP${topN}</span>
+          </div>
+          ${pCol('y','年間',topN)}
+          <div class="rcf">つみかさね＋モノグサ合算　<span class="up up1">↑</span>${RISE_PCT}%以上　<span class="up up2">↑↑</span>${RISE_PCT2}%以上</div>
+        </div>
+      </div>
+
+    </div>`;
+}
+
+function applyN(){
+  const v=parseInt(document.getElementById('top-n').value,10);
+  if(v>=1&&v<=100)render(v);
+}
+render(20);
+</script>
+</body>
+</html>
