@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no,viewport-fit=cover">
+<title>YWC スマホ版 v68 — 2026/4/30</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+html{height:100%;background:#888;}
+body{font-family:-apple-system,BlinkMacSystemFont,'Hiragino Sans','Yu Gothic UI',sans-serif;background:#888;color:#1a1a1a;font-size:14px;-webkit-tap-highlight-color:transparent;height:100%;display:flex;align-items:center;justify-content:center;}
+#app{display:flex;flex-direction:column;width:390px;max-width:100vw;height:100dvh;height:100vh;background:#F0EFEB;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.4);}
+
+/* ===== コンソールバー ===== */
+.console-bar{background:#1a1a2e;height:38px;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;}
+.console-lbl{font-size:10px;color:#666;white-space:nowrap;}
+.c-btn{font-size:12px;font-weight:600;padding:3px 13px;border-radius:999px;border:none;cursor:pointer;}
+.c-btn.msg{background:#378ADD;color:#fff;}
+.c-btn.msg.off{background:#252540;color:#555;}
+.c-btn.bc{background:#1D9E75;color:#fff;}
+.c-btn.bc.off{background:#252540;color:#555;}
+.console-role{font-size:10px;margin-left:auto;padding:2px 8px;border-radius:999px;background:#252540;color:#aaa;}
+.console-role.admin{background:#1a3a5a;color:#7ac0f8;}
+.console-role.mentor{background:#1a3a2a;color:#6fcfa0;}
+.console-role.teacher{background:#3a2a1a;color:#f0a050;}
+
+/* ===== トップバー ===== */
+.topbar{background:#fff;border-bottom:0.5px solid #e0e0e0;height:44px;display:flex;align-items:center;padding:0 10px;gap:6px;flex-shrink:0;}
+.tb-back{font-size:26px;color:#378ADD;cursor:pointer;line-height:1;flex-shrink:0;visibility:hidden;}
+.tb-title{font-size:15px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tb-right{display:flex;align-items:center;gap:5px;flex-shrink:0;}
+.delay-chip{font-size:11px;padding:2px 6px;border-radius:10px;background:#FAEEDA;color:#7A3D00;font-weight:600;white-space:nowrap;}
+.red-dot{width:7px;height:7px;border-radius:50%;background:#E24B4A;flex-shrink:0;}
+.rsel{font-size:11px;padding:2px 6px;border-radius:999px;border:1px solid #ccc;background:#f5f5f5;color:#555;}
+
+/* ===== スクリーン ===== */
+.screen{flex:1;overflow:hidden;display:none;flex-direction:column;min-height:0;}
+.screen.act{display:flex;}
+
+/* ===== チャットリスト ===== */
+#screen-list{background:#fff;}
+.lsearch-wrap{padding:7px 10px;border-bottom:1px solid #efefef;}
+.lsearch-wrap input{width:100%;font-size:14px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#F5F4F0;outline:none;}
+.ltags-scroll{padding:6px 10px;border-bottom:1px solid #efefef;display:flex;gap:5px;overflow-x:auto;}
+.ltags-scroll::-webkit-scrollbar{display:none;}
+.ltag{font-size:12px;padding:4px 10px;border-radius:12px;border:1px solid #ddd;background:transparent;color:#666;white-space:nowrap;cursor:pointer;flex-shrink:0;}
+.ltag.on{background:#E6F1FB;color:#0C447C;border-color:transparent;}
+.ltag.sf{background:#F1EFE8;color:#555;border-style:dashed;}
+.lsel-wrap{padding:4px 10px 6px;border-bottom:1px solid #efefef;}
+.lsel-wrap select{width:100%;font-size:13px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#F5F4F0;outline:none;}
+.clist{flex:1;overflow-y:auto;}
+.ci{display:flex;align-items:flex-start;gap:8px;padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;min-height:60px;}
+.ci:active{background:#F0F8FF;}
+.ci.locked{opacity:0.6;cursor:default;}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;flex-shrink:0;}
+.av-b{background:#D7EAFB;color:#0C447C;}
+.av-g{background:#D4F0E0;color:#085041;}
+.av-a{background:#FAEEDA;color:#7A3D00;}
+.av-p{background:#EAE8FD;color:#3C3489;}
+.av-c{background:#FAE8E3;color:#712B13;}
+.ci-body{flex:1;min-width:0;}
+.ci-name{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:3px;}
+.ci-prev{font-size:12px;color:#999;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-bottom:4px;}
+.ci-prev.meta{color:#1870C0;}
+.ci-bot{display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.st{font-size:11px;padding:2px 7px;border-radius:999px;font-weight:700;white-space:nowrap;}
+.st-oto{background:#E8F5EF;color:#27500A;}
+.st-tgt{background:#FEF3CC;color:#7A5500;}
+.st-tsu{background:#E6F1FB;color:#0C447C;}
+.st-ai{background:#EAE8FD;color:#3C3489;}
+.st-pho{background:#F5F5F5;color:#555;}
+.st-delay{background:#FAEEDA;color:#7A3D00;}
+.ci-time{font-size:11px;color:#bbb;white-space:nowrap;margin-left:auto;padding-left:6px;flex-shrink:0;}
+.pin-dot{width:6px;height:6px;border-radius:50%;background:#378ADD;flex-shrink:0;margin-top:7px;}
+.owner-badge{font-size:10px;padding:1px 6px;border-radius:8px;font-weight:700;}
+
+/* ===== チャット詳細 ===== */
+#screen-chat{background:#F0EFEB;}
+/* ロックバナー */
+.lock-banner{background:#FFF3CD;border-bottom:1px solid #F0C36D;padding:7px 12px;font-size:12px;color:#7A5500;display:none;flex-shrink:0;gap:6px;align-items:center;}
+.lock-banner.show{display:flex;}
+/* ヘッダー */
+.mh{background:#fff;border-bottom:1px solid #e0e0e0;padding:0 10px;height:44px;display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.mh-name{font-size:14px;font-weight:600;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.mh-pill{font-size:11px;padding:2px 6px;border-radius:8px;background:#EAE8FD;color:#3C3489;font-weight:600;white-space:nowrap;}
+.mh-btns{display:flex;gap:4px;flex-shrink:0;}
+.mh-btn{font-size:11px;padding:4px 9px;border-radius:6px;border:1px solid #ddd;background:#F5F4F0;color:#555;cursor:pointer;white-space:nowrap;}
+
+/* 才能シグナル */
+.sig-strip{background:#EAE8FD;border-bottom:1px solid #C5C0F5;padding:5px 12px;flex-shrink:0;cursor:pointer;}
+.sig-lbl{font-size:10px;color:#534AB7;font-weight:700;letter-spacing:.04em;margin-bottom:1px;}
+.sig-txt{font-size:12px;color:#3C3489;line-height:1.4;}
+.sig-meta{font-size:10px;color:#7F77DD;margin-top:1px;}
+.sig-detail{display:none;background:#F0EFEB;border-bottom:1px solid #e0e0e0;padding:7px 12px;}
+.sig-detail.show{display:block;}
+.sig-past-item{background:#fff;border-radius:6px;padding:5px 9px;border:1px solid #C5C0F5;margin-bottom:5px;}
+.sig-past-date{font-size:10px;color:#7F77DD;margin-bottom:2px;}
+.sig-past-txt{font-size:12px;color:#3C3489;}
+
+/* TL */
+.tl{flex:1;overflow-y:auto;padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:0;}
+.tl.locked{opacity:.5;pointer-events:none;}
+.tl-time{font-size:11px;color:#bbb;text-align:center;margin:2px 0;}
+.bub-wrap{display:flex;flex-direction:column;gap:1px;}
+.bub-from{font-size:10px;color:#aaa;margin-bottom:2px;}
+.bub-recv{background:#fff;border:1px solid #e8e8e8;border-radius:2px 10px 10px 10px;padding:8px 11px;font-size:13px;line-height:1.5;max-width:88%;align-self:flex-start;}
+.bub-sent{background:#06C755;border-radius:10px 2px 10px 10px;padding:8px 11px;font-size:13px;color:#fff;line-height:1.5;max-width:88%;align-self:flex-end;}
+/* 送信保留中（1分遅延） */
+.bub-pending{background:#e8f5e9;border:1.5px dashed #81c784;border-radius:10px 2px 10px 10px;padding:8px 11px;font-size:13px;color:#2e7d32;line-height:1.5;max-width:88%;align-self:flex-end;}
+.bub-pending-bar{width:100%;height:3px;background:#c8e6c9;border-radius:2px;margin-top:5px;overflow:hidden;}
+.bub-pending-progress{height:100%;background:#43a047;border-radius:2px;animation:progress60 60s linear forwards;}
+@keyframes progress60{from{width:100%}to{width:0%}}
+.bub-pending-cancel{font-size:11px;color:#388e3c;text-align:right;margin-top:3px;cursor:pointer;text-decoration:underline;}
+/* データバブル */
+.bub-data{background:#F0F8EC;border:1px solid #C5E5A8;border-radius:8px;padding:7px 10px;font-size:12px;align-self:flex-start;max-width:95%;}
+.bub-data-label{font-size:12px;font-weight:700;margin-bottom:3px;}
+.bub-data-label.oto{color:#27500A;}
+.bub-data-label.tsm{color:#1870C0;}
+.bub-data-label.tgt{color:#7A5500;}
+.bub-data-label.mno{color:#1870C0;}
+.bub-data-label.tsg{color:#B02020;}
+/* 写真バブル — 1バブル（サムネイル＋事実返信統合） */
+.bub-photo{background:#fff;border:1px solid #e0e0e0;border-radius:8px;padding:8px 10px;align-self:flex-start;max-width:95%;}
+.bub-photo-hdr{font-size:11px;font-weight:700;color:#555;margin-bottom:6px;display:flex;align-items:center;gap:5px;}
+.bub-photo-source{font-size:10px;padding:1px 5px;border-radius:4px;font-weight:600;}
+.bub-photo-source.app{background:#E8F5EF;color:#27500A;}
+.bub-photo-source.line{background:#E6F1FB;color:#0C447C;}
+.photo-thumbs{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:6px;}
+.photo-thumb{width:58px;height:44px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:10px;color:#555;text-align:center;cursor:pointer;border:1px solid #ddd;background:#F5F4F0;font-weight:600;}
+.photo-thumb:active{opacity:.7;}
+.bub-fact{font-size:12px;color:#1a1a1a;line-height:1.5;padding:5px 7px;background:#F0F8EC;border-radius:5px;border:1px solid #C5E5A8;}
+.bub-fact-sent{font-size:10px;color:#aaa;margin-top:3px;}
+/* おばちゃん */
+.oba-wrap{border:1.5px solid #185FA5;border-radius:8px 8px 8px 2px;overflow:hidden;max-width:95%;align-self:flex-start;}
+.oba-hdr{background:#E6F1FB;padding:6px 9px;display:flex;align-items:center;gap:5px;cursor:pointer;font-size:11px;color:#0C447C;}
+.oba-hdr .arrow{font-size:10px;margin-left:auto;transition:transform .15s;}
+.oba-hdr.open .arrow{transform:rotate(180deg);}
+.oba-detail{display:none;padding:7px 9px;background:#fff;border-top:1px solid #B5D4F4;}
+.oba-detail.show{display:block;}
+.oba-txt{font-size:11px;padding:4px 8px;border-radius:6px;line-height:1.5;background:#E6F1FB;color:#0C447C;}
+/* AI返信案 */
+.ai-box{background:#EBF7F0;border:1px solid #9DDEC2;border-radius:8px;padding:8px 10px;align-self:stretch;}
+.ai-box-lbl{font-size:11px;color:#1D9E75;font-weight:700;margin-bottom:6px;}
+.ai-case{border:1px solid #C5E5A8;border-radius:7px;background:#fff;margin-bottom:5px;overflow:hidden;}
+.ai-case.adopted{border-color:#1D9E75;border-width:2px;}
+.ai-case-hd{padding:8px 10px;cursor:pointer;}
+.ai-case-lbl{font-size:11px;font-weight:700;color:#1D9E75;display:inline-block;margin-right:5px;}
+.ai-case-lbl.fact{color:#185FA5;}
+.ai-case-txt{font-size:13px;color:#1a1a1a;line-height:1.4;display:block;margin-top:2px;}
+.ai-case-btns{display:flex;gap:5px;padding:0 10px 8px;}
+.ai-btn{font-size:12px;padding:4px 12px;border-radius:5px;border:1px solid #ddd;background:#fff;color:#555;cursor:pointer;}
+.ai-btn.adopt{background:#1D9E75;color:#fff;border-color:#1D9E75;}
+.ai-btn.reject{color:#A32D2D;border-color:#F09595;}
+.ai-all-reject{font-size:12px;padding:6px;border-radius:5px;border:1px solid #F09595;background:#FFF8F8;color:#A32D2D;cursor:pointer;width:100%;margin-top:3px;}
+
+/* ===== 送信エリア ===== */
+.send-area{flex-shrink:0;background:#fff;border-top:1px solid #e0e0e0;padding:6px 10px;padding-bottom:max(8px,env(safe-area-inset-bottom));}
+.send-area.locked{opacity:.4;pointer-events:none;}
+/* 送信先表示バー */
+.send-dest-bar{display:flex;align-items:center;gap:5px;padding:4px 6px;background:#F0EFEB;border-radius:7px;margin-bottom:6px;min-height:28px;flex-wrap:wrap;}
+.dest-chip{font-size:11px;padding:2px 7px;border-radius:6px;font-weight:600;white-space:nowrap;display:flex;align-items:center;gap:3px;}
+.dest-chip.grp{background:#E8F5EF;color:#27500A;}
+.dest-chip.ind{background:#E6F1FB;color:#0C447C;}
+.dest-chip.no{background:#f0f0f0;color:#aaa;text-decoration:line-through;}
+.dest-lbl{font-size:11px;color:#aaa;flex-shrink:0;}
+/* 入力行 */
+.send-row{display:flex;align-items:flex-end;gap:7px;}
+.plus-btn{width:38px;height:38px;border-radius:50%;background:#F0EFEB;border:1.5px solid #bbb;display:flex;align-items:center;justify-content:center;font-size:24px;color:#555;cursor:pointer;flex-shrink:0;line-height:1;font-weight:300;user-select:none;}
+.plus-btn:active{background:#E6F1FB;}
+.send-ta{flex:1;border:1px solid #ddd;border-radius:20px;padding:9px 14px;font-size:14px;background:#F5F4F0;resize:none;font-family:inherit;line-height:1.5;outline:none;min-height:42px;max-height:140px;overflow-y:auto;}
+.send-btn{width:40px;height:40px;border-radius:50%;background:#1D9E75;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;}
+.send-btn svg{width:18px;height:18px;fill:#fff;}
+.send-btn.learn{background:#378ADD;}
+.send-btn.done{background:#ccc;}
+.dt-row{display:none;margin-top:7px;gap:6px;align-items:center;}
+.dt-row.show{display:flex;}
+.dt-inp-m{flex:1;font-size:13px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#F5F4F0;outline:none;font-family:inherit;}
+.send-note{font-size:11px;color:#ccc;margin-top:4px;line-height:1.5;}
+
+/* ＋メニュー */
+.plus-menu{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:18px 18px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.15);z-index:200;display:none;padding:10px 0 max(16px,env(safe-area-inset-bottom));}
+.plus-menu.show{display:block;}
+.plus-menu-grid{display:grid;grid-template-columns:repeat(5,1fr);padding:8px 8px 4px;}
+.pm-item{display:flex;flex-direction:column;align-items:center;gap:5px;padding:10px 2px;cursor:pointer;}
+.pm-item:active{opacity:.6;}
+.pm-ico-wrap{width:52px;height:52px;border-radius:14px;background:#F0EFEB;display:flex;align-items:center;justify-content:center;font-size:26px;}
+.pm-lbl{font-size:11px;color:#333;text-align:center;}
+
+/* ===== 右ドロワー ===== */
+.r-drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:299;display:none;}
+.r-drawer-overlay.show{display:block;}
+.r-drawer{position:fixed;top:0;right:-100%;width:88%;max-width:340px;height:100%;background:#fff;z-index:300;transition:right .28s cubic-bezier(.4,0,.2,1);overflow-y:auto;box-shadow:-4px 0 20px rgba(0,0,0,.1);}
+.r-drawer.show{right:0;}
+.r-dh{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid #e0e0e0;background:#fff;position:sticky;top:0;z-index:1;}
+.r-dh-t{font-size:15px;font-weight:600;}
+.r-close{font-size:22px;color:#aaa;cursor:pointer;line-height:1;}
+.rs{padding:8px 12px;border-bottom:1px solid #efefef;}
+.rl{font-size:11px;color:#aaa;font-weight:700;letter-spacing:.04em;margin-bottom:5px;}
+.rperiod{font-size:11px;color:#ccc;margin-left:4px;text-decoration:underline dotted;cursor:pointer;}
+.rrow{display:flex;align-items:center;gap:4px;padding:3px 0;}
+.rpos{font-size:13px;font-weight:600;width:30px;text-align:right;padding-right:4px;color:#aaa;flex-shrink:0;}
+.rpos.cur{color:#1D9E75;font-weight:800;}
+.rname{font-size:13px;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.rname.cur{font-weight:700;}
+.rval{font-size:13px;color:#666;flex-shrink:0;text-align:right;min-width:48px;}
+.rtotal{font-size:11px;color:#bbb;margin-top:3px;}
+/* アクティビティバッジ（v72準拠） */
+.act-row{display:flex;justify-content:space-between;align-items:center;padding:3px 0;font-size:13px;}
+.act-badge{font-size:11px;padding:1px 6px;border-radius:4px;font-weight:700;white-space:nowrap;}
+.act-badge.oto{background:#E8F5EF;color:#27500A;}
+.act-badge.tgt{background:#FEF3CC;color:#7A5500;}
+.act-badge.tsu{background:#E6F1FB;color:#0C447C;}
+.act-badge.mono{background:#F0EFEB;color:#555;}
+.act-time{font-size:11px;color:#999;}
+.note-sec{padding:10px 12px;border-bottom:1px solid #efefef;}
+.sec-lbl{font-size:11px;color:#aaa;font-weight:700;letter-spacing:.04em;margin-bottom:5px;}
+.note-ta{width:100%;font-size:13px;padding:6px 8px;border:1px solid #ddd;border-radius:7px;background:#F5F4F0;resize:none;font-family:inherit;outline:none;line-height:1.5;}
+.tag-sec{padding:10px 12px;border-bottom:1px solid #efefef;}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:6px;}
+.chip{font-size:12px;padding:3px 8px;border-radius:10px;background:#E6F1FB;color:#0C447C;display:flex;align-items:center;gap:2px;}
+.chip.sf{background:#F1EFE8;color:#666;border:1px dashed #ccc;}
+.chip-x{cursor:pointer;font-size:12px;color:#aaa;}
+.tag-add{width:100%;font-size:13px;padding:5px 8px;border:1px solid #ddd;border-radius:7px;background:#F5F4F0;outline:none;font-family:inherit;}
+.llm-box{padding:10px 12px;}
+.llm-lbl{font-size:11px;color:#378ADD;font-weight:700;letter-spacing:.04em;margin-bottom:5px;}
+.llm-item{margin-bottom:8px;}
+.llm-item-t{font-size:10px;color:#aaa;font-weight:700;display:block;margin-bottom:2px;}
+.llm-item-b{font-size:12px;color:#666;line-height:1.6;}
+
+/* 定型文ドロワー */
+.tk-drawer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.15);z-index:201;max-height:62vh;display:none;flex-direction:column;}
+.tk-drawer.show{display:flex;}
+.tk-dh{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid #f0f0f0;}
+.tk-dh-t{font-size:14px;font-weight:600;}
+.tk-close{font-size:22px;color:#aaa;cursor:pointer;line-height:1;}
+.tk-sw{padding:7px 12px;border-bottom:1px solid #f0f0f0;}
+.tk-sw input{width:100%;font-size:13px;padding:7px 10px;border:1px solid #ddd;border-radius:8px;background:#F5F4F0;outline:none;}
+.tk-list{flex:1;overflow-y:auto;}
+.tk-i{padding:10px 14px;border-bottom:1px solid #f5f5f5;cursor:pointer;}
+.tk-i:active{background:#EAF3FB;}
+.tk-i-t{font-size:13px;font-weight:600;margin-bottom:2px;}
+.tk-i-b{font-size:12px;color:#999;}
+
+/* ===== 配信タブ ===== */
+#screen-bc{overflow-y:auto;}
+.bc-scroll{padding:10px 12px;display:flex;flex-direction:column;gap:10px;padding-bottom:max(24px,env(safe-area-inset-bottom));}
+.card{background:#fff;border:1px solid #e0e0e0;border-radius:10px;padding:12px 14px;}
+.card-t{font-size:15px;font-weight:600;margin-bottom:12px;}
+.field{margin-bottom:10px;}
+.flbl{font-size:13px;color:#555;font-weight:600;margin-bottom:5px;}
+.tg-grp{display:flex;gap:4px;flex-wrap:wrap;}
+.tc{font-size:13px;padding:5px 11px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.tc.on{background:#E6F1FB;color:#0C447C;border-color:transparent;font-weight:600;}
+.tgnote{font-size:11px;color:#aaa;margin-top:4px;}
+.dest-grid{display:grid;grid-template-columns:1fr 1fr;gap:5px;}
+.db{font-size:13px;padding:8px;border-radius:7px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;text-align:center;}
+.db.on{background:#E6F1FB;color:#0C447C;border-color:transparent;font-weight:600;}
+.db.dim{background:#F5F5F5;color:#bbb;border-color:transparent;}
+.gcs-grid{display:flex;gap:7px;flex-wrap:wrap;}
+.gcs-t{width:74px;cursor:pointer;border-radius:8px;border:2px solid transparent;overflow:hidden;position:relative;}
+.gcs-t.sel{border-color:#378ADD;}
+.gcs-ti{width:100%;height:54px;border-radius:5px;}
+.gcs-tn{font-size:10px;color:#666;text-align:center;padding:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.gcs-sb{position:absolute;top:3px;right:3px;width:14px;height:14px;border-radius:50%;background:#378ADD;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;}
+.bct{background:#fff;border:1px solid #ddd;border-radius:8px;padding:10px 12px;font-size:14px;line-height:1.65;font-family:inherit;resize:none;outline:none;min-height:180px;width:100%;}
+.bct:focus{border-color:#378ADD;}
+.tdraft-counter{font-size:11px;color:#bbb;text-align:right;margin-top:3px;}
+.ck-row{display:flex;align-items:center;gap:7px;margin-bottom:8px;}
+.ck-lbl{font-size:14px;cursor:pointer;}
+.dt-inp-bc{font-size:14px;padding:8px 11px;border:1px solid #ddd;border-radius:8px;background:#F5F4F0;outline:none;width:100%;font-family:inherit;}
+.dt-inp-bc:disabled{opacity:.3;}
+.lock-chip{display:inline-block;font-size:11px;padding:3px 9px;border-radius:8px;background:#FAEEDA;color:#7A3D00;font-weight:600;margin-top:5px;}
+.lock-chip.urg{background:#FCEBEB;color:#791F1F;}
+.urg-box{background:#fff;border:1.5px solid #E24B4A;border-radius:8px;padding:11px 13px;margin-top:8px;}
+.urg-t{font-size:13px;font-weight:600;color:#A32D2D;margin-bottom:4px;}
+.urg-b{font-size:12px;color:#555;margin-bottom:8px;line-height:1.6;}
+.urg-in{width:100%;border:1px solid #F09595;border-radius:8px;padding:9px 11px;font-size:14px;background:#F5F4F0;font-family:inherit;outline:none;}
+.act-row-bc{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+.abtn{font-size:14px;padding:9px 16px;border-radius:8px;border:1px solid #ccc;background:transparent;cursor:pointer;font-weight:600;}
+.abtn-b{background:#378ADD;color:#fff;border-color:#378ADD;}
+.abtn-g{background:#1D9E75;color:#fff;border-color:#1D9E75;}
+.abtn-d{font-size:13px;padding:8px 12px;border-radius:7px;border:1px solid #F09595;background:transparent;color:#A32D2D;cursor:pointer;}
+.pvc{background:#fff;border:2px solid #378ADD;border-radius:10px;padding:12px 14px;}
+.pvh{display:flex;align-items:center;gap:6px;margin-bottom:10px;}
+.pvdot{width:7px;height:7px;border-radius:50%;background:#378ADD;}
+.pvlbl{font-size:14px;color:#185FA5;font-weight:600;}
+.line-bub{background:#06C755;border-radius:10px;padding:10px 13px;margin-bottom:8px;}
+.line-lbl{font-size:11px;color:rgba(255,255,255,.7);margin-bottom:3px;}
+.line-txt{font-size:13px;color:#fff;line-height:1.7;white-space:pre-wrap;}
+.pv-meta{font-size:11px;color:#aaa;margin-bottom:8px;}
+/* 配信検索（下部） */
+.hist-search-wrap{display:flex;gap:7px;align-items:center;margin-bottom:8px;}
+.hist-search-inp{flex:1;font-size:14px;padding:9px 11px;border:1px solid #ddd;border-radius:8px;background:#F5F4F0;outline:none;font-family:inherit;}
+.hist-search-btn{font-size:13px;padding:9px 14px;border-radius:8px;border:none;background:#378ADD;color:#fff;cursor:pointer;font-weight:600;white-space:nowrap;}
+.hi{padding:10px 12px;border-bottom:1px solid #f0f0f0;}
+.hi-top{display:flex;align-items:center;gap:5px;margin-bottom:3px;}
+.hi-date{font-size:11px;color:#aaa;flex:1;}
+.hi-prev{font-size:13px;line-height:1.5;margin-bottom:5px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.hi-meta{font-size:11px;color:#aaa;margin-bottom:4px;}
+.hi-tog{font-size:12px;padding:3px 9px;border-radius:5px;border:1px solid #ddd;background:transparent;color:#666;cursor:pointer;}
+.hi-full{font-size:13px;line-height:1.6;margin-top:7px;padding:8px 10px;background:#F5F4F0;border-radius:6px;white-space:pre-wrap;border:1px solid #e8e8e8;display:none;}
+.hist-empty{font-size:13px;color:#aaa;padding:12px 0;text-align:center;}
+
+/* モーダル */
+.modal-ov{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:400;display:none;align-items:flex-end;}
+.modal-ov.show{display:flex;}
+.modal{background:#fff;border-radius:16px 16px 0 0;width:100%;padding:20px 18px;padding-bottom:max(20px,env(safe-area-inset-bottom));}
+.modal-t{font-size:16px;font-weight:600;margin-bottom:5px;}
+.modal-sub{font-size:13px;color:#777;margin-bottom:10px;}
+.modal-dest{background:#F5F4F0;border-radius:6px;padding:7px 10px;font-size:13px;margin-bottom:14px;}
+.modal-acts{display:flex;gap:8px;}
+.m-cancel{flex:1;font-size:14px;padding:10px;border-radius:8px;border:1px solid #ddd;background:#F5F4F0;cursor:pointer;}
+.m-ok{flex:1;font-size:14px;padding:10px;border-radius:8px;border:none;background:#06C755;color:#fff;cursor:pointer;font-weight:600;}
+/* 写真拡大モーダル */
+.photo-modal{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;}
+.photo-modal.show{display:flex;}
+.photo-modal-img{max-width:90vw;max-height:75vh;border-radius:8px;background:#333;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;}
+.photo-modal-btns{display:flex;gap:10px;margin-top:14px;}
+.photo-modal-btn{font-size:13px;padding:8px 16px;border-radius:8px;border:none;background:rgba(255,255,255,.15);color:#fff;cursor:pointer;}
+.photo-modal-close{position:absolute;top:16px;right:16px;font-size:28px;color:rgba(255,255,255,.7);cursor:pointer;line-height:1;}
+
+/* テンキー */
+.numpad-ov{position:fixed;inset:0;z-index:402;display:none;align-items:flex-end;background:rgba(0,0,0,.3);}
+.numpad-ov.show{display:flex;}
+.numpad{background:#fff;border-radius:16px 16px 0 0;width:100%;padding:12px 16px;padding-bottom:max(12px,env(safe-area-inset-bottom));}
+.numpad-display{font-size:22px;font-weight:600;text-align:center;padding:8px;background:#F5F4F0;border-radius:8px;margin-bottom:6px;letter-spacing:3px;}
+.numpad-hint{font-size:11px;color:#aaa;text-align:center;margin-bottom:10px;}
+.numpad-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;}
+.npk{font-size:18px;font-weight:600;padding:14px;border-radius:8px;border:1px solid #e8e8e8;background:#fff;cursor:pointer;text-align:center;}
+.npk:active{background:#E6F1FB;}
+.npk.del{background:#FFF0F0;color:#A32D2D;font-size:14px;}
+.npk.ok{background:#1D9E75;color:#fff;font-size:14px;grid-column:span 2;}
+
+/* misc */
+.drawer-bg{position:fixed;inset:0;z-index:199;display:none;}
+.drawer-bg.show{display:block;}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#333;color:#fff;font-size:13px;padding:8px 18px;border-radius:20px;z-index:500;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- コンソールバー -->
+<div class="console-bar">
+ <span class="console-lbl">YWC</span>
+ <button class="c-btn msg" id="cbtn-msg" onclick="switchMode('msg')">💬 メッセージ</button>
+ <button class="c-btn bc off" id="cbtn-bc" onclick="switchMode('bc')">📢 配信</button>
+ <span class="console-role admin" id="console-role">責任者</span>
+</div>
+
+<!-- トップバー -->
+<div class="topbar">
+ <span class="tb-back" id="tb-back-btn" onclick="closeChat()">‹</span>
+ <!-- リスト表示時 -->
+ <span class="tb-title" id="tb-title">ユウエルコネクト</span>
+ <!-- チャット時（デフォルト非表示） -->
+ <div id="tb-chat-info" style="display:none;flex:1;min-width:0;align-items:baseline;gap:6px;">
+  <span id="tb-name" style="font-size:16px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"></span>
+  <span id="tb-channel" style="font-size:12px;padding:2px 7px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0;"></span>
+ </div>
+ <div class="tb-right">
+  <select class="rsel" id="rsel" onchange="applyRole()">
+   <option value="admin">責任者</option>
+   <option value="mentor">メンター</option>
+   <option value="teacher">先生</option>
+  </select>
+  <span class="delay-chip">遅延1件</span>
+  <span class="red-dot"></span>
+ </div>
+</div>
+
+<!-- ======================= チャットリスト ======================= -->
+<div class="screen act" id="screen-list">
+ <div class="lsearch-wrap"><input placeholder="生徒名・メッセージで検索..." /></div>
+ <div class="ltags-scroll">
+  <span class="ltag sf on">未読</span><span class="ltag sf on">中</span><span class="ltag sf">小</span>
+  <span class="ltag sf">高</span><span class="ltag sf">保護者</span><span class="ltag on">英検</span><span class="ltag">要対応</span>
+ </div>
+ <div class="lsel-wrap">
+  <select><option>すべて（保護者・生徒・グループ）</option><option>保護者個別</option><option>生徒個別</option><option>グループ</option></select>
+ </div>
+ <div class="clist">
+  <div class="ci" onclick="openChat('その田 せいと（グループ）','才能シグナル',false,'')">
+   <span class="pin-dot"></span>
+   <div class="av av-b">その田</div>
+   <div class="ci-body">
+    <div class="ci-name">その田 せいと（グループ）</div>
+    <div class="ci-prev meta">音読 英語 12分 · GCS保存済</div>
+    <div class="ci-bot"><span class="st st-oto">音読</span><span class="ci-time">10分前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('佐藤 花（グループ）','才能シグナル',false,'')">
+   <div class="av av-g">佐藤</div>
+   <div class="ci-body">
+    <div class="ci-name">佐藤 花（グループ）</div>
+    <div class="ci-prev meta">タゲトモ 🟡935点 · 前月比+87</div>
+    <div class="ci-bot"><span class="st st-tgt">タゲ</span><span class="ci-time">25分前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('木村 陸（保護者）','',false,'')">
+   <div class="av av-c">木村</div>
+   <div class="ci-body">
+    <div class="ci-name">木村 陸（保護者）</div>
+    <div class="ci-prev" style="color:#999;">来週の面談について確認させてください</div>
+    <div class="ci-bot"><span class="st st-ai">AI</span><span class="ci-time">1時間前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('山田 翔（保護者）','',false,'')">
+   <div class="av av-a">山田</div>
+   <div class="ci-body">
+    <div class="ci-name">山田 翔（保護者）</div>
+    <div class="ci-prev meta">写真 3枚 · 算数ノート</div>
+    <div class="ci-bot"><span class="st st-pho">写真</span><span class="st st-delay">遅延</span><span class="ci-time">2時間前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('鈴木 莉子（生徒）','',false,'')">
+   <div class="av av-p">鈴木</div>
+   <div class="ci-body">
+    <div class="ci-name">鈴木 莉子（生徒）</div>
+    <div class="ci-prev meta">モノグサ 数社 340問 · 正答率82%</div>
+    <div class="ci-bot"><span class="ci-time">3時間前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('田中 みのり（保護者）','',false,'')">
+   <div class="av" style="background:#E3F5D7;color:#2D6A1F;">田中</div>
+   <div class="ci-body">
+    <div class="ci-name">田中 みのり（保護者）</div>
+    <div class="ci-prev" style="color:#999;">ありがとうございます。引き続きよろしく</div>
+    <div class="ci-bot"><span class="owner-badge" style="background:#D4E8FF;color:#0C447C;">高塚</span><span class="ci-time">4時間前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('伊藤 蓮（グループ）','',false,'')">
+   <div class="av" style="background:#FDE8D8;color:#8B3A0F;">伊藤</div>
+   <div class="ci-body">
+    <div class="ci-name">伊藤 蓮（グループ）</div>
+    <div class="ci-prev meta">つみかさね 国語 88問 · 週累計612問</div>
+    <div class="ci-bot"><span class="owner-badge" style="background:#D4E8FF;color:#0C447C;">高塚</span><span class="ci-time">5時間前</span></div>
+   </div>
+  </div>
+  <!-- 排他制御：三郎さんが対応中 -->
+  <div class="ci locked" onclick="openChat('田辺 こうた（グループ）','',true,'三郎')">
+   <div class="av" style="background:#eee;color:#aaa;">田辺</div>
+   <div class="ci-body">
+    <div class="ci-name">田辺 こうた（グループ）</div>
+    <div class="ci-prev" style="color:#999;">音読 数学 10分04秒</div>
+    <div class="ci-bot"><span class="st" style="background:#f0f0f0;color:#aaa;">🔒 三郎</span><span class="ci-time">8分前</span></div>
+   </div>
+  </div>
+  <div class="ci" onclick="openChat('高橋 あおい（生徒）','',false,'')">
+   <div class="av" style="background:#D7EAFB;color:#0C447C;">高橋</div>
+   <div class="ci-body">
+    <div class="ci-name">高橋 あおい（生徒）</div>
+    <div class="ci-prev meta">音読 国語 8分18秒 · GCS保存</div>
+    <div class="ci-bot"><span class="owner-badge" style="background:#D4E8FF;color:#0C447C;">高塚</span><span class="ci-time">昨日</span></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- ======================= チャット詳細 ======================= -->
+<div class="screen" id="screen-chat">
+ <!-- ロックバナー -->
+ <div class="lock-banner" id="lock-banner">
+  <span>🔒</span><span id="lock-banner-txt" style="flex:1;">三郎さんが対応中です</span><span style="font-size:11px;color:#a08020;">読み取り専用</span>
+ </div>
+ <span id="mh-name" style="display:none;"></span>
+ <span id="mh-pill" style="display:none;"></span>
+ <!-- 才能シグナル -->
+ <div class="sig-strip" onclick="toggleSig()" id="sig-strip" style="display:none;">
+  <div class="sig-lbl">才能シグナル</div>
+  <div class="sig-txt" id="sig-txt-main"></div>
+  <div class="sig-meta" id="sig-meta-main">直近1週間 ▾</div>
+ </div>
+ <div class="sig-detail" id="sig-detail">
+  <div class="sig-past-item"><div class="sig-past-date">2026/4/10 · 継続力</div><div class="sig-past-txt">音読継続日数クラス最長。継続力・自己管理に才能の兆し。</div></div>
+  <div class="sig-past-item"><div class="sig-past-date">2026/3/3 · 集中力</div><div class="sig-past-txt">モノグサ英語3時間連続。集中して取り組む粘り強さが目立つ。</div></div>
+ </div>
+ <!-- TL -->
+ <div class="tl" id="tl">
+  <div class="tl-time">2026/4/10（木）</div>
+
+  <!-- 保護者メッセージ -->
+  <div class="bub-wrap">
+   <div class="bub-from">その田さん（保護者）06:22</div>
+   <div class="bub-recv">おはようございます。今朝も音読がんばっています！写真送ります。</div>
+  </div>
+
+  <!-- 写真着信①（音読アプリ・サムネイル）v74準拠2バブル -->
+  <div class="bub-wrap role-non-teacher">
+   <div class="bub-from">音読アプリ 着信 06:24 · GCS保存</div>
+   <div class="bub-data" style="background:#F5F5F5;border-color:#ddd;">
+    <div class="bub-data-label photo">📷 写真 3枚（音読アプリ）</div>
+    <div style="display:flex;gap:4px;overflow-x:auto;padding:3px 0;">
+     <div class="photo-thumb" onclick="openPhoto('算数ノート')" style="cursor:pointer;">算数<br>ノート</div>
+     <div class="photo-thumb" onclick="openPhoto('英語ノート')" style="cursor:pointer;background:#D7EAFB;border-color:#B5D4F4;color:#0C447C;">英語<br>ノート</div>
+     <div class="photo-thumb" onclick="openPhoto('理科ノート')" style="cursor:pointer;background:#FAEEDA;border-color:#F0D0A0;color:#633806;">理科<br>ノート</div>
+    </div>
+    <div style="font-size:10px;color:#aaa;margin-top:3px;">タップで拡大 · 実体ファイル→10分後グループLINE＋保護者メール自動送信</div>
+   </div>
+  </div>
+  <!-- 写真②事実返信（右） -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">自動送信 06:34 → グループLINE＋保護者メール</div>
+   <div class="bub-sent" style="font-size:12px;background:#E8F5EF;color:#27500A;">算数・英語・理科のノート写真　確認しました</div>
+  </div>
+
+  <!-- PDF①（LINE経由）v74準拠 -->
+  <div class="bub-wrap role-non-teacher">
+   <div class="bub-from">LINE 着信 06:35 · GCS保存</div>
+   <div class="bub-data" style="background:#F5F5F5;border-color:#ddd;cursor:pointer;" onclick="showToast('PDFダウンロード（実装予定）')">
+    <div class="bub-data-label photo">📄 PDF着信（LINE経由）</div>
+    <div style="font-size:12px;color:#1a1a1a;margin-top:2px;">英語テスト結果.pdf · 2ページ</div>
+    <div style="font-size:11px;color:#378ADD;margin-top:3px;font-weight:600;">⬇ タップでダウンロード</div>
+    <div style="font-size:10px;color:#aaa;margin-top:2px;">教師のみ閲覧可 · 実体ファイル自動送信なし（LINE経由）</div>
+   </div>
+  </div>
+  <!-- PDF②事実返信（右） -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">自動送信 06:45 → グループLINE＋保護者メール</div>
+   <div class="bub-sent" style="font-size:12px;background:#E8F5EF;color:#27500A;">英語のテスト結果78点　リスニング満点</div>
+  </div>
+
+  <!-- つみかさね着信バブル（右）v74準拠：LLMポイント＋間違い問題 -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">つみかさね 06:31 · 自動送信済</div>
+   <div class="bub-data" style="align-self:flex-end;background:#FFE8E8;border-color:#FFAAAA;">
+    <div class="bub-data-label tsm"><span style="background:#ff0000;color:#fff;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;">つみかさね</span> 数社 42問 · 正答率88% · 週累計3,840問</div>
+    <div style="font-size:11px;color:#ff0000;margin-top:2px;">📈 週平均3,210問→3,840問（+19%）</div>
+    <div style="margin-top:5px;padding-top:5px;border-top:1px dashed #FFAAAA;font-size:11px;line-height:2.1;">
+     2週音読時間　78分　<strong>6位／14人</strong><br>
+     2週モノつみ　3,840問　<strong>8位／22人</strong><br>
+     今月タゲトモ <span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;font-weight:700;">黄</span>　3,210pt　<strong>14位／16人</strong>
+     <div style="font-size:10px;color:#aaa;margin-top:3px;">📋 開発メモ：メールにはランキング全文（TOP10）送信</div>
+    </div>
+    <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #FFAAAA;">
+     <div style="font-size:10px;color:#ff0000;font-weight:700;margin-bottom:3px;">💡 今日のポイント（LLM生成）</div>
+     <div style="font-size:11px;line-height:1.6;">数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっており、この単元の定着が進んでいます。</div>
+    </div>
+    <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #FFAAAA;">
+     <div style="font-size:10px;color:#ff0000;font-weight:700;margin-bottom:3px;">📝 間違い問題（達成度向上 · 数社）</div>
+     <div style="font-size:11px;line-height:1.6;">Q. 3x + 7 = 22<br><span style="color:#A32D2D;">誤答：x = 4</span>　<span style="color:#1D9E75;">正解：x = 5</span><br><span style="font-size:10px;color:#666;">解説：両辺から7を引くと 3x = 15、x = 5</span></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- 音読着信バブル（右）v74準拠：STT最難単語付き -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">音読アプリ 着信 06:48</div>
+   <div class="bub-data" style="align-self:flex-end;background:#FFF0E6;border-color:#FFB88A;">
+    <div class="bub-data-label oto"><span style="background:#FF5F00;color:#fff;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;">音読</span> 英語 · 実質12分18秒</div>
+    <div style="font-size:11px;color:#FF5F00;margin-top:2px;">📈 3か月トレンド：月平均42分→78分（+86%）　<span style="color:#888;cursor:pointer;">▶ 再生（教師・保護者メールのみ）</span></div>
+    <div style="margin-top:5px;padding-top:5px;border-top:1px dashed #FFB88A;font-size:11px;line-height:2.1;">
+     2週音読時間　78分　<strong>6位／14人</strong><br>
+     2週モノつみ　3,840問　<strong>8位／22人</strong><br>
+     今月タゲトモ <span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;font-weight:700;">黄</span>　3,210pt　<strong>14位／16人</strong>
+     <div style="font-size:10px;color:#aaa;margin-top:3px;">📋 開発メモ：メールにはランキング全文（TOP10）送信</div>
+    </div>
+    <div style="margin-top:5px;padding-top:5px;border-top:1px dashed #FFB88A;">
+     <div style="font-size:10px;color:#FF5F00;font-weight:700;margin-bottom:3px;">🔤 STT · 最難単語（8分以上 · M-4自動送信済）</div>
+     <div style="font-size:11px;line-height:1.6;"><strong>perseverance</strong>（名詞）<br>意味：困難に負けずに続ける力・粘り強さ<br>用例：Perseverance is the key to mastering English.</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- タゲトモ着信バブル（右）v74準拠 -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">タゲトモ 07:12 · 自動送信済</div>
+   <div class="bub-data" style="align-self:flex-end;background:#FFF9E6;border-color:#f8b500;">
+    <div class="bub-data-label tgt"><span style="background:#f8b500;color:#fff;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;">黄</span> タゲトモ　935点</div>
+    <div style="font-size:11px;color:#aaa;margin-top:2px;">前月比+87 · 4月通算3,210pt</div>
+    <div style="font-size:10px;color:#aaa;margin-top:2px;">
+     <span style="background:#009342;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;">緑</span>
+     <span style="background:#0052a4;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;margin-left:2px;">青</span>
+     <span style="background:#ffe500;color:#555;font-size:10px;padding:1px 4px;border-radius:3px;margin-left:2px;">熟</span>
+     <span style="color:#bbb;margin-left:4px;">色ごとにランキング集計</span>
+    </div>
+    <div style="margin-top:5px;padding-top:5px;border-top:1px dashed #F0C8A0;font-size:11px;line-height:2.1;">
+     2週音読時間　78分　<strong>6位／14人</strong><br>
+     2週モノつみ　3,840問　<strong>8位／22人</strong><br>
+     今月タゲトモ <span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;font-weight:700;">黄</span>　3,210pt　<strong>14位／16人</strong>
+     <div style="font-size:10px;color:#aaa;margin-top:3px;">📋 開発メモ：メールにはランキング全文（TOP10）送信</div>
+    </div>
+   </div>
+  </div>
+
+  <!-- モノグサバブル（右）v74新規追加：日次バッチ取得 -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">モノグサ バッチ取得 10:30</div>
+   <div class="bub-data" style="align-self:flex-end;background:#DCF2FF;border-color:#80CCFF;">
+    <div class="bub-data-label mno"><span style="background:#009bf0;color:#fff;font-size:11px;font-weight:700;padding:1px 5px;border-radius:3px;">モノグサ</span> 数社 340問 · 正答率82%</div>
+    <div style="font-size:11px;color:#009bf0;margin-top:2px;">📈 3か月トレンド：月平均2,100問→3,840問（+83%）</div>
+    <div style="margin-top:5px;padding-top:5px;border-top:1px dashed #80CCFF;font-size:11px;line-height:2.1;">
+     2週音読時間　78分　<strong>6位／14人</strong><br>
+     2週モノつみ　3,840問　<strong>8位／22人</strong><br>
+     今月タゲトモ <span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;font-weight:700;">黄</span>　3,210pt　<strong>14位／16人</strong>
+     <div style="font-size:10px;color:#aaa;margin-top:3px;">📋 開発メモ：メールにはランキング全文（TOP10）送信</div>
+    </div>
+    <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #80CCFF;">
+     <div style="font-size:10px;color:#009bf0;font-weight:700;margin-bottom:3px;">💡 今日のポイント（LLM生成）</div>
+     <div style="font-size:11px;line-height:1.6;">数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっており、この単元の定着が進んでいます。</div>
+    </div>
+    <div style="margin-top:4px;padding-top:4px;border-top:1px dashed #80CCFF;">
+     <div style="font-size:10px;color:#009bf0;font-weight:700;margin-bottom:3px;">📝 間違い問題（達成度向上 · 数社）</div>
+     <div style="font-size:11px;line-height:1.6;">Q. 3x + 7 = 22<br><span style="color:#A32D2D;">誤答：x = 4</span>　<span style="color:#1D9E75;">正解：x = 5</span><br><span style="font-size:10px;color:#666;">解説：両辺から7を引くと 3x = 15、x = 5</span></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- 保護者からの問い合わせ -->
+  <div class="bub-wrap">
+   <div class="bub-from">保護者 07:01</div>
+   <div class="bub-recv">オンライン授業のURLを教えてください</div>
+  </div>
+
+  <!-- おばちゃん自動返信 STEP2 -->
+  <div class="bub-wrap" style="flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">自動返信 07:01 → STEP2</div>
+   <div class="oba-wrap" style="align-self:flex-end;max-width:95%;">
+    <div class="oba-hdr" id="oba-hdr" onclick="toggleOba()">
+     <span>🤖 キーワード候補を送信済み</span><span class="arrow">▼</span>
+    </div>
+    <div class="oba-detail" id="oba-detail">
+     <div class="oba-txt">zoom<br>オンライン<br>音読<br><a href="#" style="color:#185FA5;font-size:11px;display:block;margin-top:4px;">▶ 事務LINEへ</a></div>
+    </div>
+   </div>
+  </div>
+
+  <!-- AI返信案 -->
+  <div class="ai-box" id="ai-box">
+   <div class="ai-box-lbl">AI返信案 — タップで採用・修正して送信</div>
+   <div class="ai-case" id="rc-a">
+    <div class="ai-case-hd" onclick="cpTo('a')"><span class="ai-case-lbl fact">案A</span><span class="ai-case-txt">本日のオンライン授業URLはこちらです。開始5分前にご入室ください。→ https://zoom.us/j/XXXXXXX</span></div>
+    <div class="ai-case-btns"><button class="ai-btn adopt" onclick="adopt('a')">採用</button><button class="ai-btn reject" onclick="doRej('a')">却下</button></div>
+   </div>
+   <div class="ai-case" id="rc-b">
+    <div class="ai-case-hd" onclick="cpTo('b')"><span class="ai-case-lbl">案B</span><span class="ai-case-txt">オンライン授業のURLをお送りします。→ https://zoom.us/j/XXXXXXX</span></div>
+    <div class="ai-case-btns"><button class="ai-btn adopt" onclick="adopt('b')">採用</button><button class="ai-btn reject" onclick="doRej('b')">却下</button></div>
+   </div>
+   <div class="ai-case" id="rc-c">
+    <div class="ai-case-hd" onclick="cpTo('c')"><span class="ai-case-lbl">案C</span><span class="ai-case-txt">本日の授業は予定通りオンラインで行います。URLをご確認ください。</span></div>
+    <div class="ai-case-btns"><button class="ai-btn adopt" onclick="adopt('c')">採用</button><button class="ai-btn reject" onclick="doRej('c')">却下</button></div>
+   </div>
+   <button class="ai-all-reject" onclick="allReject()">3件まとめて却下</button>
+  </div>
+
+  <!-- 送信済み（表示用） -->
+  <div class="bub-wrap" id="sent-wrap" style="display:none;flex-direction:column;align-items:flex-end;">
+   <div class="bub-from" style="text-align:right;">送信済み</div>
+   <div class="bub-sent" id="sent-txt"></div>
+  </div>
+ </div>
+
+ <!-- 送信エリア -->
+ <div class="send-area" id="send-area">
+  <!-- 名前＋ツールボタン行 -->
+  <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding-bottom:6px;border-bottom:1px solid #f0f0f0;">
+   <div style="display:flex;align-items:center;gap:5px;flex:1;min-width:0;overflow:hidden;">
+    <span id="sa-name" style="font-size:17px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">その田 せいと</span>
+    <span id="sa-channel" style="font-size:11px;padding:2px 7px;border-radius:6px;background:#E8F5EF;color:#27500A;font-weight:600;white-space:nowrap;flex-shrink:0;">👥 グループ</span>
+   </div>
+   <button class="mh-btn role-admin-only" onclick="window.open('https://kisogakuryoku.jp/tsumikasaneAPP/dashboards/','_blank')">つみ</button>
+   <button class="mh-btn role-admin-only" onclick="openPhotoGallery()">写真</button>
+   <button class="mh-btn" onclick="openRDrawer()">📊</button>
+  </div>
+  <div class="send-row">
+   <div class="plus-btn" onclick="togglePlusMenu()">＋</div>
+   <textarea class="send-ta" id="reply-ta" rows="1" placeholder="メッセージを入力..." oninput="arTA(this)">英語音読12分、記録しました。</textarea>
+   <button class="send-btn" id="btn-send" onclick="doSend()">
+    <svg viewBox="0 0 24 24"><path d="M2 21l21-9L2 3v7l15 2-15 2z"/></svg>
+   </button>
+  </div>
+  <div class="dt-row" id="dt-row">
+   <input type="text" class="dt-inp-m" id="msg-dt-inp" placeholder="時刻4桁（例:0630）" onclick="openMsgNumpad()" readonly />
+   <span style="font-size:11px;color:#aaa;">禁止時間帯→翌朝6:30〜7:15</span>
+  </div>
+  <div class="send-note">送信後1分以内はタップで取消可 · 23:00〜6:30は翌朝ランダム遅延</div>
+ </div>
+</div>
+
+<!-- ======================= 配信タブ ======================= -->
+<div class="screen" id="screen-bc">
+ <div class="bc-scroll">
+
+  <!-- 配信作成 -->
+  <div class="card">
+   <div class="card-t">配信内容を作成</div>
+   <div class="field">
+    <div class="flbl">タグで送信先を絞り込み（OR条件）</div>
+    <div class="tg-grp">
+     <button class="tc on" onclick="this.classList.toggle('on')">中</button>
+     <button class="tc" onclick="this.classList.toggle('on')">高</button>
+     <button class="tc" onclick="this.classList.toggle('on')">小</button>
+     <button class="tc on" onclick="this.classList.toggle('on')">英検</button>
+     <button class="tc" onclick="this.classList.toggle('on')">新井中</button>
+     <button class="tc" onclick="this.classList.toggle('on')">RB</button>
+    </div>
+    <div class="tgnote">「中」または「英検」→ 131名（重複排除後）</div>
+   </div>
+   <div class="field">
+    <div class="flbl">送信先</div>
+    <div class="dest-grid">
+     <button class="db on" onclick="this.classList.toggle('on')">保護者LINE</button>
+     <button class="db on" onclick="this.classList.toggle('on')">保護者メール</button>
+     <button class="db on" onclick="this.classList.toggle('on')">生徒LINE</button>
+     <button class="db on" onclick="this.classList.toggle('on')">生徒メール</button>
+    </div>
+    <button class="db dim" style="width:100%;margin-top:5px;" onclick="this.classList.toggle('on');this.classList.toggle('dim')">グループにも送る（OFF）</button>
+   </div>
+   <div class="field">
+    <div class="flbl">画像添付（GCS · 最大2枚）</div>
+    <div class="gcs-grid" id="bc-ig">
+     <div class="gcs-t sel" onclick="togImg(this)"><div class="gcs-ti" style="background:#D3E8FF;"></div><div class="gcs-tn">授業風景.jpg</div><div class="gcs-sb">1</div></div>
+     <div class="gcs-t" onclick="togImg(this)"><div class="gcs-ti" style="background:#D4F0E0;"></div><div class="gcs-tn">ホワイトボード.jpg</div></div>
+     <div class="gcs-t" onclick="togImg(this)"><div class="gcs-ti" style="background:#FFF0CC;"></div><div class="gcs-tn">春期講習.jpg</div></div>
+     <div class="gcs-t" onclick="togImg(this)"><div class="gcs-ti" style="background:#F5D0D0;"></div><div class="gcs-tn">スコア表.jpg</div></div>
+    </div>
+    <div style="font-size:11px;color:#1870C0;margin-top:5px;" id="bc-ig-lbl">選択中：授業風景.jpg（1枚 / 残1枚可）</div>
+   </div>
+   <div class="field">
+    <div class="flbl">送信テキスト</div>
+    <textarea class="bct" id="bc-txt" maxlength="5000" oninput="syncPv();tdraftCount(this)">★本日の！予定　ご確認ください。
+春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！
+3月最終日、さらに全力で。</textarea>
+    <div class="tdraft-counter" id="bc-counter">69 / 5,000文字</div>
+   </div>
+   <div class="field">
+    <div class="flbl">配信日時</div>
+    <div class="ck-row"><input type="checkbox" id="sn" onchange="togSN(this.checked)" /><label class="ck-lbl" for="sn">すぐに配信</label></div>
+    <input class="dt-inp-bc" type="text" id="dt-inp" inputmode="numeric" placeholder="日時を選択..." onclick="openBcNumpad()" readonly />
+    <div class="lock-chip" id="lb">23:00〜6:30 送信不可</div>
+    <div id="urg-wrap" style="display:none;">
+     <div class="urg-box">
+      <div class="urg-t">緊急配信 — 禁止時間帯</div>
+      <div class="urg-b"><strong>【緊急配信】</strong>と入力してください。監査ログに記録されます。</div>
+      <input class="urg-in" id="urg-in" placeholder="【緊急配信】と入力" oninput="chkUrg(this.value)" />
+      <div style="display:flex;gap:8px;margin-top:8px;">
+       <button class="abtn-d" id="urg-btn" disabled style="opacity:.4;">許可して続ける</button>
+       <button class="abtn" onclick="dismissUrg()">キャンセル</button>
+      </div>
+     </div>
+    </div>
+   </div>
+   <div class="act-row-bc">
+    <button class="abtn abtn-b" onclick="showPv()">プレビュー確認</button>
+    <button class="abtn">下書き保存</button>
+   </div>
+  </div>
+
+  <!-- プレビュー -->
+  <div class="pvc" id="pv-card" style="display:none;">
+   <div class="pvh"><div class="pvdot"></div><div class="pvlbl">送信プレビュー</div></div>
+   <div class="field">
+    <div class="flbl">LINE・メール共通（131名）</div>
+    <div class="line-bub"><div class="line-lbl">LINE / メール本文</div><div class="line-txt" id="pv-line"></div></div>
+    <div class="pv-meta" id="pv-meta">添付：授業風景.jpg　配信日時：—</div>
+   </div>
+   <div class="act-row-bc">
+    <button class="abtn abtn-g">この内容で送信する</button>
+    <button class="abtn" onclick="document.getElementById('pv-card').style.display='none'">戻って編集</button>
+   </div>
+  </div>
+
+  <!-- 過去配信検索（下部） -->
+  <div class="card">
+   <div class="card-t">📋 過去の配信から検索</div>
+   <div class="hist-search-wrap">
+    <input class="hist-search-inp" id="hist-inp" placeholder="キーワードを入力..." oninput="liveSearch(this.value)" />
+    <button class="hist-search-btn" onclick="liveSearch(document.getElementById('hist-inp').value)">検索</button>
+   </div>
+   <div id="hist-results">
+    <div class="hi"><div class="hi-top"><div class="hi-date">2026/3/31 6:39</div><div class="hi-sc" style="font-size:11px;padding:2px 7px;border-radius:5px;background:#D4F0E0;color:#085041;font-weight:600;">最新</div></div><div class="hi-prev">★本日の！予定　ご確認ください。春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！</div><div class="hi-meta">絞り込み · 97名</div><button class="hi-tog" onclick="togHi(this)">全文を見る</button><div class="hi-full">★本日の！予定　ご確認ください。
+春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！
+3月最終日、さらに全力で。</div></div>
+    <div class="hi"><div class="hi-top"><div class="hi-date">2026/3/28 6:45</div></div><div class="hi-prev">★本日の！予定です。3月も残すところ、あと4日。4/1に、みなぎる気合と…</div><div class="hi-meta">絞り込み · 97名</div><button class="hi-tog" onclick="togHi(this)">全文を見る</button><div class="hi-full">★本日の！予定です。
+3月も残すところ、あと4日。
+4/1に、みなぎる気合と新しいエネルギーを感じるためには、3月の終わり方。</div></div>
+    <div class="hi"><div class="hi-top"><div class="hi-date">2026/3/15 6:45</div></div><div class="hi-prev">定期テスト対策！今週から、直前集中モードに入ります。</div><div class="hi-meta">中 · 高 · 94名</div><button class="hi-tog" onclick="togHi(this)">全文を見る</button><div class="hi-full">定期テスト対策！今週から、直前集中モードに入ります。
+毎日の積み重ねが、本番につながります。頑張りましょう！</div></div>
+   </div>
+  </div>
+
+ </div>
+</div>
+
+<!-- ＋メニュー -->
+<div class="drawer-bg" id="plus-bg" onclick="closePlusMenu()"></div>
+<div class="plus-menu" id="plus-menu">
+ <div class="plus-menu-grid">
+  <div class="pm-item pm-camera" onclick="pmAction('camera')"><div class="pm-ico-wrap">📷</div><span class="pm-lbl">カメラ</span></div>
+  <div class="pm-item pm-photo" onclick="pmAction('photo')"><div class="pm-ico-wrap">🖼️</div><span class="pm-lbl">画像</span></div>
+  <div class="pm-item pm-template" onclick="pmAction('template')"><div class="pm-ico-wrap">💬</div><span class="pm-lbl">定型文</span></div>
+  <div class="pm-item pm-call" onclick="pmAction('call')"><div class="pm-ico-wrap">📞</div><span class="pm-lbl">通話</span></div>
+  <div class="pm-item pm-time" onclick="pmAction('time')"><div class="pm-ico-wrap">🕐</div><span class="pm-lbl">日時</span></div>
+ </div>
+</div>
+
+<!-- 定型文ドロワー -->
+<div class="drawer-bg" id="tk-bg" onclick="closeTk()"></div>
+<div class="tk-drawer" id="tk-drawer">
+ <div class="tk-dh"><span class="tk-dh-t">定型文（50件）</span><span class="tk-close" onclick="closeTk()">✕</span></div>
+ <div class="tk-sw"><input placeholder="定型文を検索..." /></div>
+ <div class="tk-list">
+  <div class="tk-i" onclick="insT('塾生マイページは全県模試でご利用いただけます。最初は慣れない感じで扱いにくいかもしれませんが、ぜひ一度ご覧ください。')"><div class="tk-i-t">塾生マイページ</div><div class="tk-i-b">全県模試でご利用いただけます…</div></div>
+  <div class="tk-i" onclick="insT('↑急いでつくった解答解説です。まちがいもあり得るので、あくまで参考として使用してください。')"><div class="tk-i-t">定期テスト解答</div><div class="tk-i-b">急いでつくった解答解説です…</div></div>
+  <div class="tk-i" onclick="insT('進路情報をGmailに共有いたしました。情報量がとても多いので、まずはこちらからご確認ください。')"><div class="tk-i-t">進路情報</div><div class="tk-i-b">Gmailに共有いたしました…</div></div>
+  <div class="tk-i" onclick="insT('お問い合わせありがとうございます！！ユニティ責任者の高塚です。')"><div class="tk-i-t">問い合わせ対応</div><div class="tk-i-b">ありがとうございます！！…</div></div>
+  <div class="tk-i" onclick="insT('本日のオンライン授業URLはこちらです。開始5分前にご入室ください。')"><div class="tk-i-t">Zoom URL送付</div><div class="tk-i-b">本日のオンライン授業URLは…</div></div>
+ </div>
+</div>
+
+<!-- 右ドロワー -->
+<div class="r-drawer-overlay" id="r-ov" onclick="closeRDrawer()"></div>
+<div class="r-drawer" id="r-drawer">
+ <div class="r-dh"><span class="r-dh-t" id="r-dh-name">学習データ</span><span class="r-close" onclick="closeRDrawer()">✕</span></div>
+ <!-- アクティビティ（v72準拠：バッジ表示、新しい順） -->
+ <div class="rs">
+  <div class="rl">最新アクティビティ <span style="font-size:10px;color:#ccc;font-weight:400;">新しい順</span></div>
+  <div class="act-row"><span><span class="act-badge" style="background:#f8b500;color:#fff;">黄</span></span><span style="font-size:12px;">タゲトモ 935点</span><span class="act-time">今日 07:12</span></div>
+  <div class="act-row"><span><span class="act-badge" style="background:#FF5F00;color:#fff;">音読</span></span><span style="font-size:12px;">英語 12分18秒</span><span class="act-time">今日 06:48</span></div>
+  <div class="act-row"><span><span class="act-badge" style="background:#ff0000;color:#fff;">つみ</span></span><span style="font-size:12px;">数社 42問 88%</span><span class="act-time">今日 06:31</span></div>
+  <div class="act-row"><span><span class="act-badge" style="background:#009bf0;color:#fff;">モノ</span></span><span style="font-size:12px;">数社 340問</span><span class="act-time">今日 10:30（バッチ）</span></div>
+  <div class="act-row"><span><span class="act-badge mono">モノ</span></span><span style="font-size:12px;">英語 340問</span><span class="act-time">3日前</span></div>
+ </div>
+ <!-- ランキング4種 -->
+ <div class="rs"><div class="rl">音読時間<span class="rperiod">2週間</span></div>
+  <div class="rrow"><span class="rpos">5位</span><div class="rname">きむらりく</div><div class="rval">87分</div></div>
+  <div class="rrow"><span class="rpos cur">6位</span><div class="rname cur">その田 せいと</div><div class="rval">78分</div></div>
+  <div class="rrow"><span class="rpos">7位</span><div class="rname">やまだしょう</div><div class="rval">61分</div></div>
+  <div class="rtotal">中高生 14名中</div>
+ </div>
+ <div class="rs"><div class="rl">問題数（つみ＋モノ）<span class="rperiod">2週間</span></div>
+  <div class="rrow"><span class="rpos">7位</span><div class="rname">まえのたろう</div><div class="rval">4,120問</div></div>
+  <div class="rrow"><span class="rpos cur">8位</span><div class="rname cur">その田 せいと</div><div class="rval">3,840問</div></div>
+  <div class="rrow"><span class="rpos">9位</span><div class="rname">つぎのじろう</div><div class="rval">3,710問</div></div>
+  <div class="rtotal">中高生 22名中</div>
+ </div>
+ <div class="rs"><div class="rl">正答率（つみ＋モノ）<span class="rperiod">1週間</span></div>
+  <div class="rrow"><span class="rpos">3位</span><div class="rname">きむらりく</div><div class="rval">94.2%</div></div>
+  <div class="rrow"><span class="rpos cur">4位</span><div class="rname cur">その田 せいと</div><div class="rval">91.8%</div></div>
+  <div class="rrow"><span class="rpos">5位</span><div class="rname">まえのたろう</div><div class="rval">90.3%</div></div>
+  <div class="rtotal">中高生 19名中</div>
+ </div>
+ <div class="rs"><div class="rl">タゲトモスコア<span class="rperiod">今月</span></div>
+  <div class="rrow"><span class="rpos">13位</span><div class="rname">まえのはな</div><div class="rval"><span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;">黄</span> 3,250</div></div>
+  <div class="rrow"><span class="rpos cur">14位</span><div class="rname cur">その田 せいと</div><div class="rval"><span style="background:#f8b500;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;">黄</span> 3,210</div></div>
+  <div class="rrow"><span class="rpos">15位</span><div class="rname">すずきりこ</div><div class="rval"><span style="background:#009342;color:#fff;font-size:10px;padding:1px 4px;border-radius:3px;">緑</span> 2,980</div></div>
+  <div class="rtotal">中高生 16名中</div>
+ </div>
+ <div class="note-sec">
+  <div class="sec-lbl">ノート</div>
+  <textarea class="note-ta" rows="4">コツコツ型。音読毎日継続中。タゲトモ黄1200で月3000点台安定。英語が得意。面談で進路（理系）予定。</textarea>
+ </div>
+ <div class="tag-sec">
+  <div class="sec-lbl">タグ</div>
+  <div class="chips"><span class="chip sf">中2</span><span class="chip sf">保護者</span><span class="chip">音読継続中 <span class="chip-x" onclick="this.closest('.chip').remove()">×</span></span><span class="chip">新井中 <span class="chip-x" onclick="this.closest('.chip').remove()">×</span></span></div>
+  <input class="tag-add" placeholder="タグを追加（Enter）..." onkeydown="addTag(event,this)" />
+ </div>
+ <div class="llm-box">
+  <div class="llm-lbl">コンテキスト</div>
+  <div class="llm-item"><span class="llm-item-t">学習パターン</span><div class="llm-item-b">毎朝6:30〜7:00に音読＋つみかさね実施。週末は途切れがち。</div></div>
+  <div class="llm-item"><span class="llm-item-t">才能の兆し</span><div class="llm-item-b">継続力が高い。成果が出なくても習慣が崩れない。</div></div>
+  <div class="llm-item"><span class="llm-item-t">指導メモ</span><div class="llm-item-b">英検準2リスニング対策中。シャドーイング提案済み（4/14）。</div></div>
+ </div>
+</div>
+
+<!-- 通話モーダル -->
+<div class="modal-ov" id="call-modal" onclick="if(event.target===this)this.classList.remove('show')">
+ <div class="modal">
+  <div class="modal-t">📞 通話リンクを送信</div>
+  <div class="modal-sub">LINE通話リンクをチャットに貼り付けます。</div>
+  <div class="modal-dest" id="call-dest">その田 せいと（保護者）個別</div>
+  <div class="modal-acts">
+   <button class="m-cancel" onclick="document.getElementById('call-modal').classList.remove('show')">キャンセル</button>
+   <button class="m-ok" onclick="sendCall()">送信する</button>
+  </div>
+ </div>
+</div>
+
+<!-- 写真拡大モーダル -->
+<div class="photo-modal" id="photo-modal">
+ <span class="photo-modal-close" onclick="closePhoto()">✕</span>
+ <div class="photo-modal-img" id="photo-modal-img" style="width:280px;height:200px;">（写真プレビュー）</div>
+ <div class="photo-modal-btns">
+  <button class="photo-modal-btn" onclick="showToast('回転（実装予定）')">↺ 回転</button>
+  <button class="photo-modal-btn" onclick="showToast('拡大（実装予定）')">🔍 拡大</button>
+  <button class="photo-modal-btn" onclick="showToast('トリミング（実装予定）')">✂ トリミング</button>
+  <button class="photo-modal-btn" onclick="showToast('GCS保存（実装予定）')">💾 保存</button>
+ </div>
+</div>
+
+<!-- テンキー（メッセージ用） -->
+<div class="numpad-ov" id="msg-numpad-ov" onclick="if(event.target===this)closeMsgNumpad()">
+ <div class="numpad">
+  <div class="numpad-display" id="msg-np-disp">--:--</div>
+  <div class="numpad-hint">時刻4桁入力（例：0630 → 06:30）</div>
+  <div class="numpad-grid">
+   <button class="npk" onclick="npI('msg','7')">7</button><button class="npk" onclick="npI('msg','8')">8</button><button class="npk" onclick="npI('msg','9')">9</button>
+   <button class="npk" onclick="npI('msg','4')">4</button><button class="npk" onclick="npI('msg','5')">5</button><button class="npk" onclick="npI('msg','6')">6</button>
+   <button class="npk" onclick="npI('msg','1')">1</button><button class="npk" onclick="npI('msg','2')">2</button><button class="npk" onclick="npI('msg','3')">3</button>
+   <button class="npk del" onclick="npD('msg')">⌫</button><button class="npk" onclick="npI('msg','0')">0</button>
+   <button class="npk ok" onclick="npOk('msg')">確定 →</button>
+  </div>
+ </div>
+</div>
+<!-- テンキー（配信用） -->
+<div class="numpad-ov" id="bc-numpad-ov" onclick="if(event.target===this)closeBcNumpad()">
+ <div class="numpad">
+  <div class="numpad-display" id="bc-np-disp">--:--</div>
+  <div class="numpad-hint">時刻4桁入力（例：0630 → 06:30）</div>
+  <div class="numpad-grid">
+   <button class="npk" onclick="npI('bc','7')">7</button><button class="npk" onclick="npI('bc','8')">8</button><button class="npk" onclick="npI('bc','9')">9</button>
+   <button class="npk" onclick="npI('bc','4')">4</button><button class="npk" onclick="npI('bc','5')">5</button><button class="npk" onclick="npI('bc','6')">6</button>
+   <button class="npk" onclick="npI('bc','1')">1</button><button class="npk" onclick="npI('bc','2')">2</button><button class="npk" onclick="npI('bc','3')">3</button>
+   <button class="npk del" onclick="npD('bc')">⌫</button><button class="npk" onclick="npI('bc','0')">0</button>
+   <button class="npk ok" onclick="npOk('bc')">確定 →</button>
+  </div>
+ </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ===== OWNER_CONFIG =====
+var OWNER_CONFIG=[
+ {name:'高塚',bg:'#D4E8FF',color:'#0C447C'},
+ {name:'三郎',bg:'#E8D4FF',color:'#5B2D8A'},
+];
+
+var role='admin';
+var txts={
+ a:'本日のオンライン授業URLはこちらです。開始5分前にご入室ください。→ https://zoom.us/j/XXXXXXX',
+ b:'オンライン授業のURLをお送りします。→ https://zoom.us/j/XXXXXXX',
+ c:'本日の授業は予定通りオンラインで行います。URLをご確認ください。'
+};
+
+// ===== コンソール切り替え =====
+function switchMode(mode){
+ ['screen-list','screen-chat','screen-bc'].forEach(function(id){
+  var el=document.getElementById(id);if(el)el.classList.remove('act');
+ });
+ if(mode==='msg'){
+  var inChat=document.getElementById('tb-back-btn').style.visibility==='visible';
+  document.getElementById(inChat?'screen-chat':'screen-list').classList.add('act');
+  document.getElementById('cbtn-msg').classList.remove('off');
+  document.getElementById('cbtn-bc').classList.add('off');
+  document.getElementById('tb-title').textContent=inChat?document.getElementById('mh-name').textContent:'ユウエルコネクト';
+ } else {
+  document.getElementById('screen-bc').classList.add('act');
+  document.getElementById('cbtn-bc').classList.remove('off');
+  document.getElementById('cbtn-msg').classList.add('off');
+  document.getElementById('tb-title').textContent='配信';
+  document.getElementById('tb-back-btn').style.visibility='hidden';
+ }
+}
+
+// ===== ロール =====
+var roleLabels={admin:'責任者',mentor:'メンター',teacher:'先生'};
+var roleColors={admin:'admin',mentor:'mentor',teacher:'teacher'};
+function applyRole(){
+ role=document.getElementById('rsel').value;
+ var btn=document.getElementById('btn-send');
+ btn.className=role==='admin'?'send-btn':'send-btn learn';
+ // コンソール
+ var cr=document.getElementById('console-role');
+ cr.textContent=roleLabels[role];
+ cr.className='console-role '+role;
+ // 配信タブ：メンター・先生は非表示
+ var showBc=(role==='admin');
+ document.getElementById('cbtn-bc').style.display=showBc?'':'none';
+ if(!showBc&&document.getElementById('screen-bc').classList.contains('act')){
+  switchMode('msg');
+ }
+ // ＋メニュー：メンター・先生はすべて非表示
+ var hideAll=(role==='mentor'||role==='teacher');
+ ['camera','photo','template','call','time'].forEach(function(t){
+  var el=document.querySelector('.pm-'+t);
+  if(el)el.style.display=hideAll?'none':'';
+ });
+ // つみ・写真ボタン（責任者のみ）
+ document.querySelectorAll('.role-admin-only').forEach(function(el){
+  el.style.display=(role==='admin')?'':'none';
+ });
+ // 先生：生徒名仮名
+ applyTeacherAnon(role==='teacher');
+ // 先生：写真/PDFバブル非表示
+ document.querySelectorAll('.role-non-teacher').forEach(function(el){
+  el.style.display=(role==='teacher')?'none':'';
+ });
+}
+
+// 仮名化
+var anonMap={};var anonIdx=0;
+var anonNames=['生徒A','生徒B','生徒C','生徒D','生徒E','生徒F','生徒G','生徒H','生徒I'];
+function getAnon(name){if(!anonMap[name]){anonMap[name]=anonNames[anonIdx%anonNames.length];anonIdx++;}return anonMap[name];}
+function applyTeacherAnon(on){
+ document.querySelectorAll('.ci-name').forEach(function(el){
+  var orig=el.getAttribute('data-orig')||el.textContent;
+  el.setAttribute('data-orig',orig);
+  el.textContent=on?getAnon(orig):orig;
+ });
+}
+
+// ===== チャット開閉 =====
+var currentChatName='';
+function openChat(name,pill,locked,locker){
+ document.getElementById('screen-list').classList.remove('act');
+ document.getElementById('screen-chat').classList.add('act');
+ currentChatName=name;
+ // 仮名表示
+ var dispName=(role==='teacher')?getAnon(name):name;
+ // 名前からチャネル部分を分離して表示
+ var baseName=dispName.replace(/（[^）]+）/g,'').trim();
+ var ch=name.includes('グループ')?'👥 グループ':name.includes('保護者')?'👤 保護者':name.includes('生徒')?'🎒 生徒':'👤';
+ var chBg=name.includes('グループ')?'background:#E8F5EF;color:#27500A;':name.includes('保護者')?'background:#E6F1FB;color:#0C447C;':'background:#F0EFEB;color:#555;';
+ document.getElementById('mh-name').textContent=baseName;
+ var chEl=document.getElementById('mh-channel');
+ if(chEl){chEl.textContent=ch;chEl.style.cssText='font-size:12px;padding:2px 7px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0;'+chBg;}
+ // 送信エリアの名前・チャネル更新
+ var saName=document.getElementById('sa-name');
+ var saCh=document.getElementById('sa-channel');
+ if(saName)saName.textContent=baseName;
+ if(saCh){saCh.textContent=ch;saCh.style.cssText='font-size:11px;padding:2px 7px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0;'+chBg;}
+ document.getElementById('r-dh-name').textContent=baseName+' — 学習データ';
+ // 才能シグナル
+ var strip=document.getElementById('sig-strip');
+ var pillEl=document.getElementById('mh-pill');
+ if(pill){
+  pillEl.style.display='';pillEl.textContent=pill;
+  strip.style.display='block';
+  document.getElementById('sig-txt-main').textContent='音読継続日数クラス最長。継続力・自己管理に才能の兆し。';
+ }else{pillEl.style.display='none';strip.style.display='none';}
+ // ロック
+ var banner=document.getElementById('lock-banner');
+ var tl=document.getElementById('tl');
+ var sa=document.getElementById('send-area');
+ if(locked){
+  banner.classList.add('show');
+  document.getElementById('lock-banner-txt').textContent=(locker||'他の先生')+'さんが対応中です';
+  tl.classList.add('locked');
+  sa.classList.add('locked');
+ }else{
+  banner.classList.remove('show');
+  tl.classList.remove('locked');
+  sa.classList.remove('locked');
+ }
+ document.getElementById('tb-title').style.display='none';
+ var tbInfo=document.getElementById('tb-chat-info');
+ tbInfo.style.display='flex';
+ document.getElementById('tb-name').textContent=baseName;
+ var tbCh=document.getElementById('tb-channel');
+ tbCh.textContent=ch;tbCh.style.cssText='font-size:12px;padding:2px 7px;border-radius:6px;font-weight:600;white-space:nowrap;flex-shrink:0;'+chBg;
+ // トップバー
+ document.getElementById('tb-title').textContent=dispName;
+ document.getElementById('tb-back-btn').style.visibility='visible';
+ setTimeout(function(){tl.scrollTop=tl.scrollHeight;},50);
+}
+function closeChat(){
+ document.getElementById('screen-chat').classList.remove('act');
+ document.getElementById('screen-list').classList.add('act');
+ document.getElementById('tb-title').textContent='ユウエルコネクト';
+ document.getElementById('tb-title').style.display='';
+ var tbInfo=document.getElementById('tb-chat-info');
+ if(tbInfo)tbInfo.style.display='none';
+ document.getElementById('tb-back-btn').style.visibility='hidden';
+ document.getElementById('lock-banner').classList.remove('show');
+ document.getElementById('tl').classList.remove('locked');
+ document.getElementById('send-area').classList.remove('locked');
+ closePlusMenu();
+}
+function updateDestBar(name){
+ var grp=document.getElementById('dest-grp');
+ var ind=document.getElementById('dest-ind');
+ if(!grp||!ind)return;
+ var hasGrp=name.includes('グループ');
+ grp.style.display=hasGrp?'':'none';
+ ind.style.display='';
+ var baseName=name.replace('（グループ）','').replace('（保護者）','').replace('（生徒）','');
+ ind.textContent='👤 '+baseName+'（個別）';
+}
+
+// 才能シグナル
+function toggleSig(){
+ var d=document.getElementById('sig-detail');d.classList.toggle('show');
+ document.getElementById('sig-meta-main').textContent=d.classList.contains('show')?'直近1週間 ▲':'直近1週間 ▾';
+}
+function toggleOba(){
+ var h=document.getElementById('oba-hdr'),d=document.getElementById('oba-detail');
+ h.classList.toggle('open');d.classList.toggle('show');
+}
+
+// AI返信案
+function cpTo(id){
+ var ta=document.getElementById('reply-ta');
+ if(ta){ta.value=txts[id];arTA(ta);}
+ ['a','b','c'].forEach(function(x){document.getElementById('rc-'+x).classList.remove('adopted');});
+ document.getElementById('rc-'+id).classList.add('adopted');
+}
+function adopt(id){cpTo(id);}
+function doRej(id){document.getElementById('rc-'+id).style.opacity='.4';}
+function allReject(){['a','b','c'].forEach(function(x){document.getElementById('rc-'+x).style.opacity='.4';});showToast('3件を却下しました');}
+
+// ===== 送信（1分遅延） =====
+var pendingTimer=null;
+function doSend(){
+ var txt=document.getElementById('reply-ta').value;
+ if(!txt.trim()){showToast('メッセージを入力してください');return;}
+ if(role!=='admin'){doLearn();return;}
+ var ab=document.getElementById('ai-box');if(ab)ab.style.display='none';
+ // 保留バブルを追加
+ var tl=document.getElementById('tl');
+ var wrap=document.createElement('div');
+ wrap.className='bub-wrap';wrap.id='pending-wrap';
+ wrap.style.flexDirection='column';wrap.style.alignItems='flex-end';
+ var pendingTxt=txt;
+ wrap.innerHTML='<div class="bub-from" style="text-align:right;">送信保留中（1分以内にタップで取消）</div>'
+  +'<div class="bub-pending" id="pending-bub">'+escHtml(txt)
+  +'<div class="bub-pending-bar"><div class="bub-pending-progress"></div></div>'
+  +'<div class="bub-pending-cancel" onclick="cancelSend()">✕ 取消す</div></div>';
+ tl.appendChild(wrap);
+ tl.scrollTop=tl.scrollHeight;
+ document.getElementById('btn-send').className='send-btn done';
+ document.getElementById('reply-ta').value='';
+ arTA(document.getElementById('reply-ta'));
+ // 60秒後に確定送信
+ pendingTimer=setTimeout(function(){confirmSend(pendingTxt);},60000);
+}
+function confirmSend(txt){
+ var pw=document.getElementById('pending-wrap');if(pw)pw.remove();
+ document.getElementById('sent-txt').textContent=txt;
+ var sw=document.getElementById('sent-wrap');if(sw)sw.style.display='flex';
+ var tl=document.getElementById('tl');tl.scrollTop=tl.scrollHeight;
+ document.getElementById('btn-send').className='send-btn';
+ showToast('送信しました');
+ pendingTimer=null;
+}
+function cancelSend(){
+ if(pendingTimer){clearTimeout(pendingTimer);pendingTimer=null;}
+ var pw=document.getElementById('pending-wrap');if(pw)pw.remove();
+ // クリップボードにコピー
+ var st=document.getElementById('sent-txt').textContent;
+ if(navigator.clipboard&&st)navigator.clipboard.writeText(st);
+ document.getElementById('btn-send').className='send-btn';
+ showToast('取消しました（クリップボードにコピー済み）');
+}
+function doLearn(){
+ var ab=document.getElementById('ai-box');if(ab)ab.style.display='none';
+ document.getElementById('btn-send').className='send-btn done';
+ showToast('学習データとして保存しました');
+ document.getElementById('reply-ta').value='';
+ arTA(document.getElementById('reply-ta'));
+}
+function sendCall(){
+ var ta=document.getElementById('reply-ta');
+ if(ta){ta.value='LINE通話はこちらから → tel:045XXXXXXXX';arTA(ta);}
+ document.getElementById('call-modal').classList.remove('show');
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+
+// ===== ＋メニュー =====
+function togglePlusMenu(){
+ var m=document.getElementById('plus-menu'),bg=document.getElementById('plus-bg');
+ var s=m.classList.contains('show');
+ if(s){m.classList.remove('show');bg.classList.remove('show');}
+ else{m.classList.add('show');bg.classList.add('show');}
+}
+function closePlusMenu(){
+ document.getElementById('plus-menu').classList.remove('show');
+ document.getElementById('plus-bg').classList.remove('show');
+}
+function pmAction(t){
+ closePlusMenu();
+ if(t==='template')openTk();
+ else if(t==='call')document.getElementById('call-modal').classList.add('show');
+ else if(t==='time'){document.getElementById('dt-row').classList.toggle('show');}
+ else if(t==='camera')showToast('カメラ（実装予定）');
+ else if(t==='photo')showToast('フォトライブラリ（実装予定）');
+}
+function openTk(){document.getElementById('tk-drawer').classList.add('show');document.getElementById('tk-bg').classList.add('show');}
+function closeTk(){document.getElementById('tk-drawer').classList.remove('show');document.getElementById('tk-bg').classList.remove('show');}
+function insT(t){var ta=document.getElementById('reply-ta');if(ta){ta.value=t;arTA(ta);}closeTk();}
+function openRDrawer(){document.getElementById('r-drawer').classList.add('show');document.getElementById('r-ov').classList.add('show');}
+function closeRDrawer(){document.getElementById('r-drawer').classList.remove('show');document.getElementById('r-ov').classList.remove('show');}
+function addTag(e,inp){if(e.key==='Enter'&&inp.value.trim()){var w=document.querySelector('#r-drawer .chips'),c=document.createElement('span');c.className='chip';c.innerHTML=inp.value.trim()+' <span class="chip-x" onclick="this.closest(\'.chip\').remove()">×</span>';w.appendChild(c);inp.value='';}}
+
+// ===== 写真拡大 =====
+function openPhoto(name){
+ document.getElementById('photo-modal-img').textContent='（'+name+' プレビュー）';
+ document.getElementById('photo-modal').classList.add('show');
+}
+function openPhotoGallery(){showToast('写真一覧（実装予定）');}
+function closePhoto(){document.getElementById('photo-modal').classList.remove('show');}
+
+// ===== 配信 =====
+var imgSt=[];
+function togImg(el){
+ var n=el.querySelector('.gcs-tn').textContent,i=imgSt.indexOf(n);
+ if(i>=0){imgSt.splice(i,1);el.classList.remove('sel');var b=el.querySelector('.gcs-sb');if(b)b.remove();}
+ else{if(imgSt.length>=2){showToast('最大2枚まで');return;}imgSt.push(n);el.classList.add('sel');var b=document.createElement('div');b.className='gcs-sb';b.textContent=imgSt.length;el.appendChild(b);}
+ document.getElementById('bc-ig-lbl').textContent=imgSt.length===0?'未選択（最大2枚）':'選択中：'+imgSt.join('、')+'（'+imgSt.length+'枚）';
+}
+function syncPv(){var t=document.getElementById('bc-txt'),pl=document.getElementById('pv-line');if(t&&pl)pl.textContent=t.value;}
+function tdraftCount(el){var c=document.getElementById('bc-counter');if(c)c.textContent=el.value.length.toLocaleString()+' / 5,000文字';}
+function showPv(){
+ syncPv();
+ var dt=document.getElementById('dt-inp').value;
+ var m=document.getElementById('pv-meta');if(m)m.textContent='添付：'+(imgSt.length?imgSt.join('・'):'なし')+'　配信日時：'+(dt||'未設定');
+ var p=document.getElementById('pv-card');if(p){p.style.display='block';p.scrollIntoView({behavior:'smooth',block:'start'});}
+}
+function togSN(c){var d=document.getElementById('dt-inp'),lb=document.getElementById('lb');if(c){d.disabled=true;lb.style.display='none';}else{d.disabled=false;lb.style.display='';initDts();}}
+function chkDt(v){if(document.getElementById('sn').checked)return;var uw=document.getElementById('urg-wrap'),lb=document.getElementById('lb');var m=v.match(/(\d{2}):\d{2}/);if(m){var h=parseInt(m[1]),night=h>=23||h<6;if(night){uw.style.display='block';lb.className='lock-chip urg';lb.textContent='禁止時間帯に指定中';}else{uw.style.display='none';lb.className='lock-chip';lb.textContent='23:00〜6:30 送信不可';}}}
+function chkUrg(v){var btn=document.getElementById('urg-btn');var ok=v.trim()==='【緊急配信】';btn.disabled=!ok;btn.style.opacity=ok?'1':'.4';}
+function dismissUrg(){initDts();document.getElementById('urg-wrap').style.display='none';}
+
+// 過去配信検索
+var sampleHist=[
+ {date:'2026/3/31 6:39',prev:'★本日の！予定　ご確認ください。春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！',meta:'絞り込み · 97名',full:'★本日の！予定　ご確認ください。\n春期講習は、毎年のことですが、集中力が特に高く、気合が入ります！\n3月最終日、さらに全力で。'},
+ {date:'2026/3/28 6:45',prev:'★本日の！予定です。3月も残すところ、あと4日。4/1に、みなぎる気合と…',meta:'絞り込み · 97名',full:'★本日の！予定です。\n3月も残すところ、あと4日。\n4/1に、みなぎる気合と新しいエネルギーを感じるためには、3月の終わり方。'},
+ {date:'2026/3/15 6:45',prev:'定期テスト対策！今週から、直前集中モードに入ります。',meta:'中 · 高 · 94名',full:'定期テスト対策！今週から、直前集中モードに入ります。\n毎日の積み重ねが、本番につながります。頑張りましょう！'},
+ {date:'2026/3/10 21:00',prev:'英検2次試験の練習について連絡します。スピーキングの自主練を始めてください。',meta:'英検 · 37名',full:'英検2次試験の練習について連絡します。\nスピーキングの自主練を始めてください。\n来週から対策授業を行います。'},
+];
+function liveSearch(v){
+ if(!v.trim()){document.getElementById('hist-results').innerHTML=buildHistHTML(sampleHist.slice(0,3),null);return;}
+ var q=v.trim().toLowerCase();
+ var res=sampleHist.filter(function(h){return h.full.toLowerCase().includes(q)||h.meta.toLowerCase().includes(q);});
+ document.getElementById('hist-results').innerHTML=buildHistHTML(res,v.trim());
+}
+function buildHistHTML(items,query){
+ if(!items.length)return'<div class="hist-empty">「'+(query||'')+'」に一致する配信は見つかりませんでした</div>';
+ return items.map(function(h){
+  var prev=h.prev;
+  if(query){var re=new RegExp('('+query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi');prev=prev.replace(re,'<mark style="background:#FFF59D;border-radius:2px;">$1</mark>');}
+  return'<div class="hi"><div class="hi-top"><div class="hi-date">'+h.date+'</div></div><div class="hi-prev">'+prev+'</div><div class="hi-meta">'+h.meta+'</div><button class="hi-tog" onclick="togHi(this)">全文を見る</button><div class="hi-full" style="display:none;">'+h.full+'</div></div>';
+ }).join('');
+}
+function togHi(btn){var f=btn.nextElementSibling;var s=f.style.display==='none';f.style.display=s?'block':'none';btn.textContent=s?'閉じる':'全文を見る';}
+
+// テンキー共通
+var npVals={msg:'',bc:''};
+function openMsgNumpad(){document.getElementById('msg-numpad-ov').classList.add('show');}
+function closeMsgNumpad(){document.getElementById('msg-numpad-ov').classList.remove('show');}
+function openBcNumpad(){document.getElementById('bc-numpad-ov').classList.add('show');}
+function closeBcNumpad(){document.getElementById('bc-numpad-ov').classList.remove('show');}
+function npI(t,d){if(npVals[t].length>=4)return;npVals[t]+=d;npDisp(t);}
+function npD(t){npVals[t]=npVals[t].slice(0,-1);npDisp(t);}
+function npDisp(t){var s=npVals[t].padEnd(4,'-');document.getElementById(t+'-np-disp').textContent=s.slice(0,2)+':'+s.slice(2);}
+function npOk(t){
+ if(npVals[t].length===4){var h=parseInt(npVals[t].slice(0,2)),m=parseInt(npVals[t].slice(2));
+  if(h>=0&&h<=23&&m>=0&&m<=59){var ts=String(h).padStart(2,'0')+':'+String(m).padStart(2,'0');
+   if(t==='msg'){document.getElementById('msg-dt-inp').value=ts;}
+   else{var d=document.getElementById('dt-inp');if(d){var now=new Date();var y=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0'),dd=String(now.getDate()).padStart(2,'0');d.value=y+'/'+mo+'/'+dd+' '+ts;chkDt(d.value);}}}}
+ if(t==='msg')closeMsgNumpad();else closeBcNumpad();
+ npVals[t]='';npDisp(t);
+}
+function initDts(){var d=document.getElementById('dt-inp');if(!d)return;var now=new Date();now.setDate(now.getDate()+1);var y=now.getFullYear(),mo=String(now.getMonth()+1).padStart(2,'0'),dd=String(now.getDate()).padStart(2,'0');var min=Math.floor(Math.random()*46)+390;d.value=y+'/'+mo+'/'+dd+' '+String(Math.floor(min/60)).padStart(2,'0')+':'+String(min%60).padStart(2,'0');}
+function arTA(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,140)+'px';}
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(function(){t.classList.remove('show');},2200);}
+
+document.addEventListener('DOMContentLoaded',function(){
+ var ta=document.getElementById('reply-ta');if(ta)arTA(ta);
+ applyRole();initDts();syncPv();
+ var bc=document.getElementById('bc-txt');if(bc)tdraftCount(bc);
+});
+</script>
+</div>
+</body>
+</html>
