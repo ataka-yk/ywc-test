@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>保護者受信モック v6</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    --lg: #06C755;
+    --lbg: #9bbcc2;
+    --navy: #1e3a5f;
+    --blue: #378ADD;
+    --dg: #2e7d32;
+    --oto-b: #FF5F00;
+    --tsumi-b: #e53935;
+    --mono-b: #009bf0;
+    --tage-b: #009342;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Noto Sans JP',sans-serif;background:#0c1420;min-height:100vh;
+    display:flex;flex-direction:column;align-items:center;padding:28px 12px 60px;gap:20px;}
+
+  .ptitle{text-align:center;}
+  .ptitle h1{font-family:sans-serif;color:#fff;font-size:1.1rem;font-weight:700;}
+  .ptitle p{color:rgba(255,255,255,.3);font-size:.68rem;margin-top:4px;}
+
+  .dual{display:flex;gap:22px;align-items:flex-start;width:100%;max-width:850px;flex-wrap:wrap;justify-content:center;}
+  .panel{flex:1 1 350px;max-width:378px;display:flex;flex-direction:column;align-items:center;}
+  .plbl{font-size:10px;font-weight:700;letter-spacing:.12em;color:#777;text-transform:uppercase;margin-bottom:7px;}
+
+  /* ══ PHONE ══ */
+  .phone{width:350px;background:#111;border-radius:40px;padding:10px;
+    box-shadow:0 22px 52px rgba(0,0,0,.78),inset 0 0 0 1px rgba(255,255,255,.05);}
+  .screen{border-radius:30px;overflow:hidden;background:var(--lbg);
+    display:flex;flex-direction:column;height:700px;}
+  .sbar{background:#1a3540;padding:4px 16px;display:flex;justify-content:space-between;
+    font-size:9.5px;color:rgba(255,255,255,.8);font-weight:600;}
+  .lhdr{background:#1a3540;padding:8px 12px;display:flex;align-items:center;gap:9px;
+    border-bottom:1px solid rgba(255,255,255,.08);}
+  .lhdr .bk{color:var(--lg);font-size:16px;}
+  .lav{width:30px;height:30px;border-radius:50%;background:var(--lg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+  .linfo h3{color:#fff;font-size:11px;font-weight:600;}
+  .linfo p{color:rgba(255,255,255,.38);font-size:8.5px;}
+  .lic{margin-left:auto;display:flex;gap:12px;color:rgba(255,255,255,.6);font-size:14px;}
+
+  .chat{flex:1;overflow-y:auto;padding:11px 8px;display:flex;flex-direction:column;gap:7px;}
+  .dsep{align-self:center;font-size:9px;color:rgba(0,0,0,.4);
+    background:rgba(255,255,255,.3);border-radius:8px;padding:2px 9px;}
+
+  /* 受信（左） */
+  .rv{display:flex;align-items:flex-end;gap:5px;max-width:88%;}
+  .mav{width:26px;height:26px;border-radius:50%;background:var(--lg);
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;font-weight:700;color:#fff;flex-shrink:0;align-self:flex-end;}
+  .bw{display:flex;flex-direction:column;gap:2px;}
+  .bn{font-size:8px;color:rgba(0,0,0,.38);padding-left:2px;}
+
+  /* LINE白バブル */
+  .b{background:#fff;border-radius:14px 14px 14px 3px;
+    padding:8px 11px;font-size:12px;line-height:1.8;color:#1a1a1a;
+    box-shadow:0 1px 2px rgba(0,0,0,.09);max-width:242px;
+    white-space:pre-wrap;word-break:break-word;}
+
+  /* 画像メッセージ（LINE仕様） */
+  .b-img{border-radius:12px;overflow:hidden;max-width:200px;
+    box-shadow:0 1px 3px rgba(0,0,0,.15);}
+  .img-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+  .img-th{background:#b8ced4;aspect-ratio:1;display:flex;flex-direction:column;
+    align-items:center;justify-content:center;font-size:18px;gap:1px;}
+  .img-th span{font-size:7px;color:#334;text-align:center;line-height:1.2;}
+  .img-single{background:#b8ced4;height:120px;display:flex;align-items:center;
+    justify-content:center;font-size:36px;}
+
+  /* ファイルメッセージ（LINE仕様） */
+  .b-file{background:#fff;border-radius:12px;padding:9px 12px;max-width:220px;
+    box-shadow:0 1px 2px rgba(0,0,0,.09);display:flex;align-items:center;gap:9px;
+    border:1px solid #e0e0e0;}
+  .b-file .fic{font-size:24px;flex-shrink:0;}
+  .b-file .fnm{font-size:11px;font-weight:700;color:#111;display:block;}
+  .b-file .fmt{font-size:9px;color:#888;display:block;margin-top:1px;}
+
+  /* 送信（右・緑） */
+  .st{display:flex;flex-direction:row-reverse;align-items:flex-end;gap:5px;
+    align-self:flex-end;max-width:72%;}
+  .bst{background:var(--lg);border-radius:14px 14px 3px 14px;
+    padding:8px 11px;font-size:12px;line-height:1.7;color:#fff;
+    box-shadow:0 1px 2px rgba(0,0,0,.18);word-break:break-word;}
+
+  /* 画像送信（右） */
+  .st-img{display:flex;flex-direction:row-reverse;align-items:flex-end;gap:5px;
+    align-self:flex-end;}
+  .b-img-r{border-radius:12px;overflow:hidden;max-width:200px;
+    box-shadow:0 1px 3px rgba(0,0,0,.2);}
+
+  /* ファイル送信（右） */
+  .st-file{display:flex;flex-direction:row-reverse;align-items:flex-end;gap:5px;
+    align-self:flex-end;}
+  .b-file-r{background:#06C755;border-radius:12px;padding:9px 12px;max-width:220px;
+    box-shadow:0 1px 2px rgba(0,0,0,.12);display:flex;align-items:center;gap:9px;}
+  .b-file-r .fic{font-size:24px;flex-shrink:0;}
+  .b-file-r .fnm{font-size:11px;font-weight:700;color:#fff;display:block;}
+  .b-file-r .fmt{font-size:9px;color:rgba(255,255,255,.7);display:block;margin-top:1px;}
+
+  .bt{font-size:9px;color:rgba(0,0,0,.28);align-self:flex-end;flex-shrink:0;}
+
+  .ibar{background:#eaeaea;padding:6px 8px;display:flex;align-items:center;gap:6px;
+    border-top:1px solid rgba(0,0,0,.08);}
+  .ifld{flex:1;background:#fff;border-radius:16px;padding:6px 10px;
+    font-size:11px;color:#bbb;border:1px solid #ddd;}
+  .iic{color:#999;font-size:17px;}
+  .isnd{width:29px;height:29px;border-radius:50%;background:var(--lg);
+    display:flex;align-items:center;justify-content:center;color:#fff;font-size:12px;}
+
+  /* ══ EMAIL ══ */
+  .eframe{width:350px;background:#fff;border-radius:12px;overflow:hidden;
+    box-shadow:0 14px 44px rgba(0,0,0,.62);}
+  .etop{background:var(--navy);padding:7px 12px;display:flex;align-items:center;gap:7px;}
+  .dot{width:8px;height:8px;border-radius:50%;}
+  .dr{background:#ff5f56;}.dy{background:#ffbd2e;}.dg2{background:#27c93f;}
+  .etop span{color:rgba(255,255,255,.3);font-size:9px;flex:1;text-align:center;}
+  .etbar{background:#e8e5df;padding:6px 10px;display:flex;align-items:center;gap:7px;
+    border-bottom:1px solid #d0cdc7;}
+  .ebk{font-size:14px;color:#555;}
+  .esj{font-size:10px;color:#555;font-weight:500;flex:1;white-space:nowrap;
+    overflow:hidden;text-overflow:ellipsis;}
+
+  .ebody{height:700px;overflow-y:auto;background:#f2f1ed;padding:6px 0 10px;}
+
+  /* メール1通 */
+  .ec{background:#fff;margin:0 8px 7px;border-radius:8px;overflow:hidden;
+    box-shadow:0 1px 5px rgba(0,0,0,.08);}
+  .echdr{padding:9px 12px;}
+  .echdr .elg{font-size:12.5px;color:#fff;font-weight:700;}
+  .echdr .esb{font-size:8px;color:rgba(255,255,255,.5);margin-top:1px;}
+  .emeta{padding:5px 11px;background:#fafafa;border-bottom:1px solid #eee;
+    font-size:9px;color:#888;line-height:1.9;}
+  .emeta strong{color:#333;}
+  .tag{display:inline-block;font-size:7.5px;font-weight:700;padding:1px 5px;
+    border-radius:7px;margin-left:3px;
+    background:rgba(30,58,95,.1);border:1px solid rgba(30,58,95,.25);color:#1e3a5f;}
+  .tag.s{background:rgba(46,125,50,.1);border-color:rgba(46,125,50,.3);color:#2e7d32;}
+
+  .eb{padding:8px 11px;font-size:10.5px;color:#333;line-height:1.9;}
+
+  /* メール内要素 */
+  .er{display:block;margin-top:4px;}
+  .er:first-child{margin-top:0;}
+  .etrend{display:block;font-size:10px;color:#555;margin-top:8px;
+    background:#f4f4f4;border-radius:4px;padding:4px 8px;}
+  .ehist{display:block;margin-top:10px;}
+  .ehist-l{font-size:9px;font-weight:700;color:#888;display:block;margin-bottom:3px;}
+  .ehist-b{background:#f8f8f8;border-radius:4px;padding:5px 9px;
+    font-size:10px;color:#555;line-height:2;display:block;white-space:pre;}
+  .ept{display:block;margin-top:10px;border-top:1px dashed #e0e0e0;padding-top:8px;}
+  .ept-l{font-size:9px;font-weight:700;color:var(--blue);display:block;margin-bottom:3px;}
+  .eq{display:block;margin-top:8px;background:#fff8f8;
+    border-left:2px solid #e53935;padding:5px 8px;
+    font-size:10px;line-height:1.9;}
+  .eq-l{font-size:9px;font-weight:700;color:#e53935;display:block;margin-bottom:3px;}
+  .elink{display:block;margin-top:8px;font-size:10px;color:var(--blue);}
+  .enote{display:block;font-size:8.5px;color:#aaa;margin-top:2px;}
+
+  /* ランキング（サンプル形式：あなた先頭・1位から順） */
+  .erk{display:block;margin-top:5px;border-top:1px dashed #e0e0e0;padding-top:5px;}
+  .erk-l{font-size:9px;font-weight:700;color:#888;display:block;margin-bottom:3px;}
+  .erk-b{background:#f8f8f8;border-radius:4px;padding:6px 10px;
+    font-size:10.5px;line-height:1;font-family:monospace;display:block;color:#444;
+    white-space:pre;}
+  .erk-b .me{color:var(--dg);font-weight:700;}
+
+  /* 写真グリッド（メール内） */
+  .ephg{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;margin:5px 0;}
+  .epht{background:#dde8eb;border-radius:4px;aspect-ratio:1;
+    display:flex;flex-direction:column;align-items:center;
+    justify-content:center;font-size:14px;gap:1px;}
+  .epht span{font-size:7.5px;color:#445;text-align:center;}
+
+  .eftr{padding:5px 10px;background:var(--navy);font-size:8px;
+    color:rgba(255,255,255,.32);text-align:center;}
+
+  ::-webkit-scrollbar{width:3px;}
+  ::-webkit-scrollbar-thumb{background:rgba(0,0,0,.14);border-radius:2px;}
+</style>
+</head>
+<body>
+
+<div class="ptitle">
+  <h1>保護者 受信モック v6</h1>
+  <p>その田 せいと（中2）· 2026/4/10</p>
+</div>
+
+<div class="dual">
+
+  <!-- ════ LINE ════ -->
+  <div class="panel">
+    <div class="plbl">📱 LINE（保護者スマホ）</div>
+    <div class="phone"><div class="screen">
+      <div class="sbar"><span>6:22</span><span>▌▌▌ WiFi 🔋</span></div>
+      <div class="lhdr">
+        <span class="bk">‹</span>
+        <div class="lav">U</div>
+        <div class="linfo"><h3>進学塾ユニティ</h3><p>公式アカウント</p></div>
+        <div class="lic"><span>☎</span><span>⋯</span></div>
+      </div>
+
+      <div class="chat">
+        <div class="dsep">2026年4月10日（木）</div>
+
+        <!-- 保護者テキスト -->
+        <div class="st">
+          <div class="bst">おはようございます。今朝も音読がんばっています！写真送ります。</div>
+          <span class="bt">6:22</span>
+        </div>
+
+        <!-- 写真3枚（右：保護者送信） -->
+        <div class="st-img">
+          <div class="b-img-r">
+            <div class="img-grid">
+              <div class="img-th">📓<span>算数<br>ノート</span></div>
+              <div class="img-th">📓<span>英語<br>ノート</span></div>
+              <div class="img-th">📓<span>理科<br>ノート</span></div>
+            </div>
+          </div>
+          <span class="bt">6:24</span>
+        </div>
+
+        <!-- 写真事実返信（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+            <div class="b">算数・英語・理科のノート写真　確認しました</div>
+          </div>
+          <span class="bt">6:34</span>
+        </div>
+
+        <!-- PDF（右：保護者送信） -->
+        <div class="st-file">
+          <div class="b-file-r">
+            <span class="fic">📄</span>
+            <div><span class="fnm">英語テスト結果.pdf</span><span class="fmt">2ページ</span></div>
+          </div>
+          <span class="bt">6:35</span>
+        </div>
+
+        <!-- PDF事実返信（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+            <div class="b">英語のテスト結果78点　リスニング満点</div>
+          </div>
+          <span class="bt">6:45</span>
+        </div>
+
+        <!-- 学習外写真（右） -->
+        <div class="st-img">
+          <div class="b-img-r">
+            <div class="img-single">🌸</div>
+          </div>
+          <span class="bt">6:50</span>
+        </div>
+
+        <!-- つみかさね（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+<div class="b">📕 つみかさね（数社）
+42問・正答率88%・週累計3,840問
+📈 週平均3,210問→3,840問（+19%）
+
+2週音読時間　78分　6位／14人
+2週モノつみ　3,840問　8位／22人
+今月タゲトモ 黄　3,210pt　14位／16人
+
+💡 数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっています。
+
+📝 間違い問題
+Q1. 3x+7=22 → 正解：x=5
+Q2. 比例式 4:x=8:6 → 正解：x=3</div>
+          </div>
+          <span class="bt">7:15</span>
+        </div>
+
+        <!-- 音読（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+<div class="b">🎤 音読（英語）
+実質12分18秒
+📈 月平均42分→78分（+86%）
+
+2週音読時間　78分　6位／14人
+2週モノつみ　3,840問　8位／22人
+今月タゲトモ 黄　3,210pt　14位／16人
+
+🔤 本日の最難単語
+perseverance（粘り強さ）
+Perseverance is the key to
+mastering English.</div>
+          </div>
+          <span class="bt">7:20</span>
+        </div>
+
+        <!-- タゲトモ（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+<div class="b">📗 タゲトモ（黄）
+935点　前月比 +87
+4月通算 3,210pt
+
+2週音読時間　78分　6位／14人
+2週モノつみ　3,840問　8位／22人
+今月タゲトモ 黄　3,210pt　14位／16人</div>
+          </div>
+          <span class="bt">7:25</span>
+        </div>
+
+        <!-- モノグサ（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+<div class="b">📘 モノグサ（数社）
+340問・正答率82%
+📈 月平均2,100問→3,840問（+83%）
+
+2週音読時間　78分　6位／14人
+2週モノつみ　3,840問　8位／22人
+今月タゲトモ 黄　3,210pt　14位／16人
+
+💡 数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっています。
+
+📝 間違い問題
+Q1. 3x+7=22 → 正解：x=5
+Q2. 比例式 4:x=8:6 → 正解：x=3</div>
+          </div>
+          <span class="bt">10:32</span>
+        </div>
+
+        <!-- 保護者テキスト -->
+        <div class="st">
+          <div class="bst">オンライン授業のURLを教えてください</div>
+          <span class="bt">13:01</span>
+        </div>
+
+        <!-- LLM返信（左） -->
+        <div class="rv">
+          <div class="mav">U</div>
+          <div class="bw">
+<div class="b">本日のオンライン授業URLはこちらです。開始5分前にご入室ください。
+→ https://zoom.us/j/XXXXXXX</div>
+          </div>
+          <span class="bt">13:05</span>
+        </div>
+
+      </div>
+
+      <div class="ibar">
+        <span class="iic">＋</span>
+        <div class="ifld">メッセージを入力…</div>
+        <span class="iic">😊</span>
+        <div class="isnd">▶</div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ════ EMAIL ════ -->
+  <div class="panel">
+    <div class="plbl">✉️ メール（LID1・LID2あて · 6通）</div>
+    <div class="eframe">
+      <div class="etop">
+        <div class="dot dr"></div><div class="dot dy"></div><div class="dot dg2"></div>
+        <span>受信トレイ — Gmail</span>
+      </div>
+      <div class="etbar">
+        <span class="ebk">‹</span>
+        <span class="esj">ユニティからのメール（6通）</span>
+      </div>
+
+      <div class="ebody">
+
+        <!-- ① 写真＋事実返信 -->
+        <div class="ec">
+          <div class="echdr" style="background:var(--navy);">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">📷 写真受信・事実返信</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 06:34　<strong>添付：</strong>算数ノート.jpg 英語ノート.jpg 理科ノート.jpg
+          </div>
+          <div class="eb">
+            <div class="ephg">
+              <div class="epht">📓<span>算数ノート</span></div>
+              <div class="epht">📓<span>英語ノート</span></div>
+              <div class="epht">📓<span>理科ノート</span></div>
+            </div>
+            <span class="er">算数・英語・理科のノート写真　確認しました</span>
+            <span class="ehist">
+              <span class="ehist-l">＜最近2週間の写真送信状況＞</span>
+              <span class="ehist-b">04/10 06:24　写真3枚
+04/07 07:01　写真2枚
+04/03 06:45　写真1枚</span>
+            </span>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+        <!-- ② PDF＋事実返信 -->
+        <div class="ec">
+          <div class="echdr" style="background:#546e7a;">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">📄 PDF受信・事実返信</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 06:45　<strong>添付：</strong>なし（LINE経由のため）
+          </div>
+          <div class="eb">
+            <span class="er">📄 <strong>英語テスト結果.pdf</strong>　2ページ（LINE経由）</span>
+            <span class="er" style="margin-top:3px;">英語のテスト結果78点　リスニング満点</span>
+            <span class="ehist" style="margin-top:5px;">
+              <span class="ehist-l">＜最近2週間のPDF送信状況＞</span>
+              <span class="ehist-b">04/10 06:35　英語テスト結果.pdf</span>
+            </span>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+        <!-- ③ つみかさね -->
+        <div class="ec">
+          <div class="echdr" style="background:var(--tsumi-b);">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">📕 つみかさね</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 07:15
+          </div>
+          <div class="eb">
+            <span class="er">数社　42問・正答率88%・週累計 <strong>3,840問</strong></span>
+            <span class="etrend">📈 1か月：週平均3,210問→3,840問（+19%）</span>
+            <span class="ehist">
+              <span class="ehist-l">＜最近2週間のつみかさね送信状況＞</span>
+              <span class="ehist-b">04/10 07:15　数社 42問
+04/09 07:08　数社 38問
+04/08 06:52　数社 51問
+04/07 19:30　英語 44問</span>
+            </span>
+            <span class="ept">
+              <span class="ept-l">💡 今日のポイント</span>
+              数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっており、この単元の定着が進んでいます。
+            </span>
+            <span class="eq">
+              <span class="eq-l">📝 間違い問題</span>
+              Q1. 3x + 7 = 22<br>
+              誤答：x = 4　正解：x = 5<br>
+              解説：両辺から7を引くと 3x=15、x=5<br><br>
+              Q2. 比例式 4:x = 8:6<br>
+              誤答：x = 2　正解：x = 3<br>
+              解説：外項×外項＝内項×内項 → 4×6=8x、x=3
+            </span>
+            <span class="erk">
+              <span class="erk-l">＜モノグサ・つみかさね問題数ランキング（最近2週間）＞</span>
+              <span class="erk-b"><span class="me">あなた：3,840問</span>
+
+1位：4,120問
+
+2位：4,050問
+
+3位：3,990問
+
+4位：3,960問
+
+5位：3,920問
+
+6位：3,900問
+
+7位：3,880問
+
+<span class="me">8位：3,840問</span>
+
+9位：3,710問
+
+10位：3,650問</span>
+            </span>
+            <div style="margin-top:6px;border-top:1px dashed #eee;padding-top:6px;font-size:10.5px;color:#333;line-height:1.75;">
+              【つみかさねアプリへのリンク】<br>
+              詳細の学習履歴はこちらから確認できます。<br>
+              → <span style="color:var(--blue);">https://tsumikasane.unity.jp/</span>
+            </div>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+        <!-- ④ 音読 -->
+        <div class="ec">
+          <div class="echdr" style="background:var(--oto-b);">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">🎤 音読</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 07:20　<strong>添付：</strong>🎵 sonotada_seito_oto_20260410.mp3<br>
+            <span class="enote">※ 生徒メールには音声を送りません（別メール）</span>
+          </div>
+          <div class="eb">
+            <span class="er">英語　実質 <strong>12分18秒</strong></span>
+            <span class="etrend">📈 3か月：月平均42分→78分（+86%）</span>
+            <span class="ehist">
+              <span class="ehist-l">＜最近2週間の音読送信状況＞</span>
+              <span class="ehist-b">04/10 07:20　英語 12m18s
+04/09 17:12　英語 10m00s
+04/08 16:55　英語 10m00s
+04/05 15:30　英語 9m42s</span>
+            </span>
+            <span class="ept">
+              <span class="ept-l">🔤 STT · 最難単語</span>
+              <strong>perseverance</strong>（名詞）<br>
+              意味：困難に負けずに続ける力・粘り強さ<br>
+              用例：Perseverance is the key to mastering English.
+            </span>
+            <span class="erk">
+              <span class="erk-l">＜最近2週間の音読時間ランキング＞</span>
+              <span class="erk-b"><span class="me">あなた：78分</span>
+
+1位：87分
+
+2位：85分
+
+3位：82分
+
+4位：81分
+
+5位：79分
+
+<span class="me">6位：78分</span>
+
+7位：61分
+
+8位：55分
+
+9位：50分
+
+10位：48分</span>
+            </span>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+        <!-- ⑤ モノグサ -->
+        <div class="ec">
+          <div class="echdr" style="background:var(--mono-b);">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">📘 モノグサ</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 10:32
+          </div>
+          <div class="eb">
+            <span class="er">数社　340問・正答率82%</span>
+            <span class="etrend">📈 3か月：月平均2,100問→3,840問（+83%）</span>
+            <span class="ehist">
+              <span class="ehist-l">＜最近2週間のモノグサ送信状況＞</span>
+              <span class="ehist-b">04/10 10:30（バッチ）　数社 340問
+04/09 10:30（バッチ）　数社 298問
+04/08 13:30（バッチ）　数社 312問</span>
+            </span>
+            <span class="ept">
+              <span class="ept-l">💡 今日のポイント</span>
+              数社の比例・反比例で今日最も正解が多かったです。速さと正確さが同時に上がっており、この単元の定着が進んでいます。
+            </span>
+            <span class="eq">
+              <span class="eq-l">📝 間違い問題</span>
+              Q1. 3x + 7 = 22<br>
+              誤答：x = 4　正解：x = 5<br>
+              解説：両辺から7を引くと 3x=15、x=5<br><br>
+              Q2. 比例式 4:x = 8:6<br>
+              誤答：x = 2　正解：x = 3<br>
+              解説：外項×外項＝内項×内項 → 4×6=8x、x=3
+            </span>
+            <span class="erk">
+              <span class="erk-l">＜モノグサ・つみかさね問題数ランキング（最近2週間）＞</span>
+              <span class="erk-b"><span class="me">あなた：3,840問</span>
+
+1位：4,120問
+
+2位：4,050問
+
+3位：3,990問
+
+4位：3,960問
+
+5位：3,920問
+
+6位：3,900問
+
+7位：3,880問
+
+<span class="me">8位：3,840問</span>
+
+9位：3,710問
+
+10位：3,650問</span>
+            </span>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+        <!-- ⑥ チャット返信 -->
+        <div class="ec">
+          <div class="echdr" style="background:var(--navy);">
+            <div class="elg">進学塾 ユニティ</div>
+            <div class="esb">💬 チャット返信</div>
+          </div>
+          <div class="emeta">
+            <strong>To:</strong> parent1@example.com<span class="tag">LID1</span> parent2@example.com<span class="tag">LID2</span><br>
+            <strong>Date:</strong> 13:05
+          </div>
+          <div class="eb">
+            <span class="er" style="color:#999;font-size:10px;margin-bottom:3px;display:block;">保護者：オンライン授業のURLを教えてください</span>
+            <span class="er">本日のオンライン授業URLはこちらです。開始5分前にご入室ください。<br>→ https://zoom.us/j/XXXXXXX</span>
+          </div>
+          <div class="eftr">YWC自動配信</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- 生徒メール（別送） -->
+<div style="width:100%;max-width:850px;margin-top:10px;">
+  <div style="font-size:10px;font-weight:700;letter-spacing:.12em;color:#666;text-transform:uppercase;text-align:center;margin-bottom:8px;">
+    ✉️ 生徒あて別メール（文字列のみ・画像・音声なし）
+  </div>
+  <div style="background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 2px 10px rgba(0,0,0,.3);max-width:500px;margin:0 auto;">
+    <div style="background:var(--dg);padding:8px 12px;">
+      <div style="font-size:12px;color:#fff;font-weight:700;">進学塾 ユニティ</div>
+      <div style="font-size:8px;color:rgba(255,255,255,.5);margin-top:1px;">生徒あて自動配信（画像・音声なし）</div>
+    </div>
+    <div style="padding:5px 11px;background:#fafafa;border-bottom:1px solid #eee;font-size:9px;color:#888;line-height:1.9;">
+      <strong>To:</strong> seito@example.com<span class="tag s">生徒</span><br>
+      <strong>Date:</strong> 07:20（音読受信時に一括送信）
+    </div>
+    <div style="padding:8px 11px;font-size:10.5px;color:#333;line-height:1.9;">
+      <span style="display:block;">🎤 音読（英語）　実質12分18秒</span>
+      <span style="display:block;">📕 つみかさね　42問・正答率88%・週累計3,840問</span>
+      <span style="display:block;">📘 モノグサ　340問・正答率82%</span>
+      <span style="display:block;">📗 タゲトモ（黄）　935点　前月比+87</span>
+      <span style="display:block;margin-top:4px;padding-top:4px;border-top:1px dashed #eee;">
+        2週音読時間　78分　6位／14人<br>
+        2週モノつみ　3,840問　8位／22人<br>
+        今月タゲトモ 黄　3,210pt　14位／16人
+      </span>
+    </div>
+    <div style="padding:4px 10px;background:var(--dg);font-size:8px;color:rgba(255,255,255,.32);text-align:center;">YWC自動配信</div>
+  </div>
+</div>
+
+</body>
+</html>
