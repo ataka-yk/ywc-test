@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+  <meta name="color-scheme" content="dark">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YWC 送信マトリクス A v5</title>
+<style>
+  :root {
+    --bg: #0d1117;
+    --surface: #161b22;
+    --surface2: #21262d;
+    --border: #30363d;
+    --text: #e6edf3;
+    --muted: #7d8590;
+    --accent: #58a6ff;
+    --green: #3fb950;
+    --red: #f85149;
+    --yellow: #d29922;
+    --orange: #ffa657;
+    --purple: #bc8cff;
+    --teal: #39d353;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    color-scheme: dark;
+  }
+    font-family: 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    background: var(--bg); color: var(--text);
+    font-size: 12px; padding: 24px;
+  }
+  h1 { font-size: 17px; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+  .meta { color: var(--muted); font-size: 11px; margin-bottom: 6px; }
+  .hierarchy { display: flex; gap: 6px; margin-bottom: 20px; flex-wrap: wrap; align-items: center; }
+  .hier { padding: 3px 9px; border-radius: 4px; font-size: 11px; font-weight: 700; border: 1px solid var(--border); }
+  .hier-now { background: var(--accent); color: #000; border-color: var(--accent); }
+  .hier-other { background: var(--surface2); color: var(--muted); }
+  .hier-arrow { color: var(--muted); font-size: 11px; }
+
+  /* 凡例 */
+  .legend { display: flex; flex-wrap: wrap; gap: 12px; padding: 10px 14px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; margin-bottom: 20px; font-size: 11px; align-items: center; }
+  .bage { display: inline-block; padding: 2px 6px; border-radius: 3px; font-size: 10px; font-weight: 700; }
+  .b-lg { background: #0d2e0d; color: #3fb950; border: 1px solid #238636; }
+  .b-li { background: #0d1f2e; color: #58a6ff; border: 1px solid #1f6feb; }
+  .b-mp1 { background: #2e0d0d; color: #f85149; border: 1px solid #6e2a2a; }
+  .b-mp2 { background: #2e1a0d; color: #ffa657; border: 1px solid #6e3a1a; }
+  .b-mg { background: #1a1a2e; color: #bc8cff; border: 1px solid #3a3a6e; }
+  .type-auto { background: #271f2d; color: var(--purple); font-size: 9px; font-weight: 700; display: inline-block; padding: 1px 5px; border-radius: 2px; }
+  .type-manual { background: #1f2a3a; color: var(--accent); font-size: 9px; font-weight: 700; display: inline-block; padding: 1px 5px; border-radius: 2px; }
+  .type-s2 { background: #1f2d20; color: var(--teal); font-size: 9px; font-weight: 700; display: inline-block; padding: 1px 5px; border-radius: 2px; }
+  .type-mix { background: #2a2a1a; color: var(--yellow); font-size: 9px; font-weight: 700; display: inline-block; padding: 1px 5px; border-radius: 2px; }
+
+  /* セクション区切り */
+  .sec-title { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 5px 12px; background: var(--surface2); border-left: 3px solid var(--accent); margin: 20px 0 6px; }
+
+  /* テーブル */
+  .tw { overflow-x: auto; margin-bottom: 4px; }
+  table { width: 100%; border-collapse: separate; border-spacing: 0; }
+  thead th { background: var(--surface); color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; padding: 6px 8px; border-bottom: 2px solid var(--border); border-right: 1px solid var(--border); text-align: center; white-space: nowrap; }
+  thead th.th-scene { text-align: left; min-width: 160px; max-width: 200px; border-right: 2px solid var(--accent); }
+  thead th.th-group { font-size: 9px; }
+  thead th:last-child { border-right: none; }
+  tbody tr { transition: background 0.1s; }
+  tbody tr:hover { background: var(--surface2); }
+  td.td-scene { padding: 8px 12px; border-bottom: 1px solid var(--border); border-right: 2px solid var(--accent); vertical-align: top; min-width: 160px; max-width: 200px; }
+  .sname { font-weight: 700; font-size: 12px; color: var(--text); margin-bottom: 2px; }
+  .strig { font-size: 10px; color: var(--muted); line-height: 1.4; margin-bottom: 3px; }
+  td.cell { padding: 0; border-bottom: 1px solid var(--border); border-right: 1px solid var(--border); text-align: center; vertical-align: middle; width: 82px; min-width: 82px; height: 52px; }
+  td.cell:last-child { border-right: none; }
+  .cy { background: #0d2e0d; color: var(--green); font-size: 17px; font-weight: 700; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .cn { background: transparent; color: #30363d; font-size: 15px; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+  .cc { background: #2a1a00; color: var(--yellow); font-size: 12px; font-weight: 700; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1px; }
+  .cc small { font-size: 8px; line-height: 1; }
+
+  /* 注記 */
+  .notes { margin-top: 16px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; font-size: 11px; color: var(--muted); line-height: 1.8; }
+  .notes strong { color: var(--text); }
+  .notes .warn { color: var(--yellow); }
+  .night { display: inline-block; font-size: 9px; padding: 1px 4px; background: #1a1a0d; color: var(--yellow); border: 1px solid #4a4a0a; border-radius: 2px; margin-left: 3px; }
+  .now { display: inline-block; font-size: 9px; padding: 1px 4px; background: #0d2e0d; color: var(--green); border: 1px solid #1a4a1a; border-radius: 2px; margin-left: 3px; }
+  .qref { font-size: 9px; color: #58a6ff88; margin-left: 4px; }
+</style>
+</head>
+<body>
+
+<h1>YWC 送信マトリクス A</h1>
+<div class="meta">v2 · 2026-05-03 · 誰の・何に・何が送られるか — 全体俯瞰表</div>
+
+<div class="hierarchy">
+  <div class="hier hier-now">A 俯瞰（森）← 今ここ</div>
+  <div class="hier-arrow">→</div>
+  <a href="https://www.notion.so/3530d15a9e8f815d9cc3fd4ab0cb3cea" target="_blank" style="text-decoration:none;">
+    <div class="hier hier-other" style="cursor:pointer;">D 仕様（葉）= 送信内容対応表v3 ↗</div>
+  </a>
+</div>
+
+<div class="legend">
+  <div class="legend-item"><span class="bage" style="background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→STEP2自動返信→3ボタン</span> 着信を受けてSTEP2処理・LLM3案を先生画面に表示</div>
+  <div class="legend-item"><span class="bage" style="background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→要約自動送信</span> 着信を受けてYWCが要約を自動送信</div>
+  <div class="legend-item"><span class="bage" style="background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約自動送信</span> YWCが要約を自動送信</div>
+  <div class="legend-item"><span class="bage" style="background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信</span> 履歴・ランキング全文をメールで自動送信</div>
+  <div class="legend-item"><span class="bage" style="background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送</span> LINEと音読アプリ間でYWCが代理転送（送信者情報含む）</div>
+  <div class="legend-item"><span class="bage" style="background:#0d1a2e;color:#60a5fa;border:1px solid #1a3a5a;">着信</span> 着信のみ（自動返信なし）</div>
+  <div class="legend-item"><span class="bage" style="background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</span> 先生が手動送信</div>
+  <div class="legend-item"><span class="bage" style="background:#2a2a1a;color:#fbbf24;">△ON時</span> グループON時のみ</div>
+  <div class="legend-item"><span style="color:#7d8590;font-size:11px;">—</span> 届かない</div>
+</div>
+
+<div class="tw">
+<table>
+<thead>
+    <tr>
+      <th class="th-scene" rowspan="2">場面・トリガー</th>
+      <th class="th-group" colspan="3">LINE</th>
+      <th class="th-group" colspan="3">メール</th>
+      <th class="th-group" colspan="2">音読アプリ</th>
+    </tr>
+    <tr>
+      <th>グループ</th>
+      <th>個別<br><span style="font-size:9px;font-weight:400">保護者</span></th>
+      <th>個別<br><span style="font-size:9px;font-weight:400">生徒</span></th>
+      <th>P1<br><span style="font-size:9px;font-weight:400">保護者1</span></th>
+      <th>P2△<br><span style="font-size:9px;font-weight:400">保護者2</span></th>
+      <th>生徒<br><span style="font-size:9px;font-weight:400">生徒gmail</span></th>
+      <th>グループ<br><span style="font-size:9px;font-weight:400">LINEと連動</span></th>
+      <th>個別<br><span style="font-size:9px;font-weight:400">生徒のみ</span></th>
+    </tr>
+  </thead>
+<tbody>
+    <tr><td colspan="9" class="sec-title">保　着信起因の自動送信</td></tr>
+    <tr>
+      <td class="td-scene"><strong>保-1　テキスト着信 STEP2</strong><br><span class="strig">保護者からの着信のみ動作（生徒には適用しない）。着信元ルームに返信。夜間も即時。</span><br><span class="type-s2">STEP2自動</span></td>
+      <td class="cell"><div class="cc" style="font-size:9px;background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→STEP2<br>自動返信<br>→3ボタン</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→STEP2<br>自動返信<br>→3ボタン</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d1a2e;color:#60a5fa;border:1px solid #1a3a5a;">着信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:10px;background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送</div></td><td class="cell"><div class="cn">—</div></td>
+    </tr>
+    <tr>
+      <td class="td-scene"><strong>保-2　音声ファイル着信</strong><br><span class="strig">保護者→LINE/メール添付。自動STT処理。8分未満はSTT処理なし。実体ファイルはメールに添付。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→<br>要約自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送<br>（要約のみ）</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>保-3　タゲトモSS着信</strong><br><span class="strig">保護者→LINE/メール添付。先生がOCRボタンを手動トリガー。OCR完了後即送信。禁止時間内なら翌朝。</span><br><span class="type-mix">手動トリガー→自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→<br>要約自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送<br>（要約のみ）</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>保-4　写真着信（LINE手撮り）</strong><br><span class="strig">保護者→LINE。LLM処理（事実返信テキスト・50字）。学習関連のみ自動送信。学習無関連は先生確認バブル→スルーなら送信なし。メールなし。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td>
+      <td class="cell"><div class="cc" style="font-size:9px;background:#0d2e1a;color:#4ade80;border:1px solid #1a5a2a;">着信→<br>要約自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送<br>（実体＋要約）</div></td><td class="cell"><div class="cn">—</div></td>
+    </tr>
+    <tr><td colspan="9" class="sec-title">ア　学習アプリ着信（つみかさね・モノグサ）</td></tr>
+    <tr>
+      <td class="td-scene"><strong>ア-1　つみかさね着信（Pushスロット）</strong><br><span class="strig">LINE：時系列→今日のポイント→3行ランク→間違い問題（1バブル）。メール：本日結果→トレンド→今日のポイント→間違い問題→URL→履歴→ランキングTOP10。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>ア-2　モノグサ着信（Pushスロット）</strong><br><span class="strig">LINE：時系列→今日のポイント→3行ランク→復習問題（1バブル）。メール：本日結果→トレンド→今日のポイント→復習問題→URL→履歴→ランキングTOP10。バッチ3回（10:30/13:30/22:30）<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr><td colspan="9" class="sec-title">音　生徒からの着信（音読アプリ発信）</td></tr>
+    <tr>
+      <td class="td-scene"><strong>音-1　テキスト（生徒→音読アプリ）</strong><br><span class="strig">YWCがLINEグループに代理転送。表示：ユニティ西谷梅の木 /【生徒名さん】＋本文。教師TLに表示。自動返信なし・STEP2適用なし。</span><br><span class="type-auto">代理転送</span></td>
+      <td class="cell"><div class="cc" style="font-size:10px;background:#1a2a3a;color:#93c5fd;border:1px solid #2a4a6a;">代理転送</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d1a2e;color:#60a5fa;border:1px solid #1a3a5a;">着信</div></td><td class="cell"><div class="cn">—</div></td>
+    </tr>
+    <tr>
+      <td class="td-scene"><strong>音-2　音声・音読（生徒→音読アプリ）</strong><br><span class="strig">音声→STT前処理（無音除去）→analysis job。8分以上：STT書き起こしあり。8分未満：STT処理なし。LINE（1バブル）：科目・実質時間・トレンド・3行ランク・STT最難単語（8分以上のみ）。メール：本日結果→トレンド→URL→履歴→ランキングTOP10。実体音声添付。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>音-3　写真（生徒→音読アプリ）</strong><br><span class="strig">LINE：実体写真＋事実返信テキスト（LLM・50字）のみ。M-4なし。メール：事実返信テキスト→URL（2本）→履歴→ランキングTOP10。実体写真添付。本日結果・トレンドなし。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>音-4　タゲトモSS（生徒→音読アプリ）</strong><br><span class="strig">API（POST /v3/scores/upload）→OCR処理→実体SS＋M-4同時送信。LINE（1バブル）：タゲトモ色・スコア・前月比・通算pt＋3行ランク。メール：本日結果→トレンド→URL→履歴→ランキングTOP10。実体SS添付。<span class="night">翌朝</span></span><br><span class="type-auto">自動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文<br>自動送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2e0d1a;color:#f87171;border:1px solid #6a1a2a;">全文自動送信<br><span style="font-size:8px;color:#fca5a5;">同報・条件あり</span></div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#0d2e0d;color:#4ade80;border:1px solid #1a5a1a;">要約<br>自動送信</div></td><td class="cell"><div class="cn">—</div></td></tr>
+    <tr><td colspan="9" class="sec-title">配　手動送信（配信タブ・才能タブ）</td></tr>
+    <tr>
+      <td class="td-scene"><strong>配-1　配信タブ — 通常配信</strong><br><span class="strig">先生が作成・送信。デフォルト：翌朝6:30〜7:15。グループはデフォルトOFF。LINE・メールとも同じ文面。<span class="night">翌朝</span></span><br><span class="type-manual">手動</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#2a2a1a;color:#fbbf24;">△<br><small>ON時</small></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信<br><span style="font-size:8px;color:#a78bfa;">同報・条件あり</span></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2a2a1a;color:#fbbf24;">△<br><small>ON時</small></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td></tr>
+    <tr>
+      <td class="td-scene"><strong>配-2　才能タブ — 才能配信</strong><br><span class="strig">責任者のみ。★↑形式。文面は保護者・生徒共通。グループはデフォルトOFF。</span><br><span class="type-manual">手動（責任者限定）</span></td><td class="cell"><div class="cc" style="font-size:9px;background:#2a2a1a;color:#fbbf24;">△<br><small>ON時</small></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信<br><span style="font-size:8px;color:#a78bfa;">同報・条件あり</span></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#2a2a1a;color:#fbbf24;">△<br><small>ON時</small></div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td></tr>
+    <tr><td colspan="9" class="sec-title">手　手動返信（メッセージタブ）</td></tr>
+    <tr>
+      <td class="td-scene"><strong>手-1　手動返信（グループ・保護者個別）</strong><br><span class="strig">先生がルームを選んで手で打ち込む。1分遅延後送信。グループ→LINEグループ＋音読アプリグループ。保護者個別→着信した保護者のみ。</span><br><span class="type-manual">手動</span></td>
+      <td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cn">—</div></td>
+    </tr>
+    <tr>
+      <td class="td-scene"><strong>手-2　手動返信（生徒個別）</strong><br><span class="strig">生徒個別ルームを選択。緊急・災害時のみ想定。音読アプリ個別チャットは配信専用のため届かない。</span><br><span class="type-manual">手動</span></td>
+      <td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cc" style="font-size:9px;background:#1a1a2e;color:#c4b5fd;border:1px solid #3a2a6a;">送信</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td><td class="cell"><div class="cn">—</div></td>
+    </tr>
+</tbody>
+</table>
+</div>
+<div class="notes">
+  <strong>STEP1（SF側・完全一致マッチ）</strong>：SF側で処理。YWCからは何も送らないため表に記載なし。<br>
+  <strong>メールP2△</strong>：P2がそのグループに在籍しているから届く。個別着信への返信では在籍条件は関係なく着信保護者のみ。<br>
+  <strong>生徒メール</strong>：自動送信M-4・実体ファイルは届かない。配-1・配-2のみ届く。<br>
+  <strong>夜間（23:00〜6:30）</strong>：保-1（STEP2）のみ即時。それ以外は翌朝6:30〜7:15にランダム分散配信。<br>
+  <strong>重複制御</strong>：なし。M-4は着信のたびに都度送る。<br>
+  <strong>保-2・音-2のLINEグループ</strong>：1バブル統合（科目・実質時間・ランダム期間トレンド・3行ランク・STT最難単語）。STT最難単語が事実返信を兼ねる。別途LLM生成の事実返信テキストは存在しない。Q120・Q140・Q166確定。<br>
+  <strong>ア-1のLINEグループバブル順序</strong>：時系列→今日のポイント（週1000問以上のみ）→3行ランク→間違い問題（問題文・誤答・正解・解説）。全部1バブル。Q141・Q142確定。<br>
+  <strong>保-3・音-4のLINEグループ</strong>：タゲトモ色・スコア・前月比・通算pt＋3行ランク（1バブル）。保-2・音-2とは別着信・別バブル。v90確認。Q132・Q135確定。<br>
+  <strong>トレンドの期間</strong>：1か月・3か月・6か月のランダム（着信ごとにランダム選択）。タゲトモのみ前月比・通算pt固定。Q166確定。<br>
+  <strong>科目表記</strong>：略称。複数科目は連結（例：「数社英」）。LINEバブル・メール本日結果共通。Q172・Q175・Q176確定。<br>
+  <strong>保-2・音-2（8分未満）のLINEバブル</strong>：STT最難単語なし。トレンド＋3行ランクのみ。Q171・Q174確定。<br>
+  <strong>音-3（写真）のメール</strong>：本日結果・トレンドなし。事実返信テキスト→URL（2本）→履歴→ランキングTOP10のみ。Q167確定。<br>
+  <strong>保-4（手撮り写真）</strong>：メール送信なし。LINEグループ・音読アプリ グループのみ。2026-05-04確定。<br>
+  <strong>ア-1・ア-2のLINEグループ</strong>：時系列＋3行ランク＋今日のポイント（週1000問以上のみ）＋間違い問題（ア-1のみ）＋復習問題（ア-2のみ）。Q121・Q122・Q146確定。<br>
+  <strong>メールセクションタイトル（Q158・Q161確定）</strong>：
+  履歴①＜音読送信　2週間＞ / 履歴②＜モノグサ・つみかさね学習　2週間＞ / 履歴③＜タゲトモ送信　2週間＞ /
+  ランキング①＜音読時間ランキング＞ / ランキング②＜モノグサ・つみかさね問題数ランキング＞ / ランキング③＜タゲトモ黄スコアランキング＞。<br>
+  <strong>メールの「履歴」</strong>：音読・タゲトモ・つみかさね・モノグサ全種別の履歴が毎回入る（音-3除く）。表示順：音読→モノグサ・つみかさね→タゲトモ。Q131・Q158確定。<br>
+  <span class="warn">⚠️ 残件</span>：保-3（LINE/メール添付タゲトモSS）のOCRパイプライン実装（會田さん確認後）<br>
+  <strong>参照</strong>：詳細はNotionの送信内容対応表v1（Q1〜Q182確定内容）を参照。<br>
+  <strong>手動返信（手欄）メール廃止（2026-05-03）</strong>：手動返信はLINEのみ。メール送信なし。Q127上書き確定。<br>
+  <strong>音読アプリ グループ</strong>：LINEグループと双方向連動。LINEグループに届くものは音読アプリのグループスレッドにも届く。YWCが代理転送（送信者情報含む）。<br>
+  <strong>音読アプリ 個別</strong>：生徒のみ閲覧。配-1・配-2のみ届く。自動送信（M-4）・手動返信は届かない。</div>
+</body>
+</html>
